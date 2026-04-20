@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres.jbibixrgsdylwwwelyjf:R7vaYjRewv0RBYvP@aws-0-eu-west-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connect_timeout=10&sslmode=require"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  fullName  String
+  role      String   @default("vtb") // "uniteller" or "vtb"
+  sessions  Session[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Lead {
+  id           String   @id @default(cuid())
+  organization String
+  partner      String
+  zayavka      String
+  status       String?
+  activityType String   @default("")
+  comment      String?
+  contactInfo  String   @default("")
+  email        String   @default("")
+  margin       String   @default("")
+  manager      String
+  turnoverTsp  String   @default("")
+  ourRate      String   @default("")
+  revenue      String   @default("")
+  reported         Boolean  @default(false)
+  statusChangedAt  DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Relegal {
+  id           String   @id @default(cuid())
+  fromOrg      String   @default("")
+  toOrg        String   @default("")
+  action       String   @default("")
+  manager      String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Additional {
+  id           String   @id @default(cuid())
+  organization String
+  partner      String   @default("")
+  finInstrument String   @default("")
+  turnover     String   @default("")
+  revenue      String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Churn {
+  id           String   @id @default(cuid())
+  organization String
+  turnoverTsp  String   @default("")
+  revenue      String   @default("")
+  status       String   @default("")
+  comment      String   @default("")
+  reported     Boolean  @default(false)
+  manager      String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  category  String
+  value     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([category, value])
+  @@index([category])
+}
