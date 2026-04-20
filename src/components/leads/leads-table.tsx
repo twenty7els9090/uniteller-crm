@@ -64,16 +64,25 @@ import {
   User,
   Calendar,
   ChevronDown,
-  ChevronUp,
+  Eye,
   EyeOff,
+  Loader2,
   MessageSquare,
   Mail,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { PhoneInput } from '@/components/ui/phone-input'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
 import { useSettings } from '@/hooks/use-settings'
 import { PARTNERS, MANAGERS, ZAYAVKA_OPTIONS, STATUS_OPTIONS, ACTIVITY_TYPES } from '@/lib/constants'
 
@@ -513,7 +522,12 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
   const [globalFilter, setGlobalFilter] = useState('')
   const [formOpen, setFormOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
-  const [expandedRowId, setExpandedRowId] = useState<string | null>(null)
+  const [viewLead, setViewLead] = useState<Lead | null>(null)
+  const [commentDraft, setCommentDraft] = useState('')
+  const [marginDraft, setMarginDraft] = useState('')
+  const [activityDraft, setActivityDraft] = useState('')
+  const [editing, setEditing] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   // Sync global search from store to local filter
   useEffect(() => {
@@ -770,6 +784,37 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         )
       },
     },
+    {
+      id: 'details',
+      maxSize: 100,
+      cell: ({ row }) => {
+        const lead = row.original
+        return (
+          <div className="flex items-center justify-end gap-0.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => openDetails(lead)}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1" />
+              Подробнее
+            </Button>
+            {showDelete && isAdmin && !isVTB && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => setDeleteId(lead.id)}
+                title="Удалить"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        )
+      },
+    },
   ], [user, showDelete, isVTB, inlineSave])
 
   const table = useReactTable({
@@ -801,6 +846,69 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     } finally {
       setDeleteId(null)
     }
+  }
+
+  // ─── Dialog helpers ───
+  function openDetails(lead: Lead) {
+    setViewLead(lead)
+    setCommentDraft(lead.comment || '')
+    setMarginDraft(lead.margin || '')
+    setActivityDraft(lead.activityType || '')
+    setEditing(false)
+  }
+
+  function hasChanges(): boolean {
+    if (!viewLead) return false
+    return (
+      commentDraft !== (viewLead.comment || '') ||
+      marginDraft !== (viewLead.margin || '') ||
+      activityDraft !== (viewLead.activityType || '')
+    )
+  }
+
+  async function saveDetails() {
+    if (!viewLead) return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/leads/${viewLead.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...viewLead,
+          comment: commentDraft,
+          margin: marginDraft,
+          activityType: activityDraft,
+        }),
+      })
+      if (res.ok) {
+        const updated = await res.json()
+        setAllLeads((prev) => prev.map((l) => (l.id === viewLead.id ? updated : l)))
+        setViewLead(updated)
+        setEditing(false)
+        toast.success('Сохранено')
+      } else {
+        toast.error('Ошибка сохранения')
+      }
+    } catch {
+      toast.error('Ошибка соединения')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // ─── Currency formatter ───
+  function formatCurrency(value: string | number | undefined | null): string {
+    if (!value && value !== 0) return '—'
+    const num = typeof value === 'string'
+      ? parseFloat(value.replace(/\s/g, '').replace(',', '.'))
+      : value
+    if (isNaN(num)) return '—'
+    const fixed = Math.abs(num).toFixed(2)
+    const [intPart, decPart] = fixed.split('.')
+    const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    const decimals = decPart === '00' ? '' : `,${decPart.replace(/0+$/, '')}`
+    const prefix = num < 0 ? '-' : ''
+    return `${prefix}${formattedInt}${decimals} Р`
   }
 
   const hasActiveFilters = partnerFilter.length > 0 || zayavkaFilter.length > 0 || statusFilter.length > 0 || managerFilter.length > 0 || hideRejected || hidePaused
@@ -851,7 +959,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
       {!isVTB && (
         <motion.div variants={slideUp} initial="hidden" animate="visible">
           <p className="mb-3 text-xs text-muted-foreground hidden md:block">
-            Нажмите на ячейку для редактирования прямо в таблице. Нажмите на строку для раскрытия деталей. Изменения сохраняются автоматически.
+            Нажмите на ячейку для редактирования прямо в таблице. Изменения сохраняются автоматически.
           </p>
         </motion.div>
       )}
@@ -935,31 +1043,20 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
           {currentRows.length ? currentRows.map((row) => {
             const lead = row.original
             const slaDays = getSlaDays(lead.updatedAt)
-            const isExpanded = expandedRowId === lead.id
             return (
-              <div key={row.id}>
                 <div
+                  key={row.id}
                   className={cn(
-                    'group flex flex-col gap-1.5 px-4 py-3 transition-colors border-l-[3px] cursor-pointer',
+                    'group flex flex-col gap-1.5 px-4 py-3 transition-colors border-l-[3px]',
                     lead.zayavka === 'В работе'  && 'border-l-teal-400 hover:bg-teal-50/20',
                     lead.zayavka === 'На паузе'  && 'border-l-orange-400 bg-orange-50/40 hover:bg-orange-50/70',
                     lead.zayavka === 'Отклонена' && 'border-l-red-300 bg-red-50/25 opacity-75 hover:opacity-100',
                     lead.zayavka === 'Звонок' && 'border-l-sky-400 hover:bg-sky-50/30',
                     !['В работе','На паузе','Отклонена','Звонок'].includes(lead.zayavka) && 'border-l-border hover:bg-muted/30',
-                    isExpanded && 'bg-muted/20',
                   )}
-                  onClick={() => setExpandedRowId(isExpanded ? null : lead.id)}
                 >
-                  {/* ── Строка 1: Организация + Партнёр + Менеджер + Expand Icon ── */}
+                  {/* ── Строка 1: Организация + Партнёр + Менеджер ── */}
                   <div className="flex items-center gap-3 min-w-0">
-                    {/* Expand/Collapse chevron */}
-                    <span className="shrink-0 text-muted-foreground/50 transition-transform duration-200">
-                      {isExpanded
-                        ? <ChevronUp className="h-4 w-4" />
-                        : <ChevronDown className="h-4 w-4" />
-                      }
-                    </span>
-
                     {/* Организация */}
                     <span className="shrink-0 flex items-center gap-1.5">
                       {isVTB ? (
@@ -1006,18 +1103,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       />
                     </span>
 
-                    {/* Удалить */}
-                    <span className="shrink-0">
-                      {showDelete && isAdmin && (
-                        <Button
-                          variant="ghost" size="icon"
-                          className="h-7 w-7 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
-                          onClick={(e) => { e.stopPropagation(); setDeleteId(lead.id) }}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      )}
-                    </span>
                   </div>
 
                   {/* ── Строка 2: Контакты ── */}
@@ -1113,65 +1198,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                     ) : null}
                   </div>
                 </div>
-
-                {/* ── Expandable Detail Panel ── */}
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden bg-muted/30 border-t"
-                    >
-                      <div className="px-4 py-3 pl-12 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                        {/* Email */}
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-0.5">Email</p>
-                          {isVTB ? (
-                            <span className="text-foreground">{lead.email || '—'}</span>
-                          ) : (
-                            <EditableTextCell value={lead.email || ''} onSave={(val) => inlineSave(lead.id, 'email', val)} placeholder="—" className="text-sm" />
-                          )}
-                        </div>
-                        {/* Оборот */}
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-0.5">Оборот</p>
-                          <span className="text-foreground font-medium">{lead.turnoverTsp ? `${lead.turnoverTsp} Р` : '—'}</span>
-                        </div>
-                        {/* Ставка */}
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-0.5">Ставка</p>
-                          <span className="text-foreground">{lead.ourRate ? `${lead.ourRate}%` : '—'}</span>
-                        </div>
-                        {/* Маржа */}
-                        {!isVTB && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">Маржа</p>
-                            <EditableTextCell value={lead.margin || ''} onSave={(val) => inlineSave(lead.id, 'margin', val)} suffix="%" numericOnly placeholder="—" className="text-sm" />
-                          </div>
-                        )}
-                        {/* Выручка */}
-                        {lead.revenue && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">Выручка</p>
-                            <span className="text-foreground font-medium">{lead.revenue} Р</span>
-                          </div>
-                        )}
-                        {/* Comment - full width */}
-                        <div className="col-span-2 md:col-span-4">
-                          <p className="text-xs text-muted-foreground mb-0.5">Комментарий</p>
-                          {isVTB ? (
-                            <p className="text-foreground whitespace-pre-wrap">{lead.comment || '—'}</p>
-                          ) : (
-                            <EditableTextCell value={lead.comment || ''} onSave={(val) => inlineSave(lead.id, 'comment', val)} placeholder="Добавить комментарий" className="text-sm" fullWidth />
-                          )}
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
             )
           }) : (
             <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
@@ -1218,24 +1244,21 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         {currentRows.length ? (
           currentRows.map((row) => {
             const lead = row.original
-            const isExpanded = expandedRowId === lead.id
             return (
               <motion.div
                 key={row.id}
                 variants={slideUp}
                 className={cn(
-                  'rounded-xl border bg-card p-4 space-y-2.5 active:bg-accent/50 transition-colors cursor-pointer shadow-sm',
+                  'rounded-xl border bg-card p-4 space-y-2.5 transition-colors shadow-sm',
                   'border-l-[3px]',
                   lead.zayavka === 'В работе' && 'border-l-teal-400',
                   lead.zayavka === 'На паузе' && 'border-l-orange-400 bg-orange-50/30',
                   lead.zayavka === 'Отклонена' && 'border-l-red-300 opacity-75',
                   lead.zayavka === 'Звонок' && 'border-l-sky-400',
                   lead.zayavka !== 'В работе' && lead.zayavka !== 'На паузе' && lead.zayavka !== 'Отклонена' && lead.zayavka !== 'Звонок' && 'border-l-border',
-                  isExpanded && 'ring-1 ring-primary/20'
                 )}
-                onClick={() => setExpandedRowId(isExpanded ? null : lead.id)}
               >
-                {/* Header: org + date + expand icon */}
+                {/* Header: org + date */}
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -1246,12 +1269,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                     <Calendar className="h-3 w-3 text-muted-foreground" />
                     <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(lead.createdAt)}</span>
                     {isNewLead(lead.createdAt) && <NewBadge />}
-                    <span className="text-muted-foreground/50 ml-1">
-                      {isExpanded
-                        ? <ChevronUp className="h-4 w-4" />
-                        : <ChevronDown className="h-4 w-4" />
-                      }
-                    </span>
                   </div>
                 </div>
 
@@ -1290,83 +1307,26 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                   )}
                 </div>
 
-                {/* Expandable details for mobile */}
-                <AnimatePresence initial={false}>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm pt-2 border-t">
-                        {lead.email && (
-                          <div className="col-span-2">
-                            <p className="text-xs text-muted-foreground mb-0.5">Email</p>
-                            <span className="text-foreground">{lead.email}</span>
-                          </div>
-                        )}
-                        {lead.turnoverTsp && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">Оборот</p>
-                            <span className="text-foreground font-medium">{lead.turnoverTsp} Р</span>
-                          </div>
-                        )}
-                        {lead.ourRate && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">Ставка</p>
-                            <span className="text-foreground">{lead.ourRate}%</span>
-                          </div>
-                        )}
-                        {lead.revenue && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-0.5">Выручка</p>
-                            <span className="text-foreground font-medium">{lead.revenue} Р</span>
-                          </div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Action buttons — only for admin (non-VTB) */}
-                {!isVTB && (
-                  <div className="flex items-center gap-2 pt-2 border-t">
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 pt-2 border-t">
+                  <Button
+                    variant="outline"
+                    className="h-11 text-sm flex-1 rounded-lg"
+                    onClick={() => openDetails(lead)}
+                  >
+                    <Eye className="h-4 w-4 mr-1.5" />
+                    Подробнее
+                  </Button>
+                  {!isVTB && showDelete && isAdmin && (
                     <Button
                       variant="outline"
-                      className="h-11 text-sm flex-1 rounded-lg"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setExpandedRowId(isExpanded ? null : lead.id)
-                      }}
+                      className="h-11 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
+                      onClick={() => setDeleteId(lead.id)}
                     >
-                      {isExpanded ? (
-                        <>
-                          <ChevronUp className="h-4 w-4 mr-1.5" />
-                          Свернуть
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="h-4 w-4 mr-1.5" />
-                          Подробнее
-                        </>
-                      )}
+                      <Trash2 className="h-4 w-4" />
                     </Button>
-                    {showDelete && isAdmin && (
-                      <Button
-                        variant="outline"
-                        className="h-11 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setDeleteId(lead.id)
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                )}
+                  )}
+                </div>
               </motion.div>
             )
           })
@@ -1461,6 +1421,156 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* ─── Lead Detail Dialog ─── */}
+      <Dialog open={!!viewLead} onOpenChange={(open) => { if (!open) setViewLead(null) }}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-semibold leading-tight pr-8">{viewLead?.organization || 'Детали лида'}</DialogTitle>
+            <DialogDescription>
+              {viewLead && (
+                <span className="flex items-center gap-3 flex-wrap text-sm">
+                  {viewLead.partner && <Badge variant="outline">{viewLead.partner}</Badge>}
+                  {viewLead.contactInfo && <span>{viewLead.contactInfo}</span>}
+                  {viewLead.email && (
+                    <span className="flex items-center gap-1">
+                      <Mail className="h-3 w-3" />
+                      {viewLead.email}
+                    </span>
+                  )}
+                </span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {viewLead && (
+            <div className="space-y-4">
+              {/* Status badges */}
+              <div className="flex items-center gap-2 flex-wrap">
+                {getZayavkaBadge(viewLead.zayavka)}
+                {viewLead.status && getStatusBadge(viewLead.status)}
+              </div>
+
+              {/* Info grid */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div>
+                  <p className="text-muted-foreground mb-0.5">Менеджер</p>
+                  <p className="font-medium">{viewLead.manager || '—'}</p>
+                </div>
+                {viewLead.turnoverTsp && (
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Оборот ТСП</p>
+                    <p className="font-medium">{formatCurrency(viewLead.turnoverTsp)}</p>
+                  </div>
+                )}
+                {viewLead.margin && (
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Маржа</p>
+                    <p className="font-medium">{viewLead.margin}%</p>
+                  </div>
+                )}
+                {viewLead.revenue && (
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Выручка</p>
+                    <p className="font-medium">{formatCurrency(viewLead.revenue)}</p>
+                  </div>
+                )}
+                {viewLead.activityType && (
+                  <div>
+                    <p className="text-muted-foreground mb-0.5">Вид деятельности</p>
+                    <p className="font-medium">{viewLead.activityType}</p>
+                  </div>
+                )}
+                <div>
+                  <p className="text-muted-foreground mb-0.5">Создан</p>
+                  <p className="font-medium">{viewLead.createdAt ? new Date(viewLead.createdAt).toLocaleDateString('ru-RU') : '—'}</p>
+                </div>
+              </div>
+
+              {/* Editable fields */}
+              {!isVTB && (
+                <div className="space-y-3 border-t pt-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Маржа (%)</label>
+                    <Input
+                      type="number"
+                      value={marginDraft}
+                      onChange={(e) => { setEditing(true); setMarginDraft(e.target.value) }}
+                      placeholder="—"
+                      className="h-9"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Вид деятельности</label>
+                    <Select value={activityDraft} onValueChange={(val) => { setEditing(true); setActivityDraft(val) }}>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Выбрать..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {dynamicActivityTypes.map((a) => (
+                          <SelectItem key={a} value={a}>{a}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1.5 block">Комментарий</label>
+                    <Textarea
+                      value={commentDraft}
+                      onChange={(e) => { setEditing(true); setCommentDraft(e.target.value) }}
+                      placeholder="Добавить комментарий..."
+                      rows={3}
+                      className="resize-none"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {isVTB && viewLead.comment && (
+                <div className="border-t pt-3">
+                  <p className="text-sm font-medium mb-1.5">Комментарий</p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{viewLead.comment}</p>
+                </div>
+              )}
+
+              {/* Actions */}
+              {!isVTB && (
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setViewLead(null)}
+                    >
+                      Закрыть
+                    </Button>
+                    {editing && (
+                      <Button
+                        size="sm"
+                        onClick={saveDetails}
+                        disabled={saving}
+                      >
+                        {saving && <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />}
+                        Сохранить
+                      </Button>
+                    )}
+                  </div>
+                  {showDelete && isAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => { setViewLead(null); setDeleteId(viewLead.id) }}
+                    >
+                      <Trash2 className="h-3.5 w-3.5 mr-1" />
+                      Удалить
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   )
 }
