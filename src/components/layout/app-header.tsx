@@ -1,9 +1,11 @@
 'use client'
 
-import { useAppStore, type PageType } from '@/lib/store'
+import { useAppStore, PAGE_LABELS, type PageType } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { BarChart3, Users, LogOut, Swords, Plug, Building2, TrendingDown, Settings } from 'lucide-react'
+import { BarChart3, Users, LogOut, Swords, Plug, Building2, TrendingDown, Settings, Search, ChevronRight, X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { useState, useRef, useEffect } from 'react'
 
 interface NavTab {
   label: string
@@ -24,7 +26,33 @@ const tabs: NavTab[] = [
 ]
 
 export function AppHeader() {
-  const { user, currentPage, setCurrentPage, logout } = useAppStore()
+  const { user, currentPage, setCurrentPage, logout, globalSearch, setGlobalSearch } = useAppStore()
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [searchOpen])
+
+  useEffect(() => {
+    if (!searchOpen) {
+      setSearchValue(globalSearch)
+    }
+  }, [globalSearch, searchOpen])
+
+  function handleSearchSubmit() {
+    setGlobalSearch(searchValue)
+    setSearchOpen(false)
+  }
+
+  function handleSearchClear() {
+    setSearchValue('')
+    setGlobalSearch('')
+    setSearchOpen(false)
+  }
 
   if (!user) return null
 
@@ -88,8 +116,48 @@ export function AppHeader() {
             })}
           </nav>
 
-          {/* Right: logout */}
+          {/* Right: global search + logout */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Global search */}
+            <div className="relative">
+              {searchOpen ? (
+                <div className="flex items-center gap-1">
+                  <Input
+                    ref={searchInputRef}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSearchSubmit()
+                      if (e.key === 'Escape') handleSearchClear()
+                    }}
+                    onBlur={() => handleSearchSubmit()}
+                    placeholder="Поиск по лидам..."
+                    className="h-8 w-[200px] text-sm"
+                  />
+                  {searchValue && (
+                    <button onClick={handleSearchClear} className="text-muted-foreground hover:text-foreground">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  onClick={() => setSearchOpen(true)}
+                  className={cn(
+                    'flex items-center gap-1.5 px-2 py-1.5 rounded-md text-sm transition-colors',
+                    globalSearch
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                  )}
+                >
+                  <Search className="h-4 w-4" />
+                  {globalSearch && (
+                    <span className="max-w-[100px] truncate text-xs">{globalSearch}</span>
+                  )}
+                </button>
+              )}
+            </div>
+
             <button
               onClick={logout}
               className="flex items-center gap-1.5 px-2 py-1.5 rounded-md text-sm text-muted-foreground hover:text-destructive hover:bg-accent transition-colors"
@@ -98,6 +166,19 @@ export function AppHeader() {
               <span>Выйти</span>
             </button>
           </div>
+        </div>
+
+        {/* Breadcrumb bar */}
+        <div className="flex items-center gap-1 px-6 py-1.5 text-xs text-muted-foreground border-t bg-muted/30">
+          <span>CRM</span>
+          <ChevronRight className="h-3 w-3" />
+          <span className="font-medium text-foreground">{PAGE_LABELS[currentPage]}</span>
+          {globalSearch && (
+            <>
+              <ChevronRight className="h-3 w-3" />
+              <span className="truncate max-w-[200px]">Поиск: {globalSearch}</span>
+            </>
+          )}
         </div>
       </header>
 
@@ -112,15 +193,29 @@ export function AppHeader() {
                 <path d="M9 21V9" />
               </svg>
             </div>
-            <span className="font-semibold text-sm">
-              {isAdmin ? 'Uniteller' : 'ВТБ'}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-sm">
+                {isAdmin ? 'Uniteller' : 'ВТБ'}
+              </span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-xs text-muted-foreground font-medium">
+                {PAGE_LABELS[currentPage]}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">
-              {visibleTabs.find((t) => t.page === currentPage)?.label}
-            </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setSearchOpen(true)}
+              className={cn(
+                'flex items-center justify-center w-9 h-9 rounded-lg transition-colors',
+                globalSearch
+                  ? 'text-primary'
+                  : 'text-muted-foreground'
+              )}
+            >
+              <Search className="h-4 w-4" />
+            </button>
             <button
               onClick={logout}
               className="flex items-center justify-center w-9 h-9 rounded-lg text-muted-foreground hover:text-destructive hover:bg-accent transition-colors"
@@ -129,6 +224,32 @@ export function AppHeader() {
             </button>
           </div>
         </div>
+
+        {/* Mobile search bar */}
+        {searchOpen && (
+          <div className="px-3 pb-2 flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                ref={searchInputRef}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSearchSubmit()
+                  if (e.key === 'Escape') handleSearchClear()
+                }}
+                placeholder="Поиск по лидам..."
+                className="pl-9 h-10 text-sm"
+                autoFocus
+              />
+              {searchValue && (
+                <button onClick={handleSearchClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* ─── Mobile Bottom Navigation ─── */}

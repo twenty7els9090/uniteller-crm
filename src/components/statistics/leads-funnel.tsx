@@ -14,6 +14,15 @@ const STAGES = [
   { key: 'Отклонена', color: 'bg-red-100 text-red-800 border-red-200', barColor: 'bg-red-400', fill: '#ef4444' },
 ] as const
 
+const PERIODS = [
+  { key: '7d', label: '7д' },
+  { key: '30d', label: '30д' },
+  { key: '90d', label: '90д' },
+  { key: 'all', label: 'Всё' },
+] as const
+
+type PeriodKey = (typeof PERIODS)[number]['key']
+
 interface LeadRow {
   id: string
   organization: string
@@ -21,12 +30,23 @@ interface LeadRow {
   zayavka: string
   status: string | null
   manager: string
+  createdAt: string
+}
+
+function getPeriodCutoff(period: PeriodKey): Date | null {
+  if (period === 'all') return null
+  const now = new Date()
+  const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
+  const cutoff = new Date(now)
+  cutoff.setDate(cutoff.getDate() - days)
+  return cutoff
 }
 
 export function LeadsFunnel() {
   const [leads, setLeads] = useState<LeadRow[]>([])
   const [loading, setLoading] = useState(true)
   const [partnerFilter, setPartnerFilter] = useState<string>('')
+  const [period, setPeriod] = useState<PeriodKey>('all')
   const [viewMode, setViewMode] = useState<'bar' | 'pie'>('bar')
 
   useEffect(() => {
@@ -43,9 +63,19 @@ export function LeadsFunnel() {
   }, [leads])
 
   const filteredLeads = useMemo(() => {
-    if (!partnerFilter) return leads
-    return leads.filter((l) => l.partner === partnerFilter)
-  }, [leads, partnerFilter])
+    let result = leads
+    if (partnerFilter) {
+      result = result.filter((l) => l.partner === partnerFilter)
+    }
+    const cutoff = getPeriodCutoff(period)
+    if (cutoff) {
+      result = result.filter((l) => {
+        const created = l.createdAt ? new Date(l.createdAt) : null
+        return created && created >= cutoff
+      })
+    }
+    return result
+  }, [leads, partnerFilter, period])
 
   const funnel = useMemo(() => {
     const counts: Record<string, number> = {}
@@ -96,37 +126,57 @@ export function LeadsFunnel() {
   return (
     <Card>
       <CardHeader className="pb-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Funnel className="h-4 w-4" />
-            Воронка лидов
-          </CardTitle>
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* View toggle */}
-            <div className="flex items-center bg-muted rounded-lg p-0.5">
-              <button
-                className={cn(
-                  'p-1.5 rounded-md transition-colors',
-                  viewMode === 'bar' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
-                )}
-                onClick={() => setViewMode('bar')}
-                title="Столбцы"
-              >
-                <BarChart3 className="h-3.5 w-3.5" />
-              </button>
-              <button
-                className={cn(
-                  'p-1.5 rounded-md transition-colors',
-                  viewMode === 'pie' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
-                )}
-                onClick={() => setViewMode('pie')}
-                title="Круговая"
-              >
-                <PieChartIcon className="h-3.5 w-3.5" />
-              </button>
-            </div>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <CardTitle className="text-base font-semibold flex items-center gap-2">
+              <Funnel className="h-4 w-4" />
+              Воронка лидов
+            </CardTitle>
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* View toggle */}
+              <div className="flex items-center bg-muted rounded-lg p-0.5">
+                <button
+                  className={cn(
+                    'p-1.5 rounded-md transition-colors',
+                    viewMode === 'bar' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+                  )}
+                  onClick={() => setViewMode('bar')}
+                  title="Столбцы"
+                >
+                  <BarChart3 className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  className={cn(
+                    'p-1.5 rounded-md transition-colors',
+                    viewMode === 'pie' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+                  )}
+                  onClick={() => setViewMode('pie')}
+                  title="Круговая"
+                >
+                  <PieChartIcon className="h-3.5 w-3.5" />
+                </button>
+              </div>
 
-            {/* Partner filters */}
+              {/* Period filters */}
+              <div className="flex items-center gap-1.5">
+                {PERIODS.map((p) => (
+                  <button
+                    key={p.key}
+                    className={cn(
+                      'text-xs px-2.5 py-1 rounded-full border transition-colors',
+                      period === p.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
+                    )}
+                    onClick={() => setPeriod(p.key)}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Partner filters */}
+          {partners.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               <button
                 className={cn(
@@ -135,7 +185,7 @@ export function LeadsFunnel() {
                 )}
                 onClick={() => setPartnerFilter('')}
               >
-                Все
+                Все партнёры
               </button>
               {partners.map((p) => (
                 <button
@@ -150,30 +200,44 @@ export function LeadsFunnel() {
                 </button>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
         {viewMode === 'bar' ? (
           <>
-            {/* Funnel bars */}
-            {funnel.map((stage) => (
-              <div key={stage.key} className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <Badge variant="outline" className={cn('text-xs font-medium', stage.color)}>
-                    {stage.key}
-                  </Badge>
-                  <span className="font-semibold tabular-nums">
-                    {stage.count}
-                    <span className="text-muted-foreground font-normal ml-1">({stage.pct}%)</span>
-                  </span>
+            {/* Funnel bars with conversion indicators */}
+            {funnel.map((stage, idx) => (
+              <div key={stage.key}>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <Badge variant="outline" className={cn('text-xs font-medium', stage.color)}>
+                      {stage.key}
+                    </Badge>
+                    <span className="font-semibold tabular-nums">
+                      {stage.count}
+                      <span className="text-muted-foreground font-normal ml-1">({stage.pct}%)</span>
+                    </span>
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className={cn('h-full rounded-full transition-all duration-500', stage.barColor)}
+                      style={{ width: `${maxCount ? (stage.count / maxCount) * 100 : 0}%`, minWidth: stage.count > 0 ? '4px' : '0px' }}
+                    />
+                  </div>
                 </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={cn('h-full rounded-full transition-all duration-500', stage.barColor)}
-                    style={{ width: `${maxCount ? (stage.count / maxCount) * 100 : 0}%`, minWidth: stage.count > 0 ? '4px' : '0px' }}
-                  />
-                </div>
+                {/* Conversion rate to next stage */}
+                {idx < funnel.length - 1 && stage.count > 0 && (
+                  <div className="flex items-center justify-center py-1">
+                    <span className="text-[11px] text-muted-foreground/70">
+                      ↓ {funnel[idx + 1].key}:&nbsp;
+                      <span className="font-medium text-muted-foreground">
+                        {Math.round((funnel[idx + 1].count / stage.count) * 100)}%
+                      </span>
+                      <span className="ml-0.5">конверсия</span>
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </>
@@ -209,7 +273,13 @@ export function LeadsFunnel() {
 
         <p className="text-[11px] text-muted-foreground/70 pt-1">
           Всего лидов: {filteredLeads.length}
-          {partnerFilter && ` (${partnerFilter})`}
+          {partnerFilter && ` · ${partnerFilter}`}
+          {period !== 'all' && (
+            <>
+              {' · '}
+              {PERIODS.find((p) => p.key === period)?.label}
+            </>
+          )}
         </p>
       </CardContent>
     </Card>

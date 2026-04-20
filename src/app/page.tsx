@@ -9,6 +9,7 @@ import { LeadsTable } from '@/components/leads/leads-table'
 import { StatisticsCharts } from '@/components/statistics/charts'
 import { LeadsFunnel } from '@/components/statistics/leads-funnel'
 import { TopOrganizations } from '@/components/statistics/top-organizations'
+import { LeadHeatmap } from '@/components/statistics/lead-heatmap'
 import { CombatLeadsTable } from '@/components/leads/combat-leads-table'
 import { ChurnTable } from '@/components/churn/churn-table'
 import { RelegalTable } from '@/components/relegal/relegal-table'
@@ -136,6 +137,7 @@ function StatisticsPage() {
         className="flex-1 p-4 md:p-6 space-y-6"
       >
         <LeadsFunnel />
+        <LeadHeatmap />
         <TopOrganizations />
         <StatisticsCharts />
       </motion.main>

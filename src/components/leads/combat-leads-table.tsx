@@ -469,7 +469,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
         <Button
           variant={showComments ? 'default' : 'outline'}
           size="sm"
-          className={cn('h-9 md:h-9 text-sm shrink-0 gap-1.5', showComments && 'bg-cyan-600 hover:bg-cyan-700 text-white')}
+          className={cn('h-9 md:h-9 text-sm shrink-0 gap-1.5', showComments && 'bg-primary hover:bg-primary/90 text-primary-foreground')}
           onClick={() => setShowComments(!showComments)}
         >
           <MessageSquare className="h-3.5 w-3.5" />

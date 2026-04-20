@@ -17,9 +17,9 @@ import {
 } from 'recharts'
 
 const PARTNER_COLORS: Record<string, string> = {
-  'ВТБ': '#3b82f6',
-  'Vendotek': '#10b981',
-  'Другой': '#8b5cf6',
+  'ВТБ': '#0d9488',   // teal-600
+  'Vendotek': '#0891b2', // cyan-600
+  'Другой': '#6366f1',   // indigo-500
 }
 const REJECT_COLORS = ['#ef4444', '#dc2626', '#f59e0b', '#f97316', '#6b7280', '#8b5cf6', '#059669']
 
