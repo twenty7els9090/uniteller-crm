@@ -45,22 +45,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-
-// Format number as currency: 1500000 → "1.500.000 Р"
-function formatCurrency(value: string | number | undefined | null): string {
-  if (!value && value !== 0) return '—'
-  const num = typeof value === 'string'
-    ? parseFloat(value.replace(/\s/g, '').replace(',', '.'))
-    : value
-  if (isNaN(num)) return '—'
-
-  const fixed = Math.abs(num).toFixed(2)
-  const [intPart, decPart] = fixed.split('.')
-  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-  const decimals = decPart === '00' ? '' : `,${decPart.replace(/0+$/, '')}`
-  const prefix = num < 0 ? '-' : ''
-  return `${prefix}${formattedInt}${decimals} Р`
-}
+import { formatCurrency } from '@/lib/formatters'
 
 interface CombatLeadsTableProps {
   readOnly?: boolean

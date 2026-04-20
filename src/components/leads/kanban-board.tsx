@@ -25,6 +25,15 @@ import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { Phone, User, Loader2, GripVertical, MessageSquare } from 'lucide-react'
+import { STATUS_COLORS as LIB_STATUS_COLORS, REJECTION_STATUSES } from '@/lib/status-config'
+import { formatDate } from '@/lib/formatters'
+
+// Объединяем цвета статусов из библиотеки с локальными (для kanban)
+const STATUS_COLORS: Record<string, string> = {
+  ...LIB_STATUS_COLORS,
+  'ожидание боевых платежей': 'bg-violet-100 text-violet-700',
+  'Нужна интеграция': 'bg-teal-100 text-teal-700',
+}
 
 // ─── Column Definitions ───────────────────────────────────────────────
 
@@ -129,38 +138,7 @@ const COLUMNS: ColumnDef[] = [
   },
 ]
 
-// ─── Rejection status set (for visual flagging) ────────────────────────
-
-const REJECTION_STATUSES = new Set([
-  'не актуально',
-  'отказ СБ',
-  'не поддерживаем оборудование',
-  'нет совместной интеграции',
-  'высокая комиссия',
-  'высокая процентная ставка',
-  'другая причина',
-])
-
 // ─── Status badge helper ──────────────────────────────────────────────
-
-const STATUS_COLORS: Record<string, string> = {
-  'пошли боевые платежи': 'bg-emerald-100 text-emerald-700',
-  'личный кабинет создан': 'bg-teal-100 text-teal-700',
-  'заключаем договор': 'bg-sky-100 text-sky-700',
-  'ожидаем банковские параметры': 'bg-sky-100 text-sky-700',
-  'параметры получены': 'bg-cyan-100 text-cyan-700',
-  'настраиваем сервис': 'bg-cyan-100 text-cyan-700',
-  'ожидание боевых платежей': 'bg-violet-100 text-violet-700',
-  'не открыт ОКВЭД': 'bg-amber-100 text-amber-700',
-  'высокая комиссия': 'bg-orange-100 text-orange-700',
-  'высокая процентная ставка': 'bg-orange-100 text-orange-700',
-  'не актуально': 'bg-red-100 text-red-700',
-  'не поддерживаем оборудование': 'bg-rose-100 text-rose-700',
-  'нет совместной интеграции': 'bg-red-100 text-red-700',
-  'отказ СБ': 'bg-red-100 text-red-800',
-  'другая причина': 'bg-stone-100 text-stone-600',
-  'Нужна интеграция': 'bg-teal-100 text-teal-700',
-}
 
 function StatusBadge({ status }: { status: string }) {
   const color = STATUS_COLORS[status] || 'bg-gray-100 text-gray-600'

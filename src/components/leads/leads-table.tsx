@@ -85,101 +85,36 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { useSettings } from '@/hooks/use-settings'
 import { PARTNERS, MANAGERS, ZAYAVKA_OPTIONS, STATUS_OPTIONS, ACTIVITY_TYPES } from '@/lib/constants'
+import { 
+  STATUS_COLORS, 
+  getZayavkaColor, 
+  getRowClass, 
+  getRowLeftBorder, 
+  getSlaDays, 
+  getSlaColorClass,
+  isNewLead,
+} from '@/lib/status-config'
+import { formatCurrency, formatDate, formatDateTooltip } from '@/lib/formatters'
 
 // Статусы по цветам: зелёный = успех, сине-голубой = ожидание, жёлто-оранжевый = проблема, красный = отказ
 function getStatusBadge(status: string, compact = false) {
   const size = compact ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-  const colors: Record<string, string> = {
-    // Зелёные — успех
-    'пошли боевые платежи': 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100',
-    'личный кабинет создан': 'bg-teal-100 text-teal-700 hover:bg-teal-100',
-    // Сине-голубые — ожидание / процесс
-    'заключаем договор': 'bg-sky-100 text-sky-700 hover:bg-sky-100',
-    'ожидаем банковские параметры': 'bg-sky-100 text-sky-700 hover:bg-sky-100',
-    'параметры получены': 'bg-cyan-100 text-cyan-700 hover:bg-cyan-100',
-    'настраиваем сервис': 'bg-cyan-100 text-cyan-700 hover:bg-cyan-100',
-    'ожидание боевых платежей': 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100',
-    // Жёлто-оранжевые — возможная проблема
-    'не открыт ОКВЭД': 'bg-amber-100 text-amber-700 hover:bg-amber-100',
-    'высокая комиссия': 'bg-orange-100 text-orange-700 hover:bg-orange-100',
-    'высокая процентная ставка': 'bg-orange-100 text-orange-700 hover:bg-orange-100',
-    // Красные — отказ / проблема
-    'не актуально': 'bg-red-100 text-red-700 hover:bg-red-100',
-    'не поддерживаем оборудование': 'bg-rose-100 text-rose-700 hover:bg-rose-100',
-    'нет совместной интеграции': 'bg-red-100 text-red-700 hover:bg-red-100',
-    'отказ СБ': 'bg-red-100 text-red-800 hover:bg-red-100',
-    'другая причина': 'bg-stone-100 text-stone-600 hover:bg-stone-100',
-  }
-  const color = colors[status] || 'bg-gray-100 text-gray-600 hover:bg-gray-100'
+  const color = STATUS_COLORS[status] || 'bg-gray-100 text-gray-600 hover:bg-gray-100'
   return <Badge variant="default" className={cn(color, size, 'whitespace-nowrap font-medium')}>{status}</Badge>
 }
 
 function getZayavkaBadge(zayavka: string, compact = false) {
   const size = compact ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-  switch (zayavka) {
-    case 'Выполнена':
-      return <Badge variant="default" className={cn('bg-emerald-100 text-emerald-800 hover:bg-emerald-100', size, 'whitespace-nowrap font-medium')}>Выполнена</Badge>
-    case 'В работе':
-      return <Badge variant="default" className={cn('bg-amber-100 text-amber-800 hover:bg-amber-100', size, 'whitespace-nowrap font-medium')}>В работе</Badge>
-    case 'На паузе':
-      return <Badge variant="default" className={cn('bg-orange-100 text-orange-800 hover:bg-orange-100', size, 'whitespace-nowrap font-medium')}>На паузе</Badge>
-    case 'Отклонена':
-      return <Badge variant="default" className={cn('bg-red-100 text-red-800 hover:bg-red-100', size, 'whitespace-nowrap font-medium')}>Отклонена</Badge>
-    case 'Звонок':
-      return <Badge variant="default" className={cn('bg-sky-100 text-sky-800 hover:bg-sky-100', size, 'whitespace-nowrap font-medium')}>Звонок</Badge>
-    default:
-      return <Badge variant="secondary" className={cn(size, 'whitespace-nowrap font-medium')}>{zayavka}</Badge>
+  const color = getZayavkaColor(zayavka)
+  // Для дефолтного случая используем secondary
+  if (!['Выполнена', 'В работе', 'На паузе', 'Отклонена', 'Звонок'].includes(zayavka)) {
+    return <Badge variant="secondary" className={cn(size, 'whitespace-nowrap font-medium')}>{zayavka}</Badge>
   }
-}
-
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr)
-  return date.toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'short',
-  })
-}
-
-// ─── SLA timer helpers ───
-function getSlaDays(updatedAt: string | null | undefined): number {
-  if (!updatedAt) return 0
-  return Math.floor((Date.now() - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24))
-}
-
-function getSlaColorClass(days: number): string {
-  if (days > 7) return 'text-red-600'
-  if (days >= 4) return 'text-amber-600'
-  return 'text-emerald-600'
+  return <Badge variant="default" className={cn(color, size, 'whitespace-nowrap font-medium')}>{zayavka}</Badge>
 }
 
 function getSlaTitle(updatedAt: string | null | undefined): string {
-  if (!updatedAt) return ''
-  return new Date(updatedAt).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short', year: 'numeric' })
-}
-
-// ─── Row accent by zayavka status ───
-function getRowClass(zayavka: string): string {
-  switch (zayavka) {
-    case 'На паузе': return 'bg-orange-50/70 hover:bg-orange-50'
-    case 'Отклонена': return 'bg-red-50/50 hover:bg-red-50/80 opacity-80'
-    case 'В работе': return 'hover:bg-teal-50/40'
-    default: return ''
-  }
-}
-
-function getRowLeftBorder(zayavka: string): string {
-  switch (zayavka) {
-    case 'В работе': return 'border-l-[3px] border-l-teal-400'
-    case 'На паузе': return 'border-l-[3px] border-l-orange-400'
-    case 'Отклонена': return 'border-l-[3px] border-l-red-300'
-    default: return 'border-l-[3px] border-l-transparent'
-  }
-}
-
-// Check if lead is "new" (created less than 2 days ago)
-function isNewLead(createdAt: string | null | undefined): boolean {
-  if (!createdAt) return false
-  return (Date.now() - new Date(createdAt).getTime()) < 2 * 24 * 60 * 60 * 1000
+  return formatDateTooltip(updatedAt)
 }
 
 function NewBadge() {

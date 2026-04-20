@@ -1,73 +1,84 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+```
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+target/
 
-# dependencies
-node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Dependencies
+node_modules/
+venv/
+.venv/
+.env
+.env.local
+.env.*
 
-# testing
-/coverage
+# Logs and temp files
+*.log
+*.tmp
+*.swp
 
-# next.js
-/.next/
-/out/
+# Editors
+.vscode/
+.idea/
 
-# production
-/build
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+htmlcov/
+.coverage.*
+.cache
+.pytest_cache/
+.mypy_cache/
 
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Node.js specific
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
-
-# env files
-.env*
-!.env.example
-
-# vercel
-.vercel
-
-
-# typescript
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+public/dist
 *.tsbuildinfo
-next-env.d.ts
-local-*
-.claude
-.z-ai-config
-*.log
-dev.log
-dev.out.log
-test
-prompt
 
-server.log
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
 
-# Skills directory
-/skills/
-
-# uploads
-/upload/
-
-# db
-/db/*.db
-
-# IDE
-.idea/
-.vscode/
-
-# Prisma binary cache
-prisma/prisma/
-
-# Bun
-bun.lock
-bun.lockb
+# Compression files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+```
