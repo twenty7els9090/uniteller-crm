@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAppStore } from '@/lib/store'
 import { LoginForm } from '@/components/auth/login-form'
 import { AppHeader } from '@/components/layout/app-header'
 import { LeadsTable } from '@/components/leads/leads-table'
+import { KanbanBoard } from '@/components/leads/kanban-board'
 import { StatisticsCharts } from '@/components/statistics/charts'
 import { LeadsFunnel } from '@/components/statistics/leads-funnel'
 import { TopOrganizations } from '@/components/statistics/top-organizations'
@@ -15,8 +16,9 @@ import { ChurnTable } from '@/components/churn/churn-table'
 import { RelegalTable } from '@/components/relegal/relegal-table'
 import { AdditionalTable } from '@/components/additional/additional-table'
 import { SettingsPage } from '@/components/settings/settings-page'
-import { Loader2 } from 'lucide-react'
+import { Loader2, LayoutGrid, Columns3 } from 'lucide-react'
 import { fadeIn, slideUp } from '@/lib/motion'
+import { cn } from '@/lib/utils'
 
 function LoadingScreen() {
   return (
@@ -42,9 +44,10 @@ function PageWrapper({ children, pageKey }: { children: React.ReactNode; pageKey
   )
 }
 
-/** Main page: just the leads table */
+/** Main page: leads table or kanban board */
 function MainPage() {
   const isVTB = useAppStore((s) => s.user?.role === 'vtb')
+  const [viewMode, setViewMode] = useState<'table' | 'kanban'>('table')
 
   return (
     <PageWrapper pageKey="main">
@@ -54,7 +57,44 @@ function MainPage() {
         animate="visible"
         className="flex-1 p-4 md:p-6"
       >
-        <LeadsTable showDelete={!isVTB} />
+        {/* View toggle */}
+        <div className="flex justify-end mb-3">
+          <div className="inline-flex items-center rounded-lg border bg-muted/50 p-0.5 gap-0.5">
+            <button
+              type="button"
+              onClick={() => setViewMode('table')}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+                viewMode === 'table'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/60',
+              )}
+            >
+              <LayoutGrid className="h-3.5 w-3.5" />
+              Таблица
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('kanban')}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+                viewMode === 'kanban'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-background/60',
+              )}
+            >
+              <Columns3 className="h-3.5 w-3.5" />
+              Канбан
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        {viewMode === 'table' ? (
+          <LeadsTable showDelete={!isVTB} />
+        ) : (
+          <KanbanBoard />
+        )}
       </motion.main>
     </PageWrapper>
   )
