@@ -21,7 +21,6 @@ export const leadSchema = z.object({
 })
 
 export type LeadFormData = z.input<typeof leadSchema>
-export type LeadOutputData = z.infer<typeof leadSchema>
 
 export const additionalSchema = z.object({
   id: z.string().optional(),

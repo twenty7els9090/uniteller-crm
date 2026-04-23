@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { useAppStore } from '@/lib/store'
 import type { Lead } from '@/lib/types'

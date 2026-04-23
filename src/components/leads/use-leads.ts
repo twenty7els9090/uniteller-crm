@@ -34,6 +34,7 @@ export function useLeads() {
     if (globalSearch !== undefined && globalSearch !== globalFilter) {
       setGlobalFilter(globalSearch)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalSearch])
 
   // Dynamic options from settings

@@ -72,7 +72,7 @@ export function RelegalTable({ readOnly = false }: RelegalTableProps) {
   const [editRecord, setEditRecord] = useState<Relegal | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const dynamicManagers = settings.manager.length > 0 ? settings.manager : [...MANAGERS]
+  const dynamicManagers = useMemo(() => settings.manager.length > 0 ? settings.manager : [...MANAGERS], [settings.manager])
 
   const filtered = useMemo(() => {
     if (!globalFilter) return allRecords

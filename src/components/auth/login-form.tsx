@@ -12,7 +12,6 @@ import { fadeIn, slideUp } from '@/lib/motion'
 
 export function LoginForm() {
   const setUser = useAppStore((s) => s.setUser)
-  const setCurrentPage = useAppStore((s) => s.setCurrentPage)
 
   const [selectedRole, setSelectedRole] = useState<'uniteller' | 'vtb' | null>(null)
   const [password, setPassword] = useState('')

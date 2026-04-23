@@ -54,7 +54,7 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
   const [editRecord, setEditRecord] = useState<Additional | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
-  const dynamicPartners = settings.partner.length > 0 ? settings.partner : [...PARTNERS]
+  const dynamicPartners = useMemo(() => settings.partner.length > 0 ? settings.partner : [...PARTNERS], [settings.partner])
 
   const filtered = useMemo(() => {
     if (!globalFilter) return allRecords
