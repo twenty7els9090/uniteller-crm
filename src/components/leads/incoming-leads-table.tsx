@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { useAppStore } from '@/lib/store'
 import type { Lead } from '@/lib/types'
@@ -22,17 +22,28 @@ import { REJECTION_REASONS, WORK_STATUSES } from '@/lib/constants'
 import {
   Plus, Phone, Mail, Building2, Calendar, Clock, XCircle,
   ArrowRight, Trash2, PhoneOff, AlertTriangle, Check,
+  Search, MessageSquare,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────
 
 function isOverdue(callDate: string | null): boolean {
   if (!callDate) return false
-  return new Date(callDate) < new Date()
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return new Date(callDate) < today
 }
 
 function formatCallDate(callDate: string): string {
   return new Date(callDate).toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' })
+}
+
+function getOverdueDays(callDate: string | null): number {
+  if (!callDate) return 0
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const diff = Math.floor((today.getTime() - new Date(callDate).getTime()) / (1000 * 60 * 60 * 24))
+  return diff > 0 ? diff : 0
 }
 
 // ─── Inline Status Controls ────────────────────────────────────────
@@ -106,12 +117,15 @@ function InlineStatusControls({
         <div className="flex items-center gap-1.5">
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-500 text-white border-red-500 animate-pulse' : 'bg-amber-100 text-amber-700 border-amber-200',
+            overdue ? 'bg-red-500 text-white border-red-500' : 'bg-amber-100 text-amber-700 border-amber-200',
           )}>
             {overdue ? (
-              <span className="flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Просрочено</span>
+              <span className="flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Просрочено {getOverdueDays(lead.callDate)} дн.
+              </span>
             ) : (
-              `Перезвонить ${lead.callDate ? formatCallDate(lead.callDate) : ''}`
+              `📞 ${lead.callDate ? formatCallDate(lead.callDate) : ''}`
             )}
           </Badge>
         </div>
@@ -284,7 +298,7 @@ function IncomingDesktopRow({
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-medium shrink-0">{lead.partner}</Badge>
           )}
         </div>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
           {lead.contactInfo && (
             <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-1 hover:text-foreground truncate">
               <Phone className="h-3 w-3 shrink-0" />{lead.contactInfo}
@@ -296,6 +310,12 @@ function IncomingDesktopRow({
             </a>
           )}
         </div>
+        {lead.comment && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/70 mt-0.5 truncate">
+            <MessageSquare className="h-3 w-3 shrink-0" />
+            <span className="truncate">{lead.comment}</span>
+          </div>
+        )}
       </div>
 
       {/* Inline status controls */}
@@ -355,12 +375,15 @@ function IncomingMobileCard({
         {lead.status === 'Перезвонить' && (
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-500 text-white border-red-500 animate-pulse' : 'bg-amber-100 text-amber-700 border-amber-200',
+            overdue ? 'bg-red-500 text-white border-red-500' : 'bg-amber-100 text-amber-700 border-amber-200',
           )}>
             {overdue ? (
-              <span className="flex items-center gap-1"><AlertTriangle className="h-3 w-3" /> Просрочено</span>
+              <span className="flex items-center gap-1">
+                <AlertTriangle className="h-3 w-3" />
+                Просрочено {getOverdueDays(lead.callDate)} дн.
+              </span>
             ) : (
-              `Перезвонить ${lead.callDate ? formatCallDate(lead.callDate) : ''}`
+              `📞 ${lead.callDate ? formatCallDate(lead.callDate) : ''}`
             )}
           </Badge>
         )}
@@ -389,6 +412,14 @@ function IncomingMobileCard({
           </div>
         )}
       </div>
+
+      {/* Comment */}
+      {lead.comment && (
+        <div className="flex items-start gap-1.5 text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
+          <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+          <span className="line-clamp-2">{lead.comment}</span>
+        </div>
+      )}
 
       {/* Inline controls */}
       <div className="pt-1">
@@ -448,7 +479,8 @@ export function IncomingLeadsTable() {
         l.organization.toLowerCase().includes(q) ||
         l.contactInfo.toLowerCase().includes(q) ||
         l.partner.toLowerCase().includes(q) ||
-        l.email.toLowerCase().includes(q)
+        l.email.toLowerCase().includes(q) ||
+        (l.comment && l.comment.toLowerCase().includes(q))
       )
     }
     return result.sort((a, b) => {
@@ -510,22 +542,24 @@ export function IncomingLeadsTable() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-sky-500" />
-            <h2 className="text-lg font-semibold">Входящие лиды</h2>
+            <div className="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center">
+              <Building2 className="h-4 w-4 text-sky-600" />
+            </div>
+            <h2 className="text-lg font-semibold">Входящие</h2>
           </div>
-          <Badge variant="secondary" className="text-xs">{leads.length}</Badge>
+          <Badge variant="secondary" className="text-xs tabular-nums">{leads.length}</Badge>
           {notStartedCount > 0 && (
-            <Badge className="bg-gray-100 text-gray-600 text-xs border-gray-200 border">
-              {notStartedCount} не начато
+            <Badge className="bg-gray-100 text-gray-600 text-xs border-gray-200 border tabular-nums">
+              {notStartedCount} новых
             </Badge>
           )}
           {callbackCount > 0 && (
-            <Badge className="bg-amber-100 text-amber-700 text-xs border-amber-200 border">
-              {callbackCount} перезвонить
+            <Badge className="bg-amber-100 text-amber-700 text-xs border-amber-200 border tabular-nums">
+              📞 {callbackCount} перезвонить
             </Badge>
           )}
           {overdueCount > 0 && (
-            <Badge className="bg-red-500 text-white text-xs animate-pulse border-0">
+            <Badge className="bg-red-500 text-white text-xs border-0 tabular-nums">
               <AlertTriangle className="h-3 w-3 mr-1" />
               {overdueCount} просрочено
             </Badge>
@@ -533,7 +567,7 @@ export function IncomingLeadsTable() {
         </div>
         <div className="flex items-center gap-2">
           <div className="relative max-w-xs w-full">
-            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Поиск..."
               value={search}
@@ -564,6 +598,12 @@ export function IncomingLeadsTable() {
             <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
               <PhoneOff className="h-9 w-9 opacity-25" />
               <p className="text-sm">Входящих лидов нет</p>
+              {!isVTB && (
+                <Button variant="outline" size="sm" className="mt-2" onClick={() => setFormOpen(true)}>
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  Создать первый
+                </Button>
+              )}
             </div>
           )}
         </div>
@@ -579,7 +619,8 @@ export function IncomingLeadsTable() {
             onRemove={handleRemove}
           />
         )) : (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-2 py-12">
+            <PhoneOff className="h-9 w-9 opacity-25" />
             <p className="text-muted-foreground text-sm">Входящих лидов нет</p>
           </div>
         )}

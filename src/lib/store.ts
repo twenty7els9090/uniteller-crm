@@ -32,7 +32,7 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   user: null,
-  currentPage: 'main',
+  currentPage: 'incoming',
   isLoading: true,
   globalSearch: '',
 
@@ -42,6 +42,6 @@ export const useAppStore = create<AppState>((set) => ({
   setGlobalSearch: (search) => set({ globalSearch: search }),
   logout: () => {
     fetch('/api/auth/login', { method: 'DELETE' }).catch(() => {})
-    set({ user: null, currentPage: 'main', globalSearch: '' })
+    set({ user: null, currentPage: 'incoming', globalSearch: '' })
   },
 }))

@@ -124,3 +124,26 @@ Stage Summary:
 - ~40 unused npm packages removed
 - Build compiles successfully
 - Dev server runs without errors
+
+---
+Task ID: 9
+Agent: main-coordinator
+Task: Redesign lead flow — simplified creation + 3-action incoming page
+
+Work Log:
+- Updated IncomingLeadFormDialog: added comment field (Textarea) to creation form
+- Updated IncomingLeadsTable: added comment display in both desktop rows and mobile cards
+- Added overdue days counter ("Просрочено 3 дн.") for callback leads
+- Added search by comment text in incoming leads filter
+- Improved counter badges: "новых" instead of "не начато", phone icon for callbacks
+- Changed search icon from Building2 to Search (proper semantics)
+- Set default page to 'incoming' (was 'main') in Zustand store
+- Added "Создать первый" button in empty state
+- Fixed overdue detection: now compares dates at midnight (no false same-day overdues)
+
+Stage Summary:
+- Lead creation now requires minimum: organization + partner, optional: phone, email, comment
+- Default landing page changed to "Входящие"
+- 3 action buttons (Перезвонить/Отказ/В работа) already existed, now with improved UX
+- Comment visible in incoming leads list (desktop + mobile)
+- Zero compile errors, zero lint errors

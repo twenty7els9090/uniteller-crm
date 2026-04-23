@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -42,6 +43,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
   const [partner, setPartner] = useState(isVTB ? 'ВТБ' : '')
   const [contactInfo, setContactInfo] = useState('')
   const [email, setEmail] = useState('')
+  const [comment, setComment] = useState('')
 
   const dynamicPartners = settings.partner.length > 0 ? settings.partner : [...PARTNERS]
 
@@ -51,6 +53,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
       setPartner(isVTB ? 'ВТБ' : '')
       setContactInfo('')
       setEmail('')
+      setComment('')
     }
   }, [open, isVTB])
 
@@ -72,6 +75,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
           manager: '',
           contactInfo,
           email,
+          comment,
         }),
       })
 
@@ -101,7 +105,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
             Новый входящий лид
           </DialogTitle>
           <DialogDescription>
-            Заполните информацию о входящем обращении
+            Заполните минимум: организация и партнёр. Остальное — по желанию.
           </DialogDescription>
         </DialogHeader>
 
@@ -109,7 +113,9 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
           <div className="overflow-y-auto px-6 py-5 flex-1 space-y-4">
             {/* Organization */}
             <div className="space-y-1.5">
-              <Label htmlFor="inc-org" className="text-sm">Организация *</Label>
+              <Label htmlFor="inc-org" className="text-sm font-medium">
+                Организация <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="inc-org"
                 placeholder="ООО «Название»"
@@ -121,7 +127,9 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
 
             {/* Partner */}
             <div className="space-y-1.5">
-              <Label className="text-sm">Партнёр *</Label>
+              <Label className="text-sm font-medium">
+                Партнёр <span className="text-destructive">*</span>
+              </Label>
               {isVTB ? (
                 <Input value="ВТБ" disabled className="bg-muted" />
               ) : (
@@ -141,7 +149,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
             {/* Phone + Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label className="text-sm">Телефон</Label>
+                <Label className="text-sm font-medium">Телефон</Label>
                 <PhoneInput
                   value={contactInfo}
                   onChange={setContactInfo}
@@ -149,7 +157,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-sm">Почта</Label>
+                <Label className="text-sm font-medium">Почта</Label>
                 <Input
                   type="email"
                   placeholder="example@mail.ru"
@@ -157,6 +165,17 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
+            </div>
+
+            {/* Comment */}
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium">Комментарий</Label>
+              <Textarea
+                placeholder="Дополнительная информация о заявке..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={3}
+              />
             </div>
           </div>
 
@@ -170,7 +189,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
             </Button>
             <Button type="submit" disabled={loading || !canSubmit}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Создать
+              Создать лид
             </Button>
           </DialogFooter>
         </form>
