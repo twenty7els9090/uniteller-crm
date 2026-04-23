@@ -32,16 +32,16 @@ model Lead {
   organization    String
   partner         String
   zayavka         String
-  status          String    @default("")
-  activityType    String    @default("")
-  comment         String    @default("")
-  contactInfo     String    @default("")
-  email           String    @default("")
-  margin          String    @default("")
-  manager         String
-  turnoverTsp     String    @default("")
-  ourRate         String    @default("")
-  revenue         String    @default("")
+  status          String?   @default("")
+  activityType    String?   @default("")
+  comment         String?   @default("")
+  contactInfo     String?   @default("")
+  email           String?   @default("")
+  margin          String?   @default("")
+  manager         String?   @default("")
+  turnoverTsp     String?   @default("")
+  ourRate         String?   @default("")
+  revenue         String?   @default("")
   callDate        DateTime?
   reported        Boolean   @default(false)
   statusChangedAt DateTime?
@@ -58,34 +58,34 @@ model Lead {
 
 model Relegal {
   id        String   @id @default(cuid())
-  fromOrg   String   @default("")
-  toOrg     String   @default("")
-  action    String   @default("")
-  manager   String   @default("")
+  fromOrg   String?  @default("")
+  toOrg     String?  @default("")
+  action    String?  @default("")
+  manager   String?  @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Additional {
   id            String   @id @default(cuid())
-  organization  String
-  partner       String   @default("")
-  finInstrument String   @default("")
-  turnover      String   @default("")
-  revenue       String   @default("")
+  organization  String?
+  partner       String?  @default("")
+  finInstrument String?  @default("")
+  turnover      String?  @default("")
+  revenue       String?  @default("")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
 
 model Churn {
   id           String   @id @default(cuid())
-  organization String
-  turnoverTsp  String   @default("")
-  revenue      String   @default("")
-  status       String   @default("")
-  comment      String   @default("")
+  organization String?
+  turnoverTsp  String?  @default("")
+  revenue      String?  @default("")
+  status       String?  @default("")
+  comment      String?  @default("")
   reported     Boolean  @default(false)
-  manager      String   @default("")
+  manager      String?  @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
