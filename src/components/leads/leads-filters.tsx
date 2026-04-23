@@ -15,7 +15,6 @@ import {
   Filter,
   X,
   ChevronDown,
-  EyeOff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -107,16 +106,12 @@ interface LeadsFiltersProps {
   zayavkaFilter: string[]
   statusFilter: string[]
   managerFilter: string[]
-  hideRejected: boolean
-  hidePaused: boolean
   hasActiveFilters: boolean
   // filter setters
   onPartnerFilterChange: (v: string[]) => void
   onZayavkaFilterChange: (v: string[]) => void
   onStatusFilterChange: (v: string[]) => void
   onManagerFilterChange: (v: string[]) => void
-  onHideRejectedChange: (v: boolean) => void
-  onHidePausedChange: (v: boolean) => void
   onClearFilters: () => void
 }
 
@@ -134,15 +129,11 @@ export function LeadsFilters({
   zayavkaFilter,
   statusFilter,
   managerFilter,
-  hideRejected,
-  hidePaused,
   hasActiveFilters,
   onPartnerFilterChange,
   onZayavkaFilterChange,
   onStatusFilterChange,
   onManagerFilterChange,
-  onHideRejectedChange,
-  onHidePausedChange,
   onClearFilters,
 }: LeadsFiltersProps) {
   return (
@@ -182,25 +173,6 @@ export function LeadsFilters({
 
           <MultiSelectFilter label="Менеджер" options={managers} selected={managerFilter} onChange={onManagerFilterChange} />
 
-          {/* Quick-hide toggles */}
-          <Button
-            variant={hideRejected ? 'default' : 'outline'}
-            size="sm"
-            className={cn('h-8 text-xs shrink-0 gap-1.5', hideRejected && 'bg-red-600 hover:bg-red-700 text-white')}
-            onClick={() => onHideRejectedChange(!hideRejected)}
-          >
-            <EyeOff className="h-3 w-3" />
-            Отклонённые
-          </Button>
-          <Button
-            variant={hidePaused ? 'default' : 'outline'}
-            size="sm"
-            className={cn('h-8 text-xs shrink-0 gap-1.5', hidePaused && 'bg-orange-600 hover:bg-orange-700 text-white')}
-            onClick={() => onHidePausedChange(!hidePaused)}
-          >
-            <EyeOff className="h-3 w-3" />
-            На паузе
-          </Button>
           {hasActiveFilters && (
             <Button
               variant="ghost"

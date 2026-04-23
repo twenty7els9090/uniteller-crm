@@ -161,15 +161,11 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         zayavkaFilter={data.zayavkaFilter}
         statusFilter={data.statusFilter}
         managerFilter={data.managerFilter}
-        hideRejected={data.hideRejected}
-        hidePaused={data.hidePaused}
         hasActiveFilters={data.hasActiveFilters}
         onPartnerFilterChange={data.setPartnerFilter}
         onZayavkaFilterChange={data.setZayavkaFilter}
         onStatusFilterChange={data.setStatusFilter}
         onManagerFilterChange={data.setManagerFilter}
-        onHideRejectedChange={data.setHideRejected}
-        onHidePausedChange={data.setHidePaused}
         onClearFilters={data.clearFilters}
       />
 

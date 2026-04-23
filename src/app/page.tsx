@@ -13,6 +13,7 @@ import { LeadsFunnel } from '@/components/statistics/leads-funnel'
 import { TopOrganizations } from '@/components/statistics/top-organizations'
 import { CombatLeadsTable } from '@/components/leads/combat-leads-table'
 import { RejectedLeadsTable } from '@/components/leads/rejected-leads-table'
+import { PausedLeadsTable } from '@/components/leads/paused-leads-table'
 import { ChurnTable } from '@/components/churn/churn-table'
 import { RelegalTable } from '@/components/relegal/relegal-table'
 import { AdditionalTable } from '@/components/additional/additional-table'
@@ -112,6 +113,16 @@ function RejectedPage() {
   )
 }
 
+function PausedPage() {
+  return (
+    <PageWrapper pageKey="paused">
+      <PageSection>
+        <PausedLeadsTable />
+      </PageSection>
+    </PageWrapper>
+  )
+}
+
 function AdditionalPage() {
   const isVTB = useAppStore((s) => s.user?.role === 'vtb')
   return (
@@ -201,6 +212,7 @@ export default function HomePage() {
             {currentPage === 'incoming' && <IncomingPage />}
             {currentPage === 'main' && <MainPage />}
             {currentPage === 'rejected' && <RejectedPage />}
+            {currentPage === 'paused' && <PausedPage />}
             {currentPage === 'combat' && <CombatPage />}
             {currentPage === 'dop' && <AdditionalPage />}
             {currentPage === 'relegal' && <RelegalPage />}

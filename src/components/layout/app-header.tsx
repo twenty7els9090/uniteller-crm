@@ -3,7 +3,7 @@
 import { useAppStore, PAGE_LABELS, type PageType } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
-import { BarChart3, Users, LogOut, Swords, Plug, Building2, TrendingDown, Settings, PhoneIncoming, XCircle } from 'lucide-react'
+import { BarChart3, Users, LogOut, Swords, Plug, Building2, TrendingDown, Settings, PhoneIncoming, XCircle, PauseCircle } from 'lucide-react'
 import { GlobalSearch } from './global-search'
 
 interface NavTab {
@@ -17,7 +17,8 @@ interface NavTab {
 const tabs: NavTab[] = [
   { label: 'Входящие', page: 'incoming', icon: <PhoneIncoming className="h-4 w-4" /> },
   { label: 'Лиды', page: 'main', icon: <Users className="h-4 w-4" /> },
-  { label: 'Отказы', page: 'rejected', icon: <XCircle className="h-4 w-4" /> },
+  { label: 'Отклонённые', page: 'rejected', icon: <XCircle className="h-4 w-4" /> },
+  { label: 'На паузе', page: 'paused', icon: <PauseCircle className="h-4 w-4" /> },
   { label: 'Боевые', page: 'combat', icon: <Swords className="h-4 w-4" /> },
   { label: 'Доп.', page: 'dop', icon: <Plug className="h-4 w-4" />, unitellerOnly: true },
   { label: 'Юр.лица', page: 'relegal', icon: <Building2 className="h-4 w-4" />, unitellerOnly: true },

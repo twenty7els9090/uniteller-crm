@@ -26,10 +26,6 @@ export function useLeads() {
   const [statusFilter, setStatusFilter] = useState<string[]>([])
   const [managerFilter, setManagerFilter] = useState<string[]>([])
 
-  // Quick-hide toggles
-  const [hideRejected, setHideRejected] = useState(false)
-  const [hidePaused, setHidePaused] = useState(false)
-
   // Sync global search from store to local filter
   useEffect(() => {
     if (globalSearch !== undefined && globalSearch !== globalFilter) {
@@ -44,10 +40,13 @@ export function useLeads() {
   const dynamicStatus = useMemo(() => settings.status.length > 0 ? settings.status : [...STATUS_OPTIONS], [settings.status])
   const dynamicActivityTypes = useMemo(() => settings.activityType.length > 0 ? settings.activityType : [...ACTIVITY_TYPES], [settings.activityType])
 
-  // Client-side search & filter — exclude combat leads (Выполнена / пошли боевые платежи) for non-VTB
+  // Client-side search & filter
+  // Always exclude: Отклонена, На паузе (they have their own pages)
+  // For uniteller: also exclude Выполнена/Входящий/пошли боевые платежи
   const leads = useMemo(() => {
     let result = allLeads.filter((l) =>
-      isVTB || (l.zayavka !== 'Выполнена' && l.zayavka !== 'Входящий' && l.zayavka !== 'Отклонена' && l.status !== 'пошли боевые платежи')
+      l.zayavka !== 'Отклонена' && l.zayavka !== 'На паузе' &&
+      (isVTB || (l.zayavka !== 'Выполнена' && l.zayavka !== 'Входящий' && l.status !== 'пошли боевые платежи'))
     )
     if (globalFilter) {
       const q = globalFilter.toLowerCase()
@@ -63,8 +62,6 @@ export function useLeads() {
     if (zayavkaFilter.length > 0) result = result.filter((l) => zayavkaFilter.includes(l.zayavka))
     if (statusFilter.length > 0) result = result.filter((l) => l.status && statusFilter.includes(l.status))
     if (managerFilter.length > 0) result = result.filter((l) => managerFilter.includes(l.manager))
-    if (hideRejected) result = result.filter((l) => l.zayavka !== 'Отклонена')
-    if (hidePaused) result = result.filter((l) => l.zayavka !== 'На паузе')
     // Sort by date newest first (statusChangedAt takes priority over createdAt)
     result.sort((a, b) => {
       const dateA = new Date(a.statusChangedAt || a.createdAt || 0).getTime()
@@ -72,7 +69,7 @@ export function useLeads() {
       return dateB - dateA
     })
     return result
-  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, hideRejected, hidePaused, isVTB])
+  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, isVTB])
 
   const fetchLeads = useCallback(async () => {
     setLoading(true)
@@ -137,15 +134,13 @@ export function useLeads() {
     return Array.from(set).sort()
   }, [leads])
 
-  const hasActiveFilters = partnerFilter.length > 0 || zayavkaFilter.length > 0 || statusFilter.length > 0 || managerFilter.length > 0 || hideRejected || hidePaused
+  const hasActiveFilters = partnerFilter.length > 0 || zayavkaFilter.length > 0 || statusFilter.length > 0 || managerFilter.length > 0
 
   function clearFilters() {
     setPartnerFilter([])
     setZayavkaFilter([])
     setStatusFilter([])
     setManagerFilter([])
-    setHideRejected(false)
-    setHidePaused(false)
     setGlobalFilter('')
   }
 
@@ -177,10 +172,6 @@ export function useLeads() {
     setStatusFilter,
     managerFilter,
     setManagerFilter,
-    hideRejected,
-    setHideRejected,
-    hidePaused,
-    setHidePaused,
     hasActiveFilters,
     clearFilters,
     // Dynamic options
