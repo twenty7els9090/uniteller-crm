@@ -36,9 +36,6 @@ export const STATUS_OPTIONS = [
   'другая причина',
 ] as const
 
-// Статусы входящих лидов
-export const INCOMING_STATUS_OPTIONS = ['Не начато', 'Перезвонить', 'Отказался', 'В работу'] as const
-
 // Причины отказа (из обычных лидов)
 export const REJECTION_REASONS = [
   'не актуально',

@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
 import { churnSchema } from '@/lib/validations'
-import { cleanNullableFields, handleValidationError } from '@/lib/api-helpers'
+import { requireAuth, cleanNullableFields, handleValidationError, handleApiError } from '@/lib/api-helpers'
 
 export async function GET(request: Request) {
   try {
-    const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
-    }
+    const { user, response } = await requireAuth()
+    if (!user || response) return response!
 
     if (user.role === 'vtb') {
       return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
@@ -35,17 +32,15 @@ export async function GET(request: Request) {
     })
 
     return NextResponse.json(churns)
-  } catch {
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error, 'GET /api/churn')
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const user = await getCurrentUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
-    }
+    const { user, response } = await requireAuth()
+    if (!user || response) return response!
 
     if (user.role === 'vtb') {
       return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
@@ -71,6 +66,6 @@ export async function POST(request: Request) {
   } catch (error) {
     const validationResponse = handleValidationError(error)
     if (validationResponse) return validationResponse
-    return NextResponse.json({ error: 'Ошибка сервера' }, { status: 500 })
+    return handleApiError(error, 'POST /api/churn')
   }
 }

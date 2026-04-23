@@ -168,7 +168,7 @@ function StatisticsPage() {
 }
 
 export default function HomePage() {
-  const { user, setUser, setLoading, isLoading, currentPage } = useAppStore()
+  const { user, setUser, isLoading, currentPage } = useAppStore()
 
   useEffect(() => {
     fetch('/api/auth/me')

@@ -20,20 +20,6 @@ export const scaleIn: Variants = {
   visible: { opacity: 1, scale: 1, transition: { duration: 0.35, ease: [0.22, 0.61, 0.36, 1] } },
 }
 
-/** Quick scale pop for interactive elements (badges, toggles) */
-export const popIn: Variants = {
-  hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.25, ease: [0.34, 1.56, 0.64, 1] } },
-  exit: { opacity: 0, scale: 0.8, transition: { duration: 0.15 } },
-}
-
-/** Slide down + fade (for dropdowns, alerts) */
-export const slideDown: Variants = {
-  hidden: { opacity: 0, y: -8, scale: 0.97 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.25, ease: [0.22, 0.61, 0.36, 1] } },
-  exit: { opacity: 0, y: -4, scale: 0.98, transition: { duration: 0.12 } },
-}
-
 /** Stagger children with delay */
 export const staggerContainer: Variants = {
   hidden: {},

@@ -8,12 +8,7 @@ export type { AuthUser }
 const SESSION_COOKIE_NAME = 'leadmanager_session'
 const SESSION_EXPIRY_HOURS = 24 * 7 // 7 days
 
-export function getSessionCookieName() {
-  return SESSION_COOKIE_NAME
-}
-
-/** Clean up expired sessions (call periodically) */
-export async function cleanExpiredSessions(): Promise<void> {
+async function cleanExpiredSessions(): Promise<void> {
   try {
     await db.session.deleteMany({
       where: { expiresAt: { lt: new Date() } },
@@ -28,7 +23,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = cookieStore.get(SESSION_COOKIE_NAME)?.value
 
   if (!token) {
-    // No token — also clean up expired sessions in the background
     cleanExpiredSessions()
     return null
   }
@@ -39,7 +33,6 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   })
 
   if (!session || session.expiresAt < new Date()) {
-    // Clean up expired session
     if (session) {
       db.session.delete({ where: { token } }).catch(() => {})
     }

@@ -20,13 +20,9 @@ export const leadSchema = z.object({
   reported: z.boolean().default(false),
 })
 
-export const loginSchema = z.object({
-  username: z.string().min(1, 'Введите имя пользователя'),
-  password: z.string().min(1, 'Введите пароль'),
-})
-
 export type LeadFormData = z.input<typeof leadSchema>
 export type LeadOutputData = z.infer<typeof leadSchema>
+
 export const additionalSchema = z.object({
   id: z.string().optional(),
   organization: z.string().min(1, 'Название организации обязательно'),
@@ -58,8 +54,4 @@ export const relegalSchema = z.object({
 })
 
 export type RelegalFormData = z.input<typeof relegalSchema>
-
 export type ChurnFormData = z.input<typeof churnSchema>
-export type ChurnOutputData = z.infer<typeof churnSchema>
-
-export type LoginFormData = z.infer<typeof loginSchema>

@@ -4,8 +4,8 @@ import type { Lead } from '@/lib/types'
 
 // ─── Status color maps ────────────────────────────────────────────────
 
-/** Detailed status → Tailwind classes (used in table + kanban) */
-export const STATUS_COLORS: Record<string, string> = {
+/** Detailed status → Tailwind classes (used internally by StatusBadge) */
+const STATUS_COLORS: Record<string, string> = {
   // Incoming lead statuses
   'Не начато': 'bg-gray-100 text-gray-600',
   'Не звонили': 'bg-gray-100 text-gray-600',
@@ -34,8 +34,8 @@ export const STATUS_COLORS: Record<string, string> = {
   'Нужна интеграция': 'bg-teal-100 text-teal-700',
 }
 
-/** Zayavka (request status) → Tailwind classes */
-export const ZAYAVKA_COLORS: Record<string, string> = {
+/** Zayavka (request status) → Tailwind classes (used internally by ZayavkaBadge) */
+const ZAYAVKA_COLORS: Record<string, string> = {
   'Выполнена': 'bg-emerald-100 text-emerald-800',
   'В работе': 'bg-amber-100 text-amber-800',
   'На паузе': 'bg-orange-100 text-orange-800',
