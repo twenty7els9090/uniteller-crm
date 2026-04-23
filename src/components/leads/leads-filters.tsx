@@ -192,12 +192,12 @@ export function LeadsFilters({
             </Button>
           )}
 
-          {/* Folder buttons */}
-          {(folderCounts.rejected > 0 || folderCounts.paused > 0) && (
+          {/* Folder buttons — only for uniteller, not VTB */}
+          {!isVTB && (folderCounts.rejected > 0 || folderCounts.paused > 0) && (
             <div className="w-px h-5 bg-border mx-1 shrink-0 hidden sm:block" />
           )}
 
-          {folderCounts.rejected > 0 && (
+          {!isVTB && folderCounts.rejected > 0 && (
             <Button
               variant={expandedFolder === 'rejected' ? 'destructive' : 'outline'}
               size="sm"
@@ -215,7 +215,7 @@ export function LeadsFilters({
             </Button>
           )}
 
-          {folderCounts.paused > 0 && (
+          {!isVTB && folderCounts.paused > 0 && (
             <Button
               variant={expandedFolder === 'paused' ? 'default' : 'outline'}
               size="sm"

@@ -39,8 +39,18 @@ export function useLeads() {
   // Dynamic options from settings
   const dynamicPartners = useMemo(() => settings.partner.length > 0 ? settings.partner : [...PARTNERS], [settings.partner])
   const dynamicManagers = useMemo(() => settings.manager.length > 0 ? settings.manager : [...MANAGERS], [settings.manager])
-  const dynamicZayavka = useMemo(() => settings.zayavka.length > 0 ? settings.zayavka : [...ZAYAVKA_OPTIONS], [settings.zayavka])
-  const dynamicStatus = useMemo(() => settings.status.length > 0 ? settings.status : [...STATUS_OPTIONS], [settings.status])
+  const dynamicZayavka = useMemo(() => {
+    const base = settings.zayavka.length > 0 ? settings.zayavka : [...ZAYAVKA_OPTIONS]
+    // VTB: hide В работе, На паузе, Отклонена
+    if (isVTB) return base.filter((z) => z !== 'В работе' && z !== 'На паузе' && z !== 'Отклонена')
+    return base
+  }, [settings.zayavka, isVTB])
+  const dynamicStatus = useMemo(() => {
+    const base = settings.status.length > 0 ? settings.status : [...STATUS_OPTIONS]
+    // VTB: hide Перезвонить
+    if (isVTB) return base.filter((s) => s !== 'Перезвонить')
+    return base
+  }, [settings.status, isVTB])
   const dynamicActivityTypes = useMemo(() => settings.activityType.length > 0 ? settings.activityType : [...ACTIVITY_TYPES], [settings.activityType])
 
   // Main leads: exclude combat-only, rejected, and paused
@@ -48,6 +58,10 @@ export function useLeads() {
     let result = allLeads.filter((l) => {
       // For uniteller: exclude Входящий, Выполнена, combat-only
       if (!isVTB && (l.zayavka === 'Выполнена' || l.zayavka === 'Входящий' || l.status === 'пошли боевые платежи')) {
+        return false
+      }
+      // For VTB: exclude В работе, Перезвонить, Отклонена, На паузе
+      if (isVTB && (l.zayavka === 'В работе' || l.zayavka === 'Отклонена' || l.zayavka === 'На паузе' || l.status === 'Перезвонить')) {
         return false
       }
       // Always exclude archive folders from main table

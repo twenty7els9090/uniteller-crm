@@ -53,9 +53,11 @@ type InlineMode = 'idle' | 'callback' | 'reject' | 'work'
 function InlineStatusControls({
   lead,
   onRemove,
+  isVTB = false,
 }: {
   lead: Lead
   onRemove: (id: string) => void
+  isVTB?: boolean
 }) {
   const [mode, setMode] = useState<InlineMode>('idle')
   const [callDate, setCallDate] = useState('')
@@ -224,8 +226,8 @@ function InlineStatusControls({
         </div>
       )}
 
-      {/* ── Action buttons (when idle) ── */}
-      {mode === 'idle' && (
+      {/* ── Action buttons (when idle) — hidden for VTB ── */}
+      {mode === 'idle' && !isVTB && (
         <>
           <Button
             size="sm"
@@ -266,10 +268,12 @@ function IncomingDesktopRow({
   lead,
   onDelete,
   onRemove,
+  isVTB = false,
 }: {
   lead: Lead
   onDelete: (id: string) => void
   onRemove: (id: string) => void
+  isVTB?: boolean
 }) {
   const d = new Date(lead.createdAt)
   const day = d.getDate()
@@ -319,9 +323,10 @@ function IncomingDesktopRow({
       </div>
 
       {/* Inline status controls */}
-      <InlineStatusControls lead={lead} onRemove={onRemove} />
+      <InlineStatusControls lead={lead} onRemove={onRemove} isVTB={isVTB} />
 
-      {/* Delete */}
+      {/* Delete — hidden for VTB */}
+      {!isVTB && (
       <Button
         size="sm"
         variant="ghost"
@@ -330,6 +335,7 @@ function IncomingDesktopRow({
       >
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
+      )}
     </div>
   )
 }
@@ -340,10 +346,12 @@ function IncomingMobileCard({
   lead,
   onDelete,
   onRemove,
+  isVTB = false,
 }: {
   lead: Lead
   onDelete: (id: string) => void
   onRemove: (id: string) => void
+  isVTB?: boolean
 }) {
   const d = new Date(lead.createdAt)
   const day = d.getDate()
@@ -423,10 +431,11 @@ function IncomingMobileCard({
 
       {/* Inline controls */}
       <div className="pt-1">
-        <InlineStatusControls lead={lead} onRemove={onRemove} />
+        <InlineStatusControls lead={lead} onRemove={onRemove} isVTB={isVTB} />
       </div>
 
-      {/* Delete */}
+      {/* Delete — hidden for VTB */}
+      {!isVTB && (
       <div className="flex justify-end pt-1 border-t">
         <Button
           size="sm"
@@ -438,6 +447,7 @@ function IncomingMobileCard({
           Удалить
         </Button>
       </div>
+      )}
     </motion.div>
   )
 }
@@ -593,6 +603,7 @@ export function IncomingLeadsTable() {
               lead={lead}
               onDelete={setDeleteId}
               onRemove={handleRemove}
+              isVTB={isVTB}
             />
           )) : (
             <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
@@ -617,6 +628,7 @@ export function IncomingLeadsTable() {
             lead={lead}
             onDelete={setDeleteId}
             onRemove={handleRemove}
+            isVTB={isVTB}
           />
         )) : (
           <div className="flex flex-col items-center gap-2 py-12">

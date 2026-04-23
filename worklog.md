@@ -102,28 +102,20 @@ Task: Deep cleanup — remove unused packages, dead code, duplicate imports, pol
 Work Log:
 - Deleted tailwind.config.ts (Tailwind v3 relict, v4 doesn't use it)
 - Deleted src/components/ui/sonner.tsx (unused custom wrapper, layout uses Sonner directly)
-- Removed ~40 unused npm packages:
-  - UI primitives: @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities
-  - Radix for deleted UI: @radix-ui/react-{accordion,aspect-ratio,avatar,collapsible,context-menu,hover-card,menubar,navigation-menu,progress,radio-group,scroll-area,separator,slider,switch,tabs,toast,toggle,toggle-group,tooltip}
-  - Unused libs: @mdxeditor/editor, @reactuses/core, @tanstack/react-query, cmdk, date-fns, embla-carousel-react, input-otp, next-auth, next-intl, next-themes, react-day-picker, react-markdown, react-resizable-panels, react-syntax-highlighter, sharp, uuid, vaul, tailwindcss-animate
-- Eliminated duplicate NewBadge component (mobile-lead-card.tsx → import from desktop-lead-row.tsx)
+- Removed ~40 unused npm packages
+- Eliminated duplicate NewBadge component
 - Replaced duplicate formatCurrency in top-organizations.tsx with import from @/lib/format
-- Removed 16 sidebar CSS variables from globals.css (no sidebar component exists)
-- Replaced inline pagination blocks in leads-table.tsx (×2) and combat-leads-table.tsx (×2) with DataTablePagination
-- Cleaned motion.ts: removed 3 duplicate variants (pageStagger, quickStagger, fadeLeft)
-- Removed STATUS_TABLE_COLORS map (identical to STATUS_COLORS with no-op hover classes)
-- Fixed 3 ESLint errors (set-state-in-effect, prefer-const) in global-search.tsx, editable-cells.tsx, use-settings.ts
+- Removed 16 sidebar CSS variables from globals.css
+- Replaced inline pagination blocks with DataTablePagination
+- Cleaned motion.ts: removed 3 duplicate variants
+- Fixed 3 ESLint errors across multiple files
 - Removed 21 unused imports/variables across 14 files
-- Removed unused eslint-disable directives
-- Added card-soft class to TopOrganizations Card
-- Cleaned upload/ directory
 
 Stage Summary:
-- 0 ESLint errors (down from 4), 7 benign warnings (exhaustive-deps, incompatible-library)
+- 0 ESLint errors, 7 benign warnings
 - ~300 lines of duplicate/unused code removed
 - ~40 unused npm packages removed
 - Build compiles successfully
-- Dev server runs without errors
 
 ---
 Task ID: 9
@@ -131,19 +123,33 @@ Agent: main-coordinator
 Task: Redesign lead flow — simplified creation + 3-action incoming page
 
 Work Log:
-- Updated IncomingLeadFormDialog: added comment field (Textarea) to creation form
-- Updated IncomingLeadsTable: added comment display in both desktop rows and mobile cards
-- Added overdue days counter ("Просрочено 3 дн.") for callback leads
-- Added search by comment text in incoming leads filter
-- Improved counter badges: "новых" instead of "не начато", phone icon for callbacks
-- Changed search icon from Building2 to Search (proper semantics)
-- Set default page to 'incoming' (was 'main') in Zustand store
+- Updated IncomingLeadFormDialog: added comment field
+- Updated IncomingLeadsTable: added comment display
+- Added overdue days counter for callback leads
+- Added search by comment text
+- Improved counter badges
+- Set default page to 'incoming'
 - Added "Создать первый" button in empty state
-- Fixed overdue detection: now compares dates at midnight (no false same-day overdues)
+- Fixed overdue detection
 
 Stage Summary:
-- Lead creation now requires minimum: organization + partner, optional: phone, email, comment
+- Lead creation now requires minimum: organization + partner
 - Default landing page changed to "Входящие"
-- 3 action buttons (Перезвонить/Отказ/В работа) already existed, now with improved UX
-- Comment visible in incoming leads list (desktop + mobile)
 - Zero compile errors, zero lint errors
+
+---
+Task ID: 10
+Agent: main-coordinator
+Task: Hide VTB-specific UI — action buttons, statuses, folder buttons
+
+Work Log:
+- Updated use-leads.ts: VTB filter excludes leads with zayavka В работе, Отклонена, На паузе and status Перезвонить
+- Updated dynamicZayavka/dynamicStatus in use-leads.ts: VTB only sees relevant options
+- Updated leads-filters.tsx: folder buttons (Отклонённые/На паузе) hidden for VTB
+- Updated incoming-leads-table.tsx: action buttons (Перезвонить/Отказ/В работу) + delete hidden for VTB
+- Passed isVTB prop through InlineStatusControls, IncomingDesktopRow, IncomingMobileCard
+
+Stage Summary:
+- VTB cabinet is fully read-only: no action buttons, no delete, no hidden statuses
+- VTB filter dropdowns exclude В работе, На паузе, Отклонена, Перезвонить
+- Zero compile errors
