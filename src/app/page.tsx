@@ -193,7 +193,7 @@ export default function HomePage() {
       .catch(() => {
         setUser(null)
       })
-  }, [setUser, setLoading])
+  }, [setUser])
 
   if (isLoading) {
     return <LoadingScreen />
