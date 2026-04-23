@@ -51,7 +51,6 @@ import {
   ChevronRight,
   XCircle,
   PauseCircle,
-  Phone,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
@@ -67,8 +66,6 @@ import { LeadsFilters } from './leads-filters'
 import { DesktopLeadRow } from './desktop-lead-row'
 import { MobileLeadCard } from './mobile-lead-card'
 import { cn } from '@/lib/utils'
-import type { Lead } from '@/lib/types'
-
 interface LeadsTableProps {
   showFilters?: boolean
   showDelete?: boolean
@@ -110,84 +107,6 @@ function ArchiveFolderRow({
   )
 }
 
-// ─── Compact Rejected Row (inside folder) ───
-function CompactRejectedRow({ lead, onDelete }: { lead: Lead; onDelete: (id: string) => void }) {
-  return (
-    <div className="group flex items-center gap-4 px-4 pl-12 py-2.5 transition-all duration-150 border-l-[3px] border-l-red-200 hover:bg-red-50/30">
-      <div className="flex flex-col items-center justify-center w-10 h-9 rounded-md bg-red-50 shrink-0">
-        <span className="text-xs font-bold tabular-nums leading-none text-red-600">
-          {lead.statusChangedAt ? new Date(lead.statusChangedAt).getDate() : '—'}
-        </span>
-        <span className="text-[8px] text-muted-foreground capitalize">
-          {lead.statusChangedAt ? new Date(lead.statusChangedAt).toLocaleDateString('ru-RU', { month: 'short' }) : ''}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm leading-tight truncate text-muted-foreground">{lead.organization}</span>
-          {lead.partner && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.partner}</Badge>}
-        </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-          {lead.manager && <span>{lead.manager}</span>}
-          {lead.contactInfo && (
-            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-0.5 hover:text-foreground truncate">
-              <Phone className="h-2.5 w-2.5" />{lead.contactInfo}
-            </a>
-          )}
-        </div>
-      </div>
-      {lead.status && <StatusBadge status={lead.status} compact />}
-      <Button
-        size="sm"
-        variant="ghost"
-        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded opacity-30 hover:opacity-100 transition-opacity shrink-0"
-        onClick={(e) => { e.stopPropagation(); onDelete(lead.id) }}
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
-    </div>
-  )
-}
-
-// ─── Compact Paused Row (inside folder) ───
-function CompactPausedRow({ lead, onDelete }: { lead: Lead; onDelete: (id: string) => void }) {
-  return (
-    <div className="group flex items-center gap-4 px-4 pl-12 py-2.5 transition-all duration-150 border-l-[3px] border-l-orange-200 hover:bg-orange-50/30">
-      <div className="flex flex-col items-center justify-center w-10 h-9 rounded-md bg-orange-50 shrink-0">
-        <span className="text-xs font-bold tabular-nums leading-none text-orange-600">
-          {lead.statusChangedAt ? new Date(lead.statusChangedAt).getDate() : '—'}
-        </span>
-        <span className="text-[8px] text-muted-foreground capitalize">
-          {lead.statusChangedAt ? new Date(lead.statusChangedAt).toLocaleDateString('ru-RU', { month: 'short' }) : ''}
-        </span>
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm leading-tight truncate">{lead.organization}</span>
-          {lead.partner && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.partner}</Badge>}
-        </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
-          {lead.manager && <span>{lead.manager}</span>}
-          {lead.contactInfo && (
-            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-0.5 hover:text-foreground truncate">
-              <Phone className="h-2.5 w-2.5" />{lead.contactInfo}
-            </a>
-          )}
-          {lead.comment && <span className="truncate max-w-[200px]">{lead.comment}</span>}
-        </div>
-      </div>
-      {lead.status && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.status}</Badge>}
-      <Button
-        size="sm"
-        variant="ghost"
-        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded opacity-30 hover:opacity-100 transition-opacity shrink-0"
-        onClick={(e) => { e.stopPropagation(); onDelete(lead.id) }}
-      >
-        <Trash2 className="h-3 w-3" />
-      </Button>
-    </div>
-  )
-}
 
 export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTableProps) {
   const data = useLeads()
@@ -362,9 +281,23 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="divide-y bg-red-50/20 max-h-[400px] overflow-y-auto">
+                      <div className="divide-y max-h-[600px] overflow-y-auto">
                         {data.rejectedLeads.length ? data.rejectedLeads.map((lead) => (
-                          <CompactRejectedRow key={lead.id} lead={lead} onDelete={handleArchiveDelete} />
+                          <DesktopLeadRow
+                            key={lead.id}
+                            lead={lead}
+                            isVTB={data.isVTB}
+                            isAdmin={data.isAdmin}
+                            showDelete={showDelete}
+                            inlineSave={data.inlineSave}
+                            openDetails={actions.openDetails}
+                            onDelete={actions.setDeleteId}
+                            dynamicPartners={data.dynamicPartners}
+                            dynamicManagers={data.dynamicManagers}
+                            dynamicZayavka={data.dynamicZayavka}
+                            dynamicStatus={data.dynamicStatus}
+                            dynamicActivityTypes={data.dynamicActivityTypes}
+                          />
                         )) : (
                           <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
                         )}
@@ -395,9 +328,23 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="divide-y bg-orange-50/20 max-h-[400px] overflow-y-auto">
+                      <div className="divide-y max-h-[600px] overflow-y-auto">
                         {data.pausedLeads.length ? data.pausedLeads.map((lead) => (
-                          <CompactPausedRow key={lead.id} lead={lead} onDelete={handleArchiveDelete} />
+                          <DesktopLeadRow
+                            key={lead.id}
+                            lead={lead}
+                            isVTB={data.isVTB}
+                            isAdmin={data.isAdmin}
+                            showDelete={showDelete}
+                            inlineSave={data.inlineSave}
+                            openDetails={actions.openDetails}
+                            onDelete={actions.setDeleteId}
+                            dynamicPartners={data.dynamicPartners}
+                            dynamicManagers={data.dynamicManagers}
+                            dynamicZayavka={data.dynamicZayavka}
+                            dynamicStatus={data.dynamicStatus}
+                            dynamicActivityTypes={data.dynamicActivityTypes}
+                          />
                         )) : (
                           <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
                         )}
@@ -461,18 +408,17 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-2 mt-2 max-h-[400px] overflow-y-auto">
+                      <div className="space-y-3 mt-2 max-h-[600px] overflow-y-auto">
                         {data.rejectedLeads.map((lead) => (
-                          <div key={lead.id} className="rounded-lg border border-red-100 bg-card p-3">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-sm text-muted-foreground truncate">{lead.organization}</span>
-                              {lead.status && <StatusBadge status={lead.status} compact />}
-                            </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                              {lead.manager && <span>{lead.manager}</span>}
-                              {lead.contactInfo && <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground">{lead.contactInfo}</a>}
-                            </div>
-                          </div>
+                          <MobileLeadCard
+                            key={lead.id}
+                            lead={lead}
+                            isVTB={data.isVTB}
+                            isAdmin={data.isAdmin}
+                            showDelete={showDelete}
+                            openDetails={actions.openDetails}
+                            onDelete={actions.setDeleteId}
+                          />
                         ))}
                       </div>
                     </motion.div>
@@ -505,19 +451,17 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       transition={{ duration: 0.2 }}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-2 mt-2 max-h-[400px] overflow-y-auto">
+                      <div className="space-y-3 mt-2 max-h-[600px] overflow-y-auto">
                         {data.pausedLeads.map((lead) => (
-                          <div key={lead.id} className="rounded-lg border border-orange-100 bg-card p-3">
-                            <div className="flex items-center justify-between">
-                              <span className="font-medium text-sm truncate">{lead.organization}</span>
-                              {lead.status && <Badge variant="outline" className="text-[9px]">{lead.status}</Badge>}
-                            </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
-                              {lead.manager && <span>{lead.manager}</span>}
-                              {lead.contactInfo && <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground">{lead.contactInfo}</a>}
-                              {lead.comment && <span className="truncate">{lead.comment}</span>}
-                            </div>
-                          </div>
+                          <MobileLeadCard
+                            key={lead.id}
+                            lead={lead}
+                            isVTB={data.isVTB}
+                            isAdmin={data.isAdmin}
+                            showDelete={showDelete}
+                            openDetails={actions.openDetails}
+                            onDelete={actions.setDeleteId}
+                          />
                         ))}
                       </div>
                     </motion.div>
