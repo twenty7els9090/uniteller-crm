@@ -29,7 +29,7 @@ export function StatisticsCharts() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground opacity-20" />
       </div>
     )
   }
@@ -50,12 +50,12 @@ export function StatisticsCharts() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar Chart - Leads by Partner */}
         <motion.div variants={scaleIn}>
-          <Card className="card-soft">
+          <Card className="card-soft border-border/60">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Лиды по партнёрам</CardTitle>
+              <CardTitle className="text-sm font-semibold">Лиды по партнёрам</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[280px]">
+              <div className="h-[260px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={partnerData} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
@@ -76,12 +76,12 @@ export function StatisticsCharts() {
 
         {/* Bar Chart - Rejected leads by reason */}
         <motion.div variants={scaleIn}>
-          <Card className="card-soft">
+          <Card className="card-soft border-border/60">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Причины отказа лидов</CardTitle>
+              <CardTitle className="text-sm font-semibold">Причины отказа лидов</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[280px]">
+              <div className="h-[260px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={rejectedByReason} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />

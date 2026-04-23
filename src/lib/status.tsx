@@ -4,43 +4,44 @@ import type { Lead } from '@/lib/types'
 
 // ─── Status color maps ────────────────────────────────────────────────
 
-/** Detailed status → Tailwind classes (used internally by StatusBadge) */
-const STATUS_COLORS: Record<string, string> = {
-  // Incoming lead statuses
-  'Не начато': 'bg-gray-100 text-gray-600',
-  'Не звонили': 'bg-gray-100 text-gray-600',
-  'Звонок выполнен': 'bg-emerald-100 text-emerald-700',
-  'Перезвонить': 'bg-amber-100 text-amber-700',
-  'Отказался': 'bg-red-100 text-red-700',
-  // Green — success
-  'пошли боевые платежи': 'bg-emerald-100 text-emerald-700',
-  'личный кабинет создан': 'bg-teal-100 text-teal-700',
+/** Detailed status → color config */
+const STATUS_STYLES: Record<string, { dot: string; bg: string; text: string }> = {
+  // Gray — not started
+  'Не начато': { dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-600' },
+  'Не звонили': { dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-600' },
+  // Green — success/progress
+  'Звонок выполнен': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700' },
+  'пошли боевые платежи': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700' },
+  'личный кабинет создан': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+  // Amber — pending
+  'Перезвонить': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700' },
+  'ожидание боевых платежей': { dot: 'bg-violet-400', bg: 'bg-violet-50', text: 'text-violet-700' },
   // Blue-cyan — in progress
-  'заключаем договор': 'bg-sky-100 text-sky-700',
-  'ожидаем банковские параметры': 'bg-sky-100 text-sky-700',
-  'параметры получены': 'bg-cyan-100 text-cyan-700',
-  'настраиваем сервис': 'bg-cyan-100 text-cyan-700',
-  'ожидание боевых платежей': 'bg-indigo-100 text-indigo-700',
-  // Yellow-orange — potential issue
-  'не открыт ОКВЭД': 'bg-amber-100 text-amber-700',
-  'высокая комиссия': 'bg-orange-100 text-orange-700',
-  'высокая процентная ставка': 'bg-orange-100 text-orange-700',
+  'заключаем договор': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700' },
+  'ожидаем банковские параметры': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700' },
+  'параметры получены': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700' },
+  'настраиваем сервис': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700' },
+  // Orange — issues
+  'не открыт ОКВЭД': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700' },
+  'высокая комиссия': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700' },
+  'высокая процентная ставка': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700' },
   // Red — rejected
-  'не актуально': 'bg-red-100 text-red-700',
-  'не поддерживаем оборудование': 'bg-rose-100 text-rose-700',
-  'нет совместной интеграции': 'bg-red-100 text-red-700',
-  'отказ СБ': 'bg-red-100 text-red-800',
-  'другая причина': 'bg-stone-100 text-stone-600',
-  'Нужна интеграция': 'bg-teal-100 text-teal-700',
+  'Отказался': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
+  'не актуально': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
+  'не поддерживаем оборудование': { dot: 'bg-rose-500', bg: 'bg-rose-50', text: 'text-rose-700' },
+  'нет совместной интеграции': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
+  'отказ СБ': { dot: 'bg-red-600', bg: 'bg-red-50', text: 'text-red-800' },
+  'другая причина': { dot: 'bg-stone-400', bg: 'bg-stone-50', text: 'text-stone-600' },
+  'Нужна интеграция': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
 }
 
-/** Zayavka (request status) → Tailwind classes (used internally by ZayavkaBadge) */
-const ZAYAVKA_COLORS: Record<string, string> = {
-  'Выполнена': 'bg-emerald-100 text-emerald-800',
-  'В работе': 'bg-amber-100 text-amber-800',
-  'На паузе': 'bg-orange-100 text-orange-800',
-  'Отклонена': 'bg-red-100 text-red-800',
-  'Входящий': 'bg-sky-100 text-sky-800',
+/** Zayavka (request status) → color config */
+const ZAYAVKA_STYLES: Record<string, { dot: string; bg: string; text: string }> = {
+  'Выполнена': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-800' },
+  'В работе': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-800' },
+  'На паузе': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-800' },
+  'Отклонена': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-800' },
+  'Входящий': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-800' },
 }
 
 // ─── Rejection statuses ───────────────────────────────────────────────
@@ -65,12 +66,27 @@ export function StatusBadge({
   compact?: boolean
   hover?: boolean
 }) {
-  const size = compact ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-  const colors = STATUS_COLORS[status] || 'bg-gray-100 text-gray-600'
+  const styles = STATUS_STYLES[status]
+  const size = compact ? 'text-[11px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5'
+
+  if (styles) {
+    return (
+      <span
+        className={cn(
+          'inline-flex items-center font-medium rounded-md whitespace-nowrap border-0',
+          styles.bg, styles.text, size,
+        )}
+      >
+        <span className={cn('inline-block w-1.5 h-1.5 rounded-full mr-1.5 -translate-y-px', styles.dot)} />
+        {status}
+      </span>
+    )
+  }
+
   return (
     <Badge
-      variant="default"
-      className={cn(colors, size, 'whitespace-nowrap font-medium border-0')}
+      variant="secondary"
+      className={cn(size, 'whitespace-nowrap font-medium')}
     >
       {status}
     </Badge>
@@ -86,23 +102,24 @@ export function ZayavkaBadge({
   compact?: boolean
   hover?: boolean
 }) {
-  const size = compact ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-  const color = ZAYAVKA_COLORS[zayavka]
-  if (color) {
+  const styles = ZAYAVKA_STYLES[zayavka]
+  const size = compact ? 'text-[11px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5'
+
+  if (styles) {
     return (
-      <Badge
-        variant="default"
+      <span
         className={cn(
-          color,
-          hover && 'hover:bg-opacity-80',
-          size,
-          'whitespace-nowrap font-medium border-0',
+          'inline-flex items-center font-medium rounded-md whitespace-nowrap border-0 transition-colors',
+          styles.bg, styles.text, size,
+          hover && 'hover:brightness-95 cursor-default',
         )}
       >
+        <span className={cn('inline-block w-1.5 h-1.5 rounded-full mr-1.5 -translate-y-px', styles.dot)} />
         {zayavka}
-      </Badge>
+      </span>
     )
   }
+
   return (
     <Badge variant="secondary" className={cn(size, 'whitespace-nowrap font-medium')}>
       {zayavka}
@@ -118,9 +135,9 @@ export function getSlaDays(updatedAt: string | null | undefined): number {
 }
 
 export function getSlaColorClass(days: number): string {
-  if (days > 7) return 'text-red-600'
-  if (days >= 4) return 'text-amber-600'
-  return 'text-emerald-600'
+  if (days > 7) return 'text-red-500'
+  if (days >= 4) return 'text-amber-500'
+  return 'text-emerald-500'
 }
 
 export function getSlaTitle(updatedAt: string | null | undefined): string {
@@ -142,11 +159,11 @@ export function isNewLead(createdAt: string | null | undefined): boolean {
 export function getZayavkaRowClass(zayavka: string): string {
   switch (zayavka) {
     case 'Входящий':
-    case 'Звонок': return 'border-l-sky-400 hover:bg-sky-50/30'
-    case 'В работе': return 'border-l-teal-400 hover:bg-teal-50/20'
-    case 'На паузе': return 'border-l-orange-400 bg-orange-50/40 hover:bg-orange-50/70'
-    case 'Отклонена': return 'border-l-red-300 bg-red-50/25 opacity-75 hover:opacity-100'
-    default: return 'border-l-border hover:bg-muted/30'
+    case 'Звонок': return 'border-l-sky-400 hover:bg-sky-50/40'
+    case 'В работе': return 'border-l-teal-400 hover:bg-teal-50/30'
+    case 'На паузе': return 'border-l-orange-400 bg-orange-50/30 hover:bg-orange-50/60'
+    case 'Отклонена': return 'border-l-red-300 bg-red-50/20 opacity-70 hover:opacity-100'
+    default: return 'border-l-border hover:bg-muted/40'
   }
 }
 

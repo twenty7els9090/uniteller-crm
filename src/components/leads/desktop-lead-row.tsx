@@ -22,7 +22,7 @@ import { Mail, MessageSquare, Trash2 } from 'lucide-react'
 
 export function NewBadge() {
   return (
-    <Badge variant="default" className="bg-emerald-500 text-white text-[10px] px-1.5 py-0 font-semibold">
+    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border border-emerald-200/60 text-[10px] px-1.5 py-0 font-semibold">
       новый
     </Badge>
   )
@@ -62,7 +62,7 @@ export function DesktopLeadRow({
   return (
     <div
       className={cn(
-        'group flex flex-col gap-1.5 px-4 py-3.5 transition-all duration-200 border-l-[3px] hover:bg-accent/50',
+        'group flex flex-col gap-1.5 px-4 py-3 hover:bg-accent/40 transition-all duration-150 border-l-[3px]',
         getZayavkaRowClass(lead.zayavka),
       )}
     >
@@ -71,12 +71,12 @@ export function DesktopLeadRow({
         {/* Организация */}
         <span className="shrink-0 flex items-center gap-1.5">
           {isVTB ? (
-            <span className="font-semibold text-[17px] leading-tight text-foreground" title={lead.organization}>{lead.organization}</span>
+            <span className="font-semibold text-[15px] leading-tight text-foreground" title={lead.organization}>{lead.organization}</span>
           ) : (
             <EditableTextCell
               value={lead.organization}
               onSave={(val) => inlineSave(lead.id, 'organization', val)}
-              className="font-semibold text-[17px]"
+              className="font-semibold text-[15px]"
               placeholder="—"
             />
           )}
@@ -90,7 +90,7 @@ export function DesktopLeadRow({
             value={lead.partner}
             options={dynamicPartners.map((p) => ({ value: p, label: p }))}
             onSave={(val) => inlineSave(lead.id, 'partner', val)}
-            getBadge={(val) => <Badge variant="outline" className="text-xs px-2 py-0.5 font-medium whitespace-nowrap">{val}</Badge>}
+            getBadge={(val) => <Badge variant="outline" className="text-xs px-2 py-0.5 font-medium whitespace-nowrap border-border/60 hover:border-primary/30 transition-colors">{val}</Badge>}
             disabled={isVTB}
           />
         </span>
@@ -112,14 +112,14 @@ export function DesktopLeadRow({
               className={cn('text-[11px] font-bold shrink-0 tabular-nums', getSlaColorClass(slaDays))}
               title={`Обновлено: ${getSlaTitle(lead.updatedAt)}`}
             >
-              {slaDays}д
+              {slaDays}
             </span>
           )}
           <EditableSelectCell
             value={lead.manager}
             options={dynamicManagers.map((m) => ({ value: m, label: m }))}
             onSave={(val) => inlineSave(lead.id, 'manager', val)}
-            getBadge={(val) => <Badge variant="outline" className="text-xs px-2 py-0.5 font-medium whitespace-nowrap">{val}</Badge>}
+            getBadge={(val) => <Badge variant="outline" className="text-xs px-2 py-0.5 font-medium whitespace-nowrap border-border/60 hover:border-primary/30 transition-colors">{val}</Badge>}
             disabled={isVTB}
           />
         </span>
@@ -127,26 +127,26 @@ export function DesktopLeadRow({
       </div>
 
       {/* ── Строка 2: Контакты ── */}
-      <div className="flex items-center gap-4 flex-wrap pl-1">
+      <div className="flex items-center gap-3 flex-wrap pl-1">
         {/* Телефон */}
-        <span className="flex items-center gap-1 text-[15px] text-muted-foreground shrink-0">
+        <span className="flex items-center gap-1 text-[14px] text-muted-foreground shrink-0">
           <InlinePhoneCell value={lead.contactInfo} onSave={(val) => inlineSave(lead.id, 'contactInfo', val)} />
         </span>
 
         {/* Почта */}
-        <span className="flex items-center gap-1 text-[15px] text-muted-foreground shrink-0">
+        <span className="flex items-center gap-1 text-[14px] text-muted-foreground shrink-0">
           <Mail className="h-3 w-3 shrink-0" />
           <EditableTextCell
             value={lead.email || ''}
             onSave={(val) => inlineSave(lead.id, 'email', val)}
             placeholder="example@mail.ru"
-            className="text-[15px]"
+            className="text-[14px]"
           />
         </span>
       </div>
 
       {/* ── Строка 3: Заявка + Статус + Маржа + Комментарий ── */}
-      <div className="flex items-center gap-2.5 flex-wrap pl-1">
+      <div className="flex items-center gap-2 flex-wrap pl-1">
         {/* Заявка */}
         <div className="shrink-0">
           {isVTB ? <ZayavkaBadge zayavka={lead.zayavka} compact hover /> : (

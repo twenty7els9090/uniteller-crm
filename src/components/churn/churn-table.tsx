@@ -324,8 +324,9 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-60">
+        <Loader2 className="h-6 w-6 animate-pulse text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Загрузка...</span>
       </div>
     )
   }
@@ -336,12 +337,12 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
       <motion.div variants={slideUp} initial="hidden" animate="visible">
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <TrendingDown className="h-5 w-5 text-destructive" />
+            <div className="bg-primary/10 rounded-xl p-2"><TrendingDown className="h-4 w-4 text-primary" /></div>
             <h2 className="text-lg font-semibold">Оттоки</h2>
             <Badge variant="secondary" className="text-xs">{filteredChurns.length} записей</Badge>
           </div>
           {!readOnly && (
-            <Button onClick={() => setFormOpen(true)} size="sm">
+            <Button onClick={() => setFormOpen(true)} size="sm" className="shadow-md shadow-primary/15">
               <Plus className="h-4 w-4 mr-2" />
               Внести информацию
             </Button>
@@ -363,22 +364,22 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
             placeholder="Поиск по организации, комментарию, менеджеру..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9 h-11 md:h-9"
+            className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm"
           />
         </div>
       </div>
 
       {/* ─── Desktop Table ─── */}
-      <div className="hidden md:block rounded-lg border bg-card overflow-hidden">
+      <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="bg-muted/30 hover:bg-muted/30 border-b">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="whitespace-nowrap text-xs uppercase text-muted-foreground font-semibold px-2 first:pl-3 last:pr-3"
+                      className="whitespace-nowrap text-[11px] uppercase tracking-wider text-muted-foreground font-medium px-2 first:pl-3 last:pr-3"
                     >
                       {header.isPlaceholder
                         ? null
@@ -402,7 +403,8 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <p className="text-muted-foreground">Оттоков пока нет</p>
+                    <TrendingDown className="h-8 w-8 mx-auto mb-2 text-muted-foreground opacity-20" />
+                    <p className="text-muted-foreground text-sm">Оттоков пока нет</p>
                   </TableCell>
                 </TableRow>
               )}
@@ -421,7 +423,7 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
             const churn = row.original
             return (
               <motion.div key={row.id} variants={slideUp}>
-              <div className="rounded-xl border bg-card p-4 shadow-sm space-y-2">
+              <div className="rounded-xl border border-border/60 bg-card p-4 card-soft hover:card-soft-hover active:scale-[0.997] transition-all duration-200 space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-medium text-sm leading-tight">{churn.organization}</span>
                   {churn.status && getChurnStatusBadge(churn.status)}
@@ -477,7 +479,8 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
             )
           })
         ) : (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center justify-center py-12">
+            <TrendingDown className="h-8 w-8 mb-2 text-muted-foreground opacity-20" />
             <p className="text-muted-foreground text-sm">Оттоков пока нет</p>
           </div>
         )}

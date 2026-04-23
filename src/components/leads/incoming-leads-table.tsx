@@ -20,7 +20,7 @@ import type { Lead } from '@/lib/types'
 import { IncomingLeadFormDialog } from './incoming-lead-form-dialog'
 import { REJECTION_REASONS, WORK_STATUSES } from '@/lib/constants'
 import {
-  Plus, Phone, Mail, Building2, Calendar, Clock, XCircle,
+  Plus, Phone, Mail, Building2, Calendar, XCircle,
   ArrowRight, Trash2, PhoneOff, AlertTriangle, Check,
   Search, MessageSquare,
 } from 'lucide-react'
@@ -110,8 +110,9 @@ function InlineStatusControls({
     <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
       {/* Current status badge */}
       {isNotStarted && mode === 'idle' && (
-        <Badge className="bg-gray-100 text-gray-600 text-[11px] px-2 py-0 border-gray-200 border">
-          <Clock className="h-3 w-3 mr-1" /> Не начато
+        <Badge className="bg-gray-50 text-gray-500 text-[11px] px-2 py-0 border border-gray-200/60">
+          <span className="h-1.5 w-1.5 rounded-full bg-gray-400 mr-1.5" />
+          Не начато
         </Badge>
       )}
 
@@ -119,7 +120,7 @@ function InlineStatusControls({
         <div className="flex items-center gap-1.5">
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-500 text-white border-red-500' : 'bg-amber-100 text-amber-700 border-amber-200',
+            overdue ? 'bg-red-50 text-red-600 border-red-200/60' : 'bg-amber-50 text-amber-600 border-amber-200/60',
           )}>
             {overdue ? (
               <span className="flex items-center gap-1">
@@ -232,7 +233,7 @@ function InlineStatusControls({
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 text-xs rounded-lg gap-1"
+            className="h-7 px-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50/80 text-xs rounded-lg gap-1"
             onClick={() => { setMode('callback'); setCallDate(new Date().toISOString().slice(0, 10)) }}
           >
             <Phone className="h-3 w-3" />
@@ -241,7 +242,7 @@ function InlineStatusControls({
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs rounded-lg gap-1"
+            className="h-7 px-2 text-red-500 hover:text-red-600 hover:bg-red-50/80 text-xs rounded-lg gap-1"
             onClick={() => setMode('reject')}
           >
             <XCircle className="h-3 w-3" />
@@ -250,7 +251,7 @@ function InlineStatusControls({
           <Button
             size="sm"
             variant="ghost"
-            className="h-7 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 text-xs rounded-lg gap-1"
+            className="h-7 px-2 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50/80 text-xs rounded-lg gap-1"
             onClick={() => setMode('work')}
           >
             <ArrowRight className="h-3 w-3" />
@@ -283,39 +284,39 @@ function IncomingDesktopRow({
 
   return (
     <div className={cn(
-      'group flex items-center gap-3 px-4 py-2.5 transition-all duration-200 border-l-[3px]',
+      'group flex items-center gap-3 px-4 py-3 transition-all duration-200 border-l-[3px]',
       isNotStarted && 'border-l-gray-300 hover:bg-gray-50/30',
       lead.status === 'Перезвонить' && !overdue && 'border-l-amber-400 hover:bg-amber-50/20',
       overdue && 'bg-amber-50/40 border-l-red-400',
     )}>
       {/* Date */}
-      <div className="flex flex-col items-center justify-center w-11 h-10 rounded-md bg-muted/40 shrink-0">
-        <span className="text-sm font-bold tabular-nums leading-none">{day}</span>
-        <span className="text-[9px] text-muted-foreground capitalize">{month}</span>
+      <div className="flex flex-col items-center justify-center w-10 h-10 rounded-lg bg-muted/30 shrink-0">
+        <span className="text-[14px] font-bold tabular-nums leading-none">{day}</span>
+        <span className="text-[9px] text-muted-foreground capitalize mt-0.5">{month}</span>
       </div>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-semibold text-sm leading-tight truncate">{lead.organization}</span>
+          <span className="font-semibold text-[14px] leading-tight truncate">{lead.organization}</span>
           {lead.partner && (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-medium shrink-0">{lead.partner}</Badge>
           )}
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
           {lead.contactInfo && (
-            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-1 hover:text-foreground truncate">
+            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-1 hover:text-foreground transition-colors truncate">
               <Phone className="h-3 w-3 shrink-0" />{lead.contactInfo}
             </a>
           )}
           {lead.email && (
-            <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-foreground truncate">
+            <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-foreground transition-colors truncate">
               <Mail className="h-3 w-3 shrink-0" />{lead.email}
             </a>
           )}
         </div>
         {lead.comment && (
-          <div className="flex items-center gap-1 text-xs text-muted-foreground/70 mt-0.5 truncate">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground/60 mt-0.5 truncate">
             <MessageSquare className="h-3 w-3 shrink-0" />
             <span className="truncate">{lead.comment}</span>
           </div>
@@ -363,10 +364,10 @@ function IncomingMobileCard({
     <motion.div
       variants={slideUp}
       className={cn(
-        'rounded-xl border bg-card p-4 space-y-3 transition-all duration-200 card-soft',
-        isNotStarted && 'border-dashed border-gray-200 bg-gray-50/30',
-        overdue && 'border-amber-300 bg-amber-50/40',
-        lead.status === 'Перезвонить' && !overdue && 'border-amber-200',
+        'rounded-2xl border bg-card p-4 space-y-3 transition-all duration-200 card-soft hover:card-soft-hover',
+        isNotStarted && 'border-dashed border-gray-200/70 bg-gray-50/20',
+        overdue && 'bg-amber-50/30 border-amber-200/60',
+        lead.status === 'Перезвонить' && !overdue && 'border-amber-200/60',
       )}
     >
       {/* Header: date + status */}
@@ -376,14 +377,15 @@ function IncomingMobileCard({
           <span>{day} {month}</span>
         </div>
         {isNotStarted && (
-          <Badge className="bg-gray-100 text-gray-600 text-[11px] px-2 py-0 border-gray-200 border">
-            <Clock className="h-3 w-3 mr-1" /> Не начато
+          <Badge className="bg-gray-50 text-gray-500 text-[11px] px-2 py-0 border border-gray-200/60">
+            <span className="h-1.5 w-1.5 rounded-full bg-gray-400 mr-1.5" />
+            Не начато
           </Badge>
         )}
         {lead.status === 'Перезвонить' && (
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-500 text-white border-red-500' : 'bg-amber-100 text-amber-700 border-amber-200',
+            overdue ? 'bg-red-50 text-red-600 border-red-200/60' : 'bg-amber-50 text-amber-600 border-amber-200/60',
           )}>
             {overdue ? (
               <span className="flex items-center gap-1">
@@ -410,20 +412,20 @@ function IncomingMobileCard({
         {lead.contactInfo && (
           <div className="flex items-center gap-2">
             <Phone className="h-3.5 w-3.5" />
-            <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground">{lead.contactInfo}</a>
+            <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground transition-colors">{lead.contactInfo}</a>
           </div>
         )}
         {lead.email && (
           <div className="flex items-center gap-2">
             <Mail className="h-3.5 w-3.5" />
-            <a href={`mailto:${lead.email}`} className="hover:text-foreground truncate">{lead.email}</a>
+            <a href={`mailto:${lead.email}`} className="hover:text-foreground transition-colors truncate">{lead.email}</a>
           </div>
         )}
       </div>
 
       {/* Comment */}
       {lead.comment && (
-        <div className="flex items-start gap-1.5 text-sm text-muted-foreground bg-muted/30 rounded-lg px-3 py-2">
+        <div className="flex items-start gap-1.5 text-sm text-muted-foreground bg-muted/30 rounded-lg p-2.5">
           <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           <span className="line-clamp-2">{lead.comment}</span>
         </div>
@@ -552,24 +554,24 @@ export function IncomingLeadsTable() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-sky-100 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-sky-100/80 ring-1 ring-sky-200/50 flex items-center justify-center">
               <Building2 className="h-4 w-4 text-sky-600" />
             </div>
             <h2 className="text-lg font-semibold">Входящие</h2>
           </div>
           <Badge variant="secondary" className="text-xs tabular-nums">{leads.length}</Badge>
           {notStartedCount > 0 && (
-            <Badge className="bg-gray-100 text-gray-600 text-xs border-gray-200 border tabular-nums">
+            <Badge className="bg-gray-50 text-gray-500 text-xs border border-gray-200/60 tabular-nums">
               {notStartedCount} новых
             </Badge>
           )}
           {callbackCount > 0 && (
-            <Badge className="bg-amber-100 text-amber-700 text-xs border-amber-200 border tabular-nums">
+            <Badge className="bg-amber-50 text-amber-600 text-xs border border-amber-200/60 tabular-nums">
               📞 {callbackCount} перезвонить
             </Badge>
           )}
           {overdueCount > 0 && (
-            <Badge className="bg-red-500 text-white text-xs border-0 tabular-nums">
+            <Badge className="bg-red-500/90 text-white text-xs border-0 tabular-nums shadow-sm shadow-red-500/20">
               <AlertTriangle className="h-3 w-3 mr-1" />
               {overdueCount} просрочено
             </Badge>
@@ -606,11 +608,11 @@ export function IncomingLeadsTable() {
               isVTB={isVTB}
             />
           )) : (
-            <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
-              <PhoneOff className="h-9 w-9 opacity-25" />
-              <p className="text-sm">Входящих лидов нет</p>
+            <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
+              <PhoneOff className="h-12 w-12 opacity-20" />
+              <p className="text-sm text-muted-foreground/70">Входящих лидов нет</p>
               {!isVTB && (
-                <Button variant="outline" size="sm" className="mt-2" onClick={() => setFormOpen(true)}>
+                <Button variant="outline" size="sm" className="mt-1" onClick={() => setFormOpen(true)}>
                   <Plus className="h-3.5 w-3.5 mr-1.5" />
                   Создать первый
                 </Button>
@@ -631,9 +633,9 @@ export function IncomingLeadsTable() {
             isVTB={isVTB}
           />
         )) : (
-          <div className="flex flex-col items-center gap-2 py-12">
-            <PhoneOff className="h-9 w-9 opacity-25" />
-            <p className="text-muted-foreground text-sm">Входящих лидов нет</p>
+          <div className="flex flex-col items-center justify-center gap-3 py-20">
+            <PhoneOff className="h-12 w-12 opacity-20" />
+            <p className="text-muted-foreground text-sm text-muted-foreground/70">Входящих лидов нет</p>
           </div>
         )}
       </motion.div>
@@ -642,7 +644,7 @@ export function IncomingLeadsTable() {
       {!isVTB && (
         <button
           onClick={() => setFormOpen(true)}
-          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 flex items-center justify-center active:scale-95 transition-transform"
+          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 flex items-center justify-center active:scale-95 transition-transform ring-4 ring-primary/10"
           aria-label="Новый входящий"
         >
           <Plus className="h-6 w-6" />

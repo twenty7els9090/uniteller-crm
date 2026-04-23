@@ -122,12 +122,12 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
             Нажмите на ячейку для редактирования прямо в таблице. Изменения сохраняются автоматически.
           </p>
         )}
-        <div className="hidden md:block rounded-lg border bg-card overflow-hidden">
+        <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50 border-b-2">
+              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
                 {['Организация', 'Партнёр', 'Заявка', 'Статус', 'Контакты', 'Менеджер', ''].map((h) => (
-                  <TableHead key={h} className="text-xs font-semibold text-muted-foreground px-2 first:pl-4 py-3">
+                  <TableHead key={h} className="text-[11px] uppercase tracking-wider font-medium text-muted-foreground px-2 first:pl-4 py-3">
                     {h}
                   </TableHead>
                 ))}
@@ -180,7 +180,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
       />
 
       {/* ─── Desktop Card-Table ─── */}
-      <div className="hidden md:block rounded-xl border bg-card overflow-hidden card-soft">
+      <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
         <AnimatePresence mode="wait">
           <motion.div
             key={data.expandedFolder || 'main'}
@@ -208,10 +208,10 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
               />
             )) : (
               <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
-                <svg className="h-9 w-9 opacity-25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-12 w-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                <p className="text-sm">{folderLabel ? `${folderLabel} нет` : 'Лиды не найдены'}</p>
+                <p className="text-sm text-muted-foreground/70">{folderLabel ? `${folderLabel} нет` : 'Лиды не найдены'}</p>
                 {(data.hasActiveFilters || data.globalFilter) && (
                   <button onClick={data.clearFilters} className="text-xs text-primary hover:underline mt-0.5">
                     Сбросить фильтры
@@ -265,7 +265,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
       {!data.isVTB && (
         <button
           onClick={() => actions.setFormOpen(true)}
-          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 flex items-center justify-center active:scale-95 transition-transform"
+          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 ring-4 ring-primary/10 flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Новый лид"
         >
           <Plus className="h-6 w-6" />
@@ -372,13 +372,13 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       value={actions.marginDraft}
                       onChange={(e) => { actions.setEditing(true); actions.setMarginDraft(e.target.value) }}
                       placeholder="—"
-                      className="h-9"
+                      className="h-9 bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Вид деятельности</label>
                     <Select value={actions.activityDraft} onValueChange={(val) => { actions.setEditing(true); actions.setActivityDraft(val) }}>
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className="h-9 bg-white/70 backdrop-blur-sm">
                         <SelectValue placeholder="Выбрать..." />
                       </SelectTrigger>
                       <SelectContent>
@@ -395,7 +395,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
                       onChange={(e) => { actions.setEditing(true); actions.setCommentDraft(e.target.value) }}
                       placeholder="Добавить комментарий..."
                       rows={3}
-                      className="resize-none"
+                      className="resize-none bg-white/70 backdrop-blur-sm"
                     />
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
 
               {/* Actions */}
               {!data.isVTB && (
-                <div className="flex items-center justify-between pt-2 border-t">
+                <div className="flex items-center justify-between pt-3 border-t border-border/50">
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"

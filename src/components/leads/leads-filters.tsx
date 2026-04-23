@@ -56,8 +56,8 @@ function MultiSelectFilter({
           variant="outline"
           size="sm"
           className={cn(
-            'h-8 text-sm shrink-0 gap-1.5 w-[140px] sm:w-[170px] justify-between font-normal',
-            count > 0 && 'border-primary bg-primary/5'
+            'h-8 text-sm shrink-0 gap-1.5 w-[140px] sm:w-[170px] justify-between font-normal rounded-lg',
+            count > 0 && 'border-primary/50 bg-primary/[0.06]'
           )}
         >
           <span className="truncate">
@@ -66,10 +66,10 @@ function MultiSelectFilter({
           <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[220px] p-1" align="start" side="bottom" sideOffset={4}>
+      <PopoverContent className="w-[220px] p-1.5 rounded-xl bg-white/90 backdrop-blur-xl border-white/20 shadow-xl shadow-black/[0.06]" align="start" side="bottom" sideOffset={4}>
         <div className="space-y-0.5">
           <button
-            className="flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm hover:bg-accent transition-colors text-left shrink-0"
+            className="flex items-center gap-2 w-full rounded-lg px-2.5 py-1.5 text-sm hover:bg-accent/80 transition-colors text-left shrink-0"
             onClick={selectAll}
           >
             <Checkbox checked={allSelected} />
@@ -79,7 +79,7 @@ function MultiSelectFilter({
             {options.map((opt) => (
               <button
                 key={opt}
-                className="flex items-center gap-2 w-full rounded-sm px-2 py-1.5 text-sm hover:bg-accent transition-colors text-left"
+                className="flex items-center gap-2 w-full rounded-lg px-2.5 py-1.5 text-sm hover:bg-accent/80 transition-colors text-left"
                 onClick={() => toggle(opt)}
               >
                 <Checkbox checked={selected.includes(opt)} />
@@ -149,18 +149,18 @@ export function LeadsFilters({
   return (
     <div className="space-y-3 mb-4">
       {/* Search & Add */}
-      <div className="flex flex-col sm:flex-row gap-2">
+      <div className="flex flex-col sm:flex-row gap-2.5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
           <Input
             placeholder="Поиск..."
             value={globalFilter}
             onChange={(e) => onGlobalFilterChange(e.target.value)}
-            className="pl-9 h-11 md:h-9"
+            className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm border-white/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] focus-visible:ring-primary/20 focus-visible:border-primary/30 focus-visible:bg-white transition-all duration-200"
           />
         </div>
         {!isVTB && (
-          <Button onClick={onAddLead} size="default" className="hidden sm:flex">
+          <Button onClick={onAddLead} size="default" className="hidden sm:flex shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-200">
             <Plus className="h-4 w-4 mr-2" />
             Новый лид
           </Button>
@@ -169,9 +169,9 @@ export function LeadsFilters({
 
       {/* Filters row */}
       {showFilters && (
-        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0">
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0 pt-1 border-t border-border/50">
           <div className="flex items-center gap-1.5 shrink-0">
-            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Filter className="h-4 w-4 text-muted-foreground/70" />
             <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">Фильтры:</span>
           </div>
 
@@ -184,7 +184,7 @@ export function LeadsFilters({
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 text-muted-foreground shrink-0"
+              className="h-8 text-muted-foreground hover:text-foreground shrink-0 transition-colors duration-150"
               onClick={onClearFilters}
             >
               <X className="h-3.5 w-3.5 mr-1" />
@@ -194,7 +194,7 @@ export function LeadsFilters({
 
           {/* Folder buttons — only for uniteller, not VTB */}
           {!isVTB && (folderCounts.rejected > 0 || folderCounts.paused > 0) && (
-            <div className="w-px h-5 bg-border mx-1 shrink-0 hidden sm:block" />
+            <div className="w-px h-5 bg-gradient-to-b from-transparent via-border/60 to-transparent mx-1 shrink-0 hidden sm:block" />
           )}
 
           {!isVTB && folderCounts.rejected > 0 && (
@@ -202,8 +202,8 @@ export function LeadsFilters({
               variant={expandedFolder === 'rejected' ? 'destructive' : 'outline'}
               size="sm"
               className={cn(
-                'h-8 text-xs gap-1.5 shrink-0',
-                expandedFolder !== 'rejected' && 'text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700',
+                'h-8 text-xs gap-1.5 shrink-0 rounded-lg',
+                expandedFolder !== 'rejected' && 'text-rose-600 border-rose-200/70 hover:bg-rose-50 hover:border-rose-300 hover:text-rose-700',
               )}
               onClick={() => onToggleFolder('rejected')}
             >
@@ -220,9 +220,9 @@ export function LeadsFilters({
               variant={expandedFolder === 'paused' ? 'default' : 'outline'}
               size="sm"
               className={cn(
-                'h-8 text-xs gap-1.5 shrink-0',
-                expandedFolder !== 'paused' && 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:text-orange-700',
-                expandedFolder === 'paused' && 'bg-orange-600 hover:bg-orange-700 border-orange-600',
+                'h-8 text-xs gap-1.5 shrink-0 rounded-lg',
+                expandedFolder !== 'paused' && 'text-amber-600 border-amber-200/70 hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700',
+                expandedFolder === 'paused' && 'bg-amber-600 hover:bg-amber-700 border-amber-600',
               )}
               onClick={() => onToggleFolder('paused')}
             >

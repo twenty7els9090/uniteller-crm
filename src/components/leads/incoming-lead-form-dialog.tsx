@@ -99,8 +99,8 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-b-none md:rounded-b-lg">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b">
-          <DialogTitle className="text-lg flex items-center gap-2">
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50">
+          <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <PhoneIncoming className="h-5 w-5 text-sky-500" />
             Новый входящий лид
           </DialogTitle>
@@ -179,7 +179,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
             </div>
           </div>
 
-          <DialogFooter className="px-6 py-3 border-t gap-2 sm:gap-0 shrink-0">
+          <DialogFooter className="px-6 py-3 border-t border-border/50 gap-2 sm:gap-0 shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -187,7 +187,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
             >
               Отмена
             </Button>
-            <Button type="submit" disabled={loading || !canSubmit}>
+            <Button type="submit" disabled={loading || !canSubmit} className="shadow-sm shadow-primary/10">
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Создать лид
             </Button>

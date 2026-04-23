@@ -40,7 +40,7 @@ export function MobileLeadCard({
     <motion.div
       variants={slideUp}
       className={cn(
-        'rounded-xl border bg-card p-4 space-y-3 transition-all duration-200 card-soft hover:card-soft-hover active:scale-[0.995]',
+        'rounded-xl border bg-card p-4 space-y-2.5 transition-all duration-200 card-soft hover:card-soft-hover active:scale-[0.997]',
         getZayavkaRowClass(lead.zayavka),
       )}
     >
@@ -48,8 +48,8 @@ export function MobileLeadCard({
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
           <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="font-medium text-sm leading-tight">{lead.organization}</span>
-          {(() => { const d = getSlaDays(lead.updatedAt); return d > 0 ? <span className={cn('text-[10px] font-semibold shrink-0', getSlaColorClass(d))}>{d}д</span> : null })()}
+          <span className="font-semibold text-sm leading-tight">{lead.organization}</span>
+          {(() => { const d = getSlaDays(lead.updatedAt); return d > 0 ? <span className={cn('text-[10px] font-semibold shrink-0', getSlaColorClass(d))}>{d}</span> : null })()}
         </div>
         <div className="flex items-center gap-1 shrink-0">
           <Calendar className="h-3 w-3 text-muted-foreground" />
@@ -60,10 +60,10 @@ export function MobileLeadCard({
 
       {/* Badges row: partner + zayavka */}
       <div className="flex flex-wrap gap-1.5">
-        <Badge variant="outline" className="text-xs px-2 py-0.5 whitespace-nowrap">{lead.partner}</Badge>
+        <Badge variant="outline" className="text-xs px-2 py-0.5 whitespace-nowrap border-border/50">{lead.partner}</Badge>
         <ZayavkaBadge zayavka={lead.zayavka} compact hover />
         {lead.activityType && (
-          <Badge variant="outline" className="text-xs px-2 py-0.5">{lead.activityType}</Badge>
+          <Badge variant="outline" className="text-xs px-2 py-0.5 border-border/50">{lead.activityType}</Badge>
         )}
       </div>
 
@@ -72,7 +72,7 @@ export function MobileLeadCard({
 
       {/* Comment */}
       {lead.comment && (
-        <p className="text-sm text-muted-foreground bg-muted/40 rounded-lg p-2.5 whitespace-pre-wrap break-words leading-relaxed">{lead.comment}</p>
+        <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2.5 whitespace-pre-wrap break-words leading-relaxed">{lead.comment}</p>
       )}
 
       {/* Details grid */}
@@ -94,10 +94,10 @@ export function MobileLeadCard({
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center gap-2 pt-2 border-t">
+      <div className="flex items-center gap-2 pt-2 border-t border-border/50">
         <Button
           variant="outline"
-          className="h-11 text-sm flex-1 rounded-lg"
+          className="h-11 text-sm flex-1 rounded-lg hover:bg-primary/5 transition-colors"
           onClick={() => openDetails(lead)}
         >
           <Eye className="h-4 w-4 mr-1.5" />
@@ -106,7 +106,7 @@ export function MobileLeadCard({
         {!isVTB && showDelete && isAdmin && (
           <Button
             variant="outline"
-            className="h-11 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg"
+            className="h-11 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
             onClick={() => onDelete(lead.id)}
           >
             <Trash2 className="h-4 w-4" />

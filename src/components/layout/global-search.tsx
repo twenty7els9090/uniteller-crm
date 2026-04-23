@@ -211,7 +211,7 @@ export function GlobalSearch() {
               initial={{ width: 0, opacity: 0 }}
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+              transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="relative overflow-hidden"
             >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -227,7 +227,7 @@ export function GlobalSearch() {
                   if (e.key === 'Escape') handleClear()
                 }}
                 placeholder="Поиск..."
-                className="h-10 w-full text-sm pl-10 pr-9"
+                className="h-10 w-full text-sm pl-10 pr-9 bg-white/80 backdrop-blur-sm border-border/60"
               />
               <AnimatePresence>
                 {query && (
@@ -253,7 +253,7 @@ export function GlobalSearch() {
               transition={{ duration: 0.15 }}
               onClick={() => setOpen(true)}
               className={cn(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm transition-colors',
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm transition-all hover:scale-[1.02]',
                 globalSearch
                   ? 'text-primary bg-primary/10'
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
@@ -303,7 +303,7 @@ export function GlobalSearch() {
                     if (e.key === 'Escape') handleClear()
                   }}
                   placeholder="Поиск..."
-                  className="pl-9 h-10 text-sm"
+                  className="pl-9 h-10 text-sm bg-white/80 backdrop-blur-sm border-border/60"
                 />
                 {query && (
                   <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -324,7 +324,7 @@ export function GlobalSearch() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="absolute top-full right-0 mt-2 w-[340px] sm:w-[400px] glass-strong border border-border/60 rounded-xl shadow-xl shadow-black/[0.06] z-50 overflow-hidden origin-top-right"
+            className="absolute top-full right-0 mt-2 w-[360px] sm:w-[420px] glass-strong border border-border/40 rounded-xl shadow-xl shadow-black/[0.08] z-50 overflow-hidden origin-top-right"
           >
             {loading ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -335,9 +335,9 @@ export function GlobalSearch() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-6 text-center text-sm text-muted-foreground"
+                className="py-8 text-center text-sm text-muted-foreground/70"
               >
-                <Search className="h-5 w-5 mx-auto mb-1.5 opacity-30" />
+                <Search className="h-6 w-6 mx-auto mb-2 opacity-15" />
                 Ничего не найдено
               </motion.div>
             ) : (
@@ -350,8 +350,8 @@ export function GlobalSearch() {
                     transition={{ duration: 0.15, delay: i * 0.03 }}
                     onClick={() => handleResultClick(result)}
                     className={cn(
-                      'w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-accent transition-colors',
-                      i === 0 && 'bg-muted/30',
+                      'w-full flex items-start gap-3 px-3.5 py-2.5 text-left hover:bg-accent/50 transition-colors',
+                      i === 0 && 'bg-muted/20',
                       i > 0 && 'border-t',
                     )}
                   >
@@ -368,7 +368,7 @@ export function GlobalSearch() {
                         </p>
                       )}
                     </div>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 shrink-0 mt-0.5">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 bg-muted/60 rounded-md shrink-0 mt-0.5">
                       {result.pageLabel}
                     </Badge>
                   </motion.button>

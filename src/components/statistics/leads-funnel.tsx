@@ -105,7 +105,7 @@ export function LeadsFunnel() {
 
   if (loading) {
     return (
-      <Card className="card-soft">
+      <Card className="card-soft border-border/60">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Funnel className="h-4 w-4" />
@@ -113,7 +113,7 @@ export function LeadsFunnel() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 animate-pulse">
+          <div className="space-y-4 animate-shimmer">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-10 bg-muted/60 rounded-lg" />
             ))}
@@ -124,7 +124,7 @@ export function LeadsFunnel() {
   }
 
   return (
-    <Card className="card-soft">
+    <Card className="card-soft border-border/60">
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -134,7 +134,7 @@ export function LeadsFunnel() {
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
               {/* View toggle */}
-              <div className="flex items-center bg-muted/60 rounded-lg p-0.5">
+              <div className="flex items-center bg-muted/40 rounded-lg p-0.5">
                 <button
                   className={cn(
                     'p-1.5 rounded-md transition-colors duration-150',
@@ -163,8 +163,10 @@ export function LeadsFunnel() {
                   <button
                     key={p.key}
                     className={cn(
-                      'text-xs px-2.5 py-1 rounded-full border transition-colors duration-150',
-                      period === p.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
+                      'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                      period === p.key
+                        ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
+                        : 'bg-background border-border/60 hover:bg-accent'
                     )}
                     onClick={() => setPeriod(p.key)}
                   >
@@ -180,8 +182,10 @@ export function LeadsFunnel() {
             <div className="flex flex-wrap gap-1.5">
               <button
                 className={cn(
-                  'text-xs px-2 py-1 rounded-full border transition-colors duration-150',
-                  !partnerFilter ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
+                  'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                  !partnerFilter
+                    ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
+                    : 'bg-background border-border/60 hover:bg-accent'
                 )}
                 onClick={() => setPartnerFilter('')}
               >
@@ -191,8 +195,10 @@ export function LeadsFunnel() {
                 <button
                   key={p}
                   className={cn(
-                    'text-xs px-2 py-1 rounded-full border transition-colors duration-150',
-                    partnerFilter === p ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
+                    'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                    partnerFilter === p
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
+                      : 'bg-background border-border/60 hover:bg-accent'
                   )}
                   onClick={() => setPartnerFilter(partnerFilter === p ? '' : p)}
                 >
@@ -219,7 +225,7 @@ export function LeadsFunnel() {
                       <span className="text-muted-foreground font-normal ml-1">({stage.pct}%)</span>
                     </span>
                   </div>
-                  <div className="h-2.5 bg-muted/60 rounded-full overflow-hidden">
+                  <div className="h-2 bg-muted/40 rounded-full overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all duration-500', stage.barColor)}
                       style={{ width: `${maxCount ? (stage.count / maxCount) * 100 : 0}%`, minWidth: stage.count > 0 ? '4px' : '0px' }}
@@ -229,7 +235,7 @@ export function LeadsFunnel() {
                 {/* Conversion rate to next stage */}
                 {idx < funnel.length - 1 && stage.count > 0 && (
                   <div className="flex items-center justify-center py-1">
-                    <span className="text-[11px] text-muted-foreground/60">
+                    <span className="text-[11px] text-muted-foreground/50">
                       ↓ {funnel[idx + 1].key}:&nbsp;
                       <span className="font-medium text-muted-foreground">
                         {Math.round((funnel[idx + 1].count / stage.count) * 100)}%
@@ -271,7 +277,7 @@ export function LeadsFunnel() {
           </>
         )}
 
-        <p className="text-[11px] text-muted-foreground/60 pt-1">
+        <p className="text-[11px] text-muted-foreground/50 pt-1">
           Всего лидов: {filteredLeads.length}
           {partnerFilter && ` · ${partnerFilter}`}
           {period !== 'all' && (

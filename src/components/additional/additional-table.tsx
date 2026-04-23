@@ -191,7 +191,12 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
   }
 
   if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-3 opacity-60">
+        <Loader2 className="h-6 w-6 animate-pulse text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Загрузка...</span>
+      </div>
+    )
   }
 
   return (
@@ -199,12 +204,12 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
       {/* Header */}
       <motion.div variants={slideUp} initial="hidden" animate="visible" className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <Plug className="h-5 w-5 text-primary" />
+          <div className="bg-primary/10 rounded-xl p-2"><Plug className="h-4 w-4 text-primary" /></div>
           <h2 className="text-lg font-semibold">Доп. подключение</h2>
           <Badge variant="secondary" className="text-xs">{filtered.length} записей</Badge>
         </div>
         {!readOnly && (
-          <Button onClick={() => setFormOpen(true)} size="sm">
+          <Button onClick={() => setFormOpen(true)} size="sm" className="shadow-md shadow-primary/15">
             <Plus className="h-4 w-4 mr-2" />Внести информацию
           </Button>
         )}
@@ -220,19 +225,19 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
       <div className="mb-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Поиск..." value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} className="pl-9 h-11 md:h-9" />
+          <Input placeholder="Поиск..." value={globalFilter} onChange={(e) => setGlobalFilter(e.target.value)} className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm" />
         </div>
       </div>
 
       {/* ─── Desktop Table ─── */}
-      <div className="hidden md:block rounded-lg border bg-card overflow-hidden">
+      <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((hg) => (
-                <TableRow key={hg.id}>
+                <TableRow key={hg.id} className="bg-muted/30 hover:bg-muted/30 border-b">
                   {hg.headers.map((header) => (
-                    <TableHead key={header.id} className="whitespace-nowrap text-xs uppercase text-muted-foreground font-semibold px-2 first:pl-3 last:pr-3">
+                    <TableHead key={header.id} className="whitespace-nowrap text-[11px] uppercase tracking-wider text-muted-foreground font-medium px-2 first:pl-3 last:pr-3">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   ))}
@@ -253,7 +258,8 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
-                    <p className="text-muted-foreground">Записей пока нет</p>
+                    <Plug className="h-8 w-8 mx-auto mb-2 text-muted-foreground opacity-20" />
+                    <p className="text-muted-foreground text-sm">Записей пока нет</p>
                   </TableCell>
                 </TableRow>
               )}
@@ -272,7 +278,7 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
             const rec = row.original
             return (
               <motion.div key={row.id} variants={slideUp}>
-              <div className="rounded-xl border bg-card p-4 shadow-sm space-y-2">
+              <div className="rounded-xl border border-border/60 bg-card p-4 card-soft hover:card-soft-hover active:scale-[0.997] transition-all duration-200 space-y-2">
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-medium text-sm leading-tight">{rec.organization}</span>
                   {rec.partner && <Badge variant="outline" className="text-xs shrink-0">{rec.partner}</Badge>}
@@ -313,7 +319,8 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
             )
           })
         ) : (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center justify-center py-12">
+            <Plug className="h-8 w-8 mb-2 text-muted-foreground opacity-20" />
             <p className="text-muted-foreground text-sm">Записей пока нет</p>
           </div>
         )}
