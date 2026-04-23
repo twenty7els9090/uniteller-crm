@@ -53,19 +53,25 @@ export function useLeads() {
   }, [settings.status, isVTB])
   const dynamicActivityTypes = useMemo(() => settings.activityType.length > 0 ? settings.activityType : [...ACTIVITY_TYPES], [settings.activityType])
 
-  // Main leads: exclude combat-only, rejected, and paused
+  // Main leads: exclude combat-only; when searching, include rejected/paused too
+  const isSearching = !!globalFilter
+
   const leads = useMemo(() => {
     let result = allLeads.filter((l) => {
-      // For uniteller: exclude Входящий, Выполнена, combat-only
+      // For uniteller: exclude Входящий, Выполнена, combat-only (always, even in search)
       if (!isVTB && (l.zayavka === 'Выполнена' || l.zayavka === 'Входящий' || l.status === 'пошли боевые платежи')) {
         return false
       }
-      // For VTB: exclude В работе, Перезвонить, Отклонена, На паузе
-      if (isVTB && (l.zayavka === 'В работе' || l.zayavka === 'Отклонена' || l.zayavka === 'На паузе' || l.status === 'Перезвонить')) {
+      // For VTB: exclude В работе, Перезвонить (always)
+      if (isVTB && (l.zayavka === 'В работе' || l.status === 'Перезвонить')) {
         return false
       }
-      // Always exclude archive folders from main table
-      if (l.zayavka === 'Отклонена' || l.zayavka === 'На паузе') {
+      // For VTB: hide Отклонена/На паузе when NOT searching
+      if (isVTB && !isSearching && (l.zayavka === 'Отклонена' || l.zayavka === 'На паузе')) {
+        return false
+      }
+      // For uniteller: exclude archive folders only when NOT searching
+      if (!isSearching && (l.zayavka === 'Отклонена' || l.zayavka === 'На паузе')) {
         return false
       }
       return true
@@ -93,7 +99,7 @@ export function useLeads() {
       return dateB - dateA
     })
     return result
-  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, isVTB])
+  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, isVTB, isSearching])
 
   // Rejected leads for folder
   const rejectedLeads = useMemo(() => {
