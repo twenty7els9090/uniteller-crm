@@ -40,12 +40,12 @@ export function AppHeader() {
 
   return (
     <>
-      {/* ─── Desktop Header — Dark ─── */}
-      <header className="hidden md:block sticky top-0 z-30 bg-slate-900 border-b border-white/[0.06] shadow-lg shadow-black/10">
+      {/* ─── Desktop Header — Light ─── */}
+      <header className="hidden md:block sticky top-0 z-30 bg-white border-b border-slate-200/80 shadow-sm">
         <div className="flex items-center justify-between h-[54px] px-5 lg:px-6">
           {/* Left: logo */}
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-md shadow-teal-500/20">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-md shadow-teal-500/25">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3h18v18H3z" />
                 <path d="M3 9h18" />
@@ -53,15 +53,15 @@ export function AppHeader() {
               </svg>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-semibold text-[13px] text-white tracking-tight">
+              <span className="font-semibold text-[13px] text-slate-900 tracking-tight">
                 {isAdmin ? 'Uniteller CRM' : 'ВТБ Партнёр'}
               </span>
-              <span className="text-[10px] text-white/30 leading-none">{user.fullName}</span>
+              <span className="text-[10px] text-slate-400 leading-none">{user.fullName}</span>
             </div>
           </div>
 
           {/* Center: nav tabs with animated pill */}
-          <nav className="relative flex items-center gap-0.5 bg-white/[0.06] rounded-xl p-[3px]">
+          <nav className="relative flex items-center gap-0.5 bg-slate-100 rounded-xl p-[3px]">
             {visibleTabs.map((tab) => {
               const isActive = currentPage === tab.page
               return (
@@ -71,8 +71,8 @@ export function AppHeader() {
                   className={cn(
                     'relative flex items-center gap-1.5 px-3.5 py-[7px] rounded-lg text-[12.5px] font-medium transition-colors duration-150 z-10',
                     isActive
-                      ? 'text-white'
-                      : 'text-white/40 hover:text-white/70'
+                      ? 'text-teal-700'
+                      : 'text-slate-500 hover:text-slate-700'
                   )}
                 >
                   {tab.icon}
@@ -80,7 +80,7 @@ export function AppHeader() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute inset-0 bg-white/[0.12] rounded-lg -z-10"
+                      className="absolute inset-0 bg-white rounded-lg shadow-sm -z-10"
                       transition={SPRING}
                     />
                   )}
@@ -94,7 +94,7 @@ export function AppHeader() {
             <GlobalSearch />
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-white/40 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors duration-150"
             >
               <LogOut className="h-4 w-4" />
               <span className="hidden xl:inline text-[12.5px]">Выйти</span>
@@ -103,11 +103,11 @@ export function AppHeader() {
         </div>
       </header>
 
-      {/* ─── Mobile Header ─── */}
-      <header className="md:hidden sticky top-0 z-30 bg-slate-900 border-b border-white/[0.06] safe-top shadow-lg shadow-black/10">
+      {/* ─── Mobile Header — Light ─── */}
+      <header className="md:hidden sticky top-0 z-30 bg-white border-b border-slate-200/80 safe-top shadow-sm">
         <div className="flex items-center justify-between h-[48px] px-3">
           <div className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-md shadow-teal-500/20">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center shadow-md shadow-teal-500/25">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3h18v18H3z" />
                 <path d="M3 9h18" />
@@ -115,11 +115,11 @@ export function AppHeader() {
               </svg>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-[13px] text-white">
+              <span className="font-semibold text-[13px] text-slate-900">
                 {isAdmin ? 'Uniteller' : 'ВТБ'}
               </span>
-              <span className="text-white/20 text-xs">·</span>
-              <span className="text-[11px] text-white/40 font-medium">
+              <span className="text-slate-200 text-xs">·</span>
+              <span className="text-[11px] text-slate-400 font-medium">
                 {PAGE_LABELS[currentPage]}
               </span>
             </div>
@@ -129,7 +129,7 @@ export function AppHeader() {
             <GlobalSearch />
             <button
               onClick={logout}
-              className="flex items-center justify-center w-8 h-8 rounded-lg text-white/40 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
             >
               <LogOut className="h-[14px] w-[14px]" />
             </button>
@@ -139,7 +139,7 @@ export function AppHeader() {
 
       {/* ─── Mobile Bottom Navigation ─── */}
       <nav className="md:hidden fixed bottom-4 left-3 right-3 z-40">
-        <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/30 safe-bottom">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200/80 shadow-xl shadow-slate-900/10 safe-bottom">
           <div className="flex items-stretch overflow-x-auto no-scrollbar">
             {visibleTabs.map((tab) => {
               const isActive = currentPage === tab.page
@@ -150,8 +150,8 @@ export function AppHeader() {
                   className={cn(
                     'flex flex-col items-center justify-center gap-1 min-w-[52px] flex-1 py-2.5 px-1 transition-colors duration-150 relative',
                     isActive
-                      ? 'text-teal-400'
-                      : 'text-white/30 active:text-white/60'
+                      ? 'text-teal-600'
+                      : 'text-slate-400 active:text-slate-600'
                   )}
                 >
                   <span className={cn(
@@ -163,13 +163,13 @@ export function AppHeader() {
                   {isActive && (
                     <motion.div
                       layoutId="mobile-nav-dot"
-                      className="absolute -bottom-0 w-6 h-0.5 rounded-full bg-teal-400"
+                      className="absolute -bottom-0 w-6 h-0.5 rounded-full bg-teal-500"
                       transition={SPRING}
                     />
                   )}
                   <span className={cn(
                     'text-[10px] leading-tight font-medium whitespace-normal break-words text-center transition-colors duration-150',
-                    isActive && 'font-semibold text-teal-400'
+                    isActive && 'font-semibold text-teal-600'
                   )}>
                     {tab.label}
                   </span>

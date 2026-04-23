@@ -166,7 +166,7 @@ export function GlobalSearch() {
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="relative overflow-hidden"
             >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 ref={inputRef}
                 value={query}
@@ -176,7 +176,7 @@ export function GlobalSearch() {
                   if (e.key === 'Escape') handleClear()
                 }}
                 placeholder="Поиск..."
-                className="h-9 w-full text-sm pl-10 pr-9 bg-white/[0.08] border-white/[0.1] text-white placeholder:text-white/30 focus-visible:bg-white/[0.12] focus-visible:border-white/[0.2]"
+                className="h-9 w-full text-sm pl-10 pr-9 bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:bg-white focus-visible:border-slate-300"
               />
               <AnimatePresence>
                 {query && (
@@ -186,7 +186,7 @@ export function GlobalSearch() {
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.15 }}
                     onClick={handleClear}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     <X className="h-4 w-4" />
                   </motion.button>
@@ -204,8 +204,8 @@ export function GlobalSearch() {
               className={cn(
                 'flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm transition-all hover:scale-[1.02]',
                 globalSearch
-                  ? 'text-teal-400'
-                  : 'text-white/40 hover:text-white/70 hover:bg-white/[0.06]'
+                  ? 'text-teal-600'
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
               )}
             >
               <Search className="h-4 w-4" />
@@ -220,7 +220,7 @@ export function GlobalSearch() {
         onClick={() => setOpen(true)}
         className={cn(
           'md:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors',
-          globalSearch ? 'text-teal-400' : 'text-white/40'
+          globalSearch ? 'text-teal-600' : 'text-slate-400'
         )}
       >
         <Search className="h-4 w-4" />
@@ -239,7 +239,7 @@ export function GlobalSearch() {
           {open && (
             <div className="px-3 pb-2 flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   ref={inputRef}
                   value={query}
@@ -249,10 +249,10 @@ export function GlobalSearch() {
                     if (e.key === 'Escape') handleClear()
                   }}
                   placeholder="Поиск..."
-                  className="pl-9 h-10 text-sm bg-white/[0.08] border-white/[0.1] text-white placeholder:text-white/30"
+                  className="pl-9 h-10 text-sm bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400"
                 />
                 {query && (
-                  <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                  <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                     <X className="h-4 w-4" />
                   </button>
                 )}
