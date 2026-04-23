@@ -3,14 +3,12 @@ import type { AuthUser } from '@/lib/types'
 
 export type { AuthUser }
 
-export type PageType = 'incoming' | 'main' | 'combat' | 'rejected' | 'paused' | 'dop' | 'relegal' | 'churn' | 'statistics' | 'settings'
+export type PageType = 'incoming' | 'main' | 'combat' | 'dop' | 'relegal' | 'churn' | 'statistics' | 'settings'
 
 export const PAGE_LABELS: Record<PageType, string> = {
   incoming: 'Входящие',
   main: 'Лиды',
   combat: 'Боевые лиды',
-  rejected: 'Отклонённые',
-  paused: 'На паузе',
   dop: 'Доп. сервисы',
   relegal: 'Юр.лица',
   churn: 'Оттоки',

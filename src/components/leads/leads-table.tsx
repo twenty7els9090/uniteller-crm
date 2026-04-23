@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -43,8 +44,7 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Plus,
+import { Plus,
   Loader2,
   Mail,
   Trash2,
@@ -76,6 +76,18 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     setAllLeads: data.setAllLeads,
     fetchLeads: data.fetchLeads,
   })
+
+  // Tab counts (from allLeads, respecting VTB filter)
+  const tabCounts = useMemo(() => {
+    const base = data.allLeads.filter((l) =>
+      data.isVTB || (l.zayavka !== 'Выполнена' && l.zayavka !== 'Входящий' && l.status !== 'пошли боевые платежи')
+    )
+    return {
+      all: base.filter((l) => l.zayavka !== 'Отклонена' && l.zayavka !== 'На паузе').length,
+      rejected: data.allLeads.filter((l) => l.zayavka === 'Отклонена').length,
+      paused: data.allLeads.filter((l) => l.zayavka === 'На паузе').length,
+    }
+  }, [data.allLeads, data.isVTB])
 
   const columns = getLeadColumns({
     isVTB: data.isVTB,
@@ -153,6 +165,9 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         globalFilter={data.globalFilter}
         onGlobalFilterChange={data.setGlobalFilter}
         onAddLead={() => actions.setFormOpen(true)}
+        zayavkaTab={data.zayavkaTab}
+        onZayavkaTabChange={data.setZayavkaTab}
+        tabCounts={tabCounts}
         partners={data.partners}
         managers={data.managers}
         dynamicZayavka={data.dynamicZayavka}

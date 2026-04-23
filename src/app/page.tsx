@@ -12,8 +12,6 @@ import { StatisticsCharts } from '@/components/statistics/charts'
 import { LeadsFunnel } from '@/components/statistics/leads-funnel'
 import { TopOrganizations } from '@/components/statistics/top-organizations'
 import { CombatLeadsTable } from '@/components/leads/combat-leads-table'
-import { RejectedLeadsTable } from '@/components/leads/rejected-leads-table'
-import { PausedLeadsTable } from '@/components/leads/paused-leads-table'
 import { ChurnTable } from '@/components/churn/churn-table'
 import { RelegalTable } from '@/components/relegal/relegal-table'
 import { AdditionalTable } from '@/components/additional/additional-table'
@@ -98,26 +96,6 @@ function CombatPage() {
     <PageWrapper pageKey="combat">
       <PageSection>
         <CombatLeadsTable readOnly={isVTB} />
-      </PageSection>
-    </PageWrapper>
-  )
-}
-
-function RejectedPage() {
-  return (
-    <PageWrapper pageKey="rejected">
-      <PageSection>
-        <RejectedLeadsTable />
-      </PageSection>
-    </PageWrapper>
-  )
-}
-
-function PausedPage() {
-  return (
-    <PageWrapper pageKey="paused">
-      <PageSection>
-        <PausedLeadsTable />
       </PageSection>
     </PageWrapper>
   )
@@ -211,8 +189,6 @@ export default function HomePage() {
           <AnimatePresence mode="wait">
             {currentPage === 'incoming' && <IncomingPage />}
             {currentPage === 'main' && <MainPage />}
-            {currentPage === 'rejected' && <RejectedPage />}
-            {currentPage === 'paused' && <PausedPage />}
             {currentPage === 'combat' && <CombatPage />}
             {currentPage === 'dop' && <AdditionalPage />}
             {currentPage === 'relegal' && <RelegalPage />}
