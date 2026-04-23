@@ -1,6 +1,5 @@
 'use client'
 
-import { useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -44,17 +43,21 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus,
+import {
+  Plus,
   Loader2,
   Mail,
   Trash2,
+  ChevronRight,
+  XCircle,
+  PauseCircle,
+  Phone,
 } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { formatCurrency } from '@/lib/format'
 import {
   StatusBadge,
-  ZayavkaBadge,
 } from '@/lib/status'
 import { LeadFormDialog } from './lead-form-dialog'
 import { useLeads } from './use-leads'
@@ -63,10 +66,127 @@ import { getLeadColumns, SkeletonRows } from './leads-columns'
 import { LeadsFilters } from './leads-filters'
 import { DesktopLeadRow } from './desktop-lead-row'
 import { MobileLeadCard } from './mobile-lead-card'
+import { cn } from '@/lib/utils'
+import type { Lead } from '@/lib/types'
 
 interface LeadsTableProps {
   showFilters?: boolean
   showDelete?: boolean
+}
+
+// ─── Archive Folder Row (desktop) ───
+function ArchiveFolderRow({
+  icon: Icon,
+  label,
+  count,
+  expanded,
+  onClick,
+  colorClass,
+}: {
+  icon: React.ElementType
+  label: string
+  count: number
+  expanded: boolean
+  onClick: () => void
+  colorClass: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'group w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 border-l-[3px] hover:bg-accent/40',
+        colorClass,
+      )}
+    >
+      <Icon className="h-4.5 w-4.5 shrink-0 opacity-60" />
+      <span className="font-semibold text-sm">{label}</span>
+      <Badge variant="secondary" className="text-[10px] tabular-nums font-bold">{count}</Badge>
+      <div className="flex-1" />
+      <ChevronRight className={cn(
+        'h-4 w-4 text-muted-foreground transition-transform duration-200',
+        expanded && 'rotate-90',
+      )} />
+    </button>
+  )
+}
+
+// ─── Compact Rejected Row (inside folder) ───
+function CompactRejectedRow({ lead, onDelete }: { lead: Lead; onDelete: (id: string) => void }) {
+  return (
+    <div className="group flex items-center gap-4 px-4 pl-12 py-2.5 transition-all duration-150 border-l-[3px] border-l-red-200 hover:bg-red-50/30">
+      <div className="flex flex-col items-center justify-center w-10 h-9 rounded-md bg-red-50 shrink-0">
+        <span className="text-xs font-bold tabular-nums leading-none text-red-600">
+          {lead.statusChangedAt ? new Date(lead.statusChangedAt).getDate() : '—'}
+        </span>
+        <span className="text-[8px] text-muted-foreground capitalize">
+          {lead.statusChangedAt ? new Date(lead.statusChangedAt).toLocaleDateString('ru-RU', { month: 'short' }) : ''}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm leading-tight truncate text-muted-foreground">{lead.organization}</span>
+          {lead.partner && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.partner}</Badge>}
+        </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+          {lead.manager && <span>{lead.manager}</span>}
+          {lead.contactInfo && (
+            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-0.5 hover:text-foreground truncate">
+              <Phone className="h-2.5 w-2.5" />{lead.contactInfo}
+            </a>
+          )}
+        </div>
+      </div>
+      {lead.status && <StatusBadge status={lead.status} compact />}
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded opacity-30 hover:opacity-100 transition-opacity shrink-0"
+        onClick={(e) => { e.stopPropagation(); onDelete(lead.id) }}
+      >
+        <Trash2 className="h-3 w-3" />
+      </Button>
+    </div>
+  )
+}
+
+// ─── Compact Paused Row (inside folder) ───
+function CompactPausedRow({ lead, onDelete }: { lead: Lead; onDelete: (id: string) => void }) {
+  return (
+    <div className="group flex items-center gap-4 px-4 pl-12 py-2.5 transition-all duration-150 border-l-[3px] border-l-orange-200 hover:bg-orange-50/30">
+      <div className="flex flex-col items-center justify-center w-10 h-9 rounded-md bg-orange-50 shrink-0">
+        <span className="text-xs font-bold tabular-nums leading-none text-orange-600">
+          {lead.statusChangedAt ? new Date(lead.statusChangedAt).getDate() : '—'}
+        </span>
+        <span className="text-[8px] text-muted-foreground capitalize">
+          {lead.statusChangedAt ? new Date(lead.statusChangedAt).toLocaleDateString('ru-RU', { month: 'short' }) : ''}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-sm leading-tight truncate">{lead.organization}</span>
+          {lead.partner && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.partner}</Badge>}
+        </div>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground mt-0.5">
+          {lead.manager && <span>{lead.manager}</span>}
+          {lead.contactInfo && (
+            <a href={`tel:${lead.contactInfo}`} className="flex items-center gap-0.5 hover:text-foreground truncate">
+              <Phone className="h-2.5 w-2.5" />{lead.contactInfo}
+            </a>
+          )}
+          {lead.comment && <span className="truncate max-w-[200px]">{lead.comment}</span>}
+        </div>
+      </div>
+      {lead.status && <Badge variant="outline" className="text-[9px] px-1 py-0 shrink-0">{lead.status}</Badge>}
+      <Button
+        size="sm"
+        variant="ghost"
+        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded opacity-30 hover:opacity-100 transition-opacity shrink-0"
+        onClick={(e) => { e.stopPropagation(); onDelete(lead.id) }}
+      >
+        <Trash2 className="h-3 w-3" />
+      </Button>
+    </div>
+  )
 }
 
 export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTableProps) {
@@ -76,18 +196,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     setAllLeads: data.setAllLeads,
     fetchLeads: data.fetchLeads,
   })
-
-  // Tab counts (from allLeads, respecting VTB filter)
-  const tabCounts = useMemo(() => {
-    const base = data.allLeads.filter((l) =>
-      data.isVTB || (l.zayavka !== 'Выполнена' && l.zayavka !== 'Входящий' && l.status !== 'пошли боевые платежи')
-    )
-    return {
-      all: base.filter((l) => l.zayavka !== 'Отклонена' && l.zayavka !== 'На паузе').length,
-      rejected: data.allLeads.filter((l) => l.zayavka === 'Отклонена').length,
-      paused: data.allLeads.filter((l) => l.zayavka === 'На паузе').length,
-    }
-  }, [data.allLeads, data.isVTB])
 
   const columns = getLeadColumns({
     isVTB: data.isVTB,
@@ -147,6 +255,18 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     )
   }
 
+  // Handle archive folder delete
+  async function handleArchiveDelete(id: string) {
+    try {
+      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        const { toast } = await import('sonner')
+        toast.success('Запись удалена')
+        data.setAllLeads((prev) => prev.filter((l) => l.id !== id))
+      }
+    } catch { /* silent */ }
+  }
+
   return (
     <>
       {/* Hint — hidden on mobile */}
@@ -165,9 +285,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         globalFilter={data.globalFilter}
         onGlobalFilterChange={data.setGlobalFilter}
         onAddLead={() => actions.setFormOpen(true)}
-        zayavkaTab={data.zayavkaTab}
-        onZayavkaTabChange={data.setZayavkaTab}
-        tabCounts={tabCounts}
         partners={data.partners}
         managers={data.managers}
         dynamicZayavka={data.dynamicZayavka}
@@ -186,7 +303,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
 
       {/* ─── Desktop Card-Table ─── */}
       <div className="hidden md:block rounded-xl border bg-card overflow-hidden card-soft">
-        {/* Rows */}
+        {/* Main leads rows */}
         <div className="divide-y">
           {currentRows.length ? currentRows.map((row) => (
             <DesktopLeadRow
@@ -221,9 +338,80 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
 
         {/* Pagination */}
         <DataTablePagination table={table} totalRows={data.leads.length} />
+
+        {/* ─── Archive Folders ─── */}
+        {(data.folderCounts.rejected > 0 || data.folderCounts.paused > 0) && (
+          <div className="border-t-2 border-dashed">
+            {/* Rejected folder */}
+            {data.folderCounts.rejected > 0 && (
+              <>
+                <ArchiveFolderRow
+                  icon={XCircle}
+                  label="Отклонённые"
+                  count={data.folderCounts.rejected}
+                  expanded={data.expandedFolder === 'rejected'}
+                  onClick={() => data.toggleFolder('rejected')}
+                  colorClass="border-l-red-300"
+                />
+                <AnimatePresence>
+                  {data.expandedFolder === 'rejected' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="divide-y bg-red-50/20 max-h-[400px] overflow-y-auto">
+                        {data.rejectedLeads.length ? data.rejectedLeads.map((lead) => (
+                          <CompactRejectedRow key={lead.id} lead={lead} onDelete={handleArchiveDelete} />
+                        )) : (
+                          <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+
+            {/* Paused folder */}
+            {data.folderCounts.paused > 0 && (
+              <>
+                <ArchiveFolderRow
+                  icon={PauseCircle}
+                  label="На паузе"
+                  count={data.folderCounts.paused}
+                  expanded={data.expandedFolder === 'paused'}
+                  onClick={() => data.toggleFolder('paused')}
+                  colorClass="border-l-orange-300"
+                />
+                <AnimatePresence>
+                  {data.expandedFolder === 'paused' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="divide-y bg-orange-50/20 max-h-[400px] overflow-y-auto">
+                        {data.pausedLeads.length ? data.pausedLeads.map((lead) => (
+                          <CompactPausedRow key={lead.id} lead={lead} onDelete={handleArchiveDelete} />
+                        )) : (
+                          <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
-        {/* Mobile Card View */}
+      {/* Mobile Card View */}
       <motion.div className="md:hidden space-y-3 pb-24" variants={staggerContainer} initial="hidden" animate="visible">
         {currentRows.length ? (
           currentRows.map((row) => (
@@ -245,6 +433,100 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
 
         {/* Mobile pagination */}
         <DataTablePagination table={table} totalRows={data.leads.length} variant="mobile" />
+
+        {/* Mobile archive folders */}
+        {(data.folderCounts.rejected > 0 || data.folderCounts.paused > 0) && (
+          <div className="space-y-2 pt-2">
+            {data.folderCounts.rejected > 0 && (
+              <motion.div variants={slideUp}>
+                <button
+                  onClick={() => data.toggleFolder('rejected')}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-200 bg-red-50/30 transition-all"
+                >
+                  <XCircle className="h-4.5 w-4.5 text-red-500 shrink-0" />
+                  <span className="font-semibold text-sm">Отклонённые</span>
+                  <Badge variant="secondary" className="text-[10px] tabular-nums">{data.folderCounts.rejected}</Badge>
+                  <div className="flex-1" />
+                  <ChevronRight className={cn(
+                    'h-4 w-4 text-muted-foreground transition-transform',
+                    data.expandedFolder === 'rejected' && 'rotate-90',
+                  )} />
+                </button>
+                <AnimatePresence>
+                  {data.expandedFolder === 'rejected' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-2 mt-2 max-h-[400px] overflow-y-auto">
+                        {data.rejectedLeads.map((lead) => (
+                          <div key={lead.id} className="rounded-lg border border-red-100 bg-card p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-sm text-muted-foreground truncate">{lead.organization}</span>
+                              {lead.status && <StatusBadge status={lead.status} compact />}
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                              {lead.manager && <span>{lead.manager}</span>}
+                              {lead.contactInfo && <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground">{lead.contactInfo}</a>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+
+            {data.folderCounts.paused > 0 && (
+              <motion.div variants={slideUp}>
+                <button
+                  onClick={() => data.toggleFolder('paused')}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-orange-200 bg-orange-50/30 transition-all"
+                >
+                  <PauseCircle className="h-4.5 w-4.5 text-orange-500 shrink-0" />
+                  <span className="font-semibold text-sm">На паузе</span>
+                  <Badge variant="secondary" className="text-[10px] tabular-nums">{data.folderCounts.paused}</Badge>
+                  <div className="flex-1" />
+                  <ChevronRight className={cn(
+                    'h-4 w-4 text-muted-foreground transition-transform',
+                    data.expandedFolder === 'paused' && 'rotate-90',
+                  )} />
+                </button>
+                <AnimatePresence>
+                  {data.expandedFolder === 'paused' && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-2 mt-2 max-h-[400px] overflow-y-auto">
+                        {data.pausedLeads.map((lead) => (
+                          <div key={lead.id} className="rounded-lg border border-orange-100 bg-card p-3">
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium text-sm truncate">{lead.organization}</span>
+                              {lead.status && <Badge variant="outline" className="text-[9px]">{lead.status}</Badge>}
+                            </div>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
+                              {lead.manager && <span>{lead.manager}</span>}
+                              {lead.contactInfo && <a href={`tel:${lead.contactInfo}`} className="hover:text-foreground">{lead.contactInfo}</a>}
+                              {lead.comment && <span className="truncate">{lead.comment}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </div>
+        )}
       </motion.div>
 
       {!data.isVTB && (
@@ -307,7 +589,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
             <div className="space-y-4">
               {/* Status badges */}
               <div className="flex items-center gap-2 flex-wrap">
-                <ZayavkaBadge zayavka={actions.viewLead.zayavka} hover />
+                {actions.viewLead.zayavka && <StatusBadge status={actions.viewLead.zayavka} hover />}
                 {actions.viewLead.status && <StatusBadge status={actions.viewLead.status} hover />}
               </div>
 

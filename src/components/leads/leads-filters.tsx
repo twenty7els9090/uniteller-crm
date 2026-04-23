@@ -17,7 +17,6 @@ import {
   ChevronDown,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { ZayavkaTab } from './use-leads'
 
 // ─── Multi-select filter popover ───
 function MultiSelectFilter({
@@ -91,54 +90,6 @@ function MultiSelectFilter({
   )
 }
 
-// ─── Tab button: Все / Отклонённые / На паузе ───
-function TabButton({
-  active,
-  onClick,
-  children,
-  count,
-  variant = 'default',
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-  count?: number
-  variant?: 'default' | 'danger' | 'warning'
-}) {
-  const colors = {
-    default: active
-      ? 'bg-primary text-primary-foreground shadow-sm'
-      : 'bg-muted/60 text-muted-foreground hover:text-foreground',
-    danger: active
-      ? 'bg-red-600 text-white shadow-sm'
-      : 'bg-red-500/10 text-red-600 hover:bg-red-500/20',
-    warning: active
-      ? 'bg-orange-600 text-white shadow-sm'
-      : 'bg-orange-500/10 text-orange-600 hover:bg-orange-500/20',
-  }
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150 whitespace-nowrap shrink-0',
-        colors[variant],
-      )}
-    >
-      {children}
-      {count !== undefined && (
-        <span className={cn(
-          'text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full',
-          active
-            ? variant === 'default' ? 'bg-white/20' : 'bg-white/20'
-            : 'bg-muted',
-        )}>
-          {count}
-        </span>
-      )}
-    </button>
-  )
-}
-
 // ─── LeadsFilters ───
 interface LeadsFiltersProps {
   showFilters: boolean
@@ -146,10 +97,6 @@ interface LeadsFiltersProps {
   globalFilter: string
   onGlobalFilterChange: (v: string) => void
   onAddLead: () => void
-  // Tab
-  zayavkaTab: ZayavkaTab
-  onZayavkaTabChange: (v: ZayavkaTab) => void
-  tabCounts: { all: number; rejected: number; paused: number }
   // filter states
   partners: string[]
   managers: string[]
@@ -174,9 +121,6 @@ export function LeadsFilters({
   globalFilter,
   onGlobalFilterChange,
   onAddLead,
-  zayavkaTab,
-  onZayavkaTabChange,
-  tabCounts,
   partners,
   managers,
   dynamicZayavka,
@@ -213,60 +157,30 @@ export function LeadsFilters({
         )}
       </div>
 
-      {/* Tabs + Filters */}
+      {/* Filters row */}
       {showFilters && (
-        <div className="space-y-2.5">
-          {/* Zayavka tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-            <TabButton
-              active={zayavkaTab === 'all'}
-              onClick={() => onZayavkaTabChange('all')}
-              count={tabCounts.all}
-            >
-              Все
-            </TabButton>
-            <TabButton
-              active={zayavkaTab === 'Отклонена'}
-              onClick={() => onZayavkaTabChange('Отклонена')}
-              variant="danger"
-              count={tabCounts.rejected}
-            >
-              Отклонённые
-            </TabButton>
-            <TabButton
-              active={zayavkaTab === 'На паузе'}
-              onClick={() => onZayavkaTabChange('На паузе')}
-              variant="warning"
-              count={tabCounts.paused}
-            >
-              На паузе
-            </TabButton>
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">Фильтры:</span>
           </div>
 
-          {/* Filters row */}
-          <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0">
-            <div className="flex items-center gap-1.5 shrink-0">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">Фильтры:</span>
-            </div>
+          <MultiSelectFilter label="Партнёр" options={partners} selected={partnerFilter} onChange={onPartnerFilterChange} />
+          <MultiSelectFilter label="Заявка" options={[...dynamicZayavka]} selected={zayavkaFilter} onChange={onZayavkaFilterChange} />
+          <MultiSelectFilter label="Статус" options={[...dynamicStatus]} selected={statusFilter} onChange={onStatusFilterChange} />
+          <MultiSelectFilter label="Менеджер" options={managers} selected={managerFilter} onChange={onManagerFilterChange} />
 
-            <MultiSelectFilter label="Партнёр" options={partners} selected={partnerFilter} onChange={onPartnerFilterChange} />
-            <MultiSelectFilter label="Заявка" options={[...dynamicZayavka]} selected={zayavkaFilter} onChange={onZayavkaFilterChange} />
-            <MultiSelectFilter label="Статус" options={[...dynamicStatus]} selected={statusFilter} onChange={onStatusFilterChange} />
-            <MultiSelectFilter label="Менеджер" options={managers} selected={managerFilter} onChange={onManagerFilterChange} />
-
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 text-muted-foreground shrink-0"
-                onClick={onClearFilters}
-              >
-                <X className="h-3.5 w-3.5 mr-1" />
-                Сбросить
-              </Button>
-            )}
-          </div>
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-muted-foreground shrink-0"
+              onClick={onClearFilters}
+            >
+              <X className="h-3.5 w-3.5 mr-1" />
+              Сбросить
+            </Button>
+          )}
         </div>
       )}
     </div>

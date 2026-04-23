@@ -8,8 +8,6 @@ import { useSettings } from '@/hooks/use-settings'
 import { PARTNERS, MANAGERS, ZAYAVKA_OPTIONS, STATUS_OPTIONS, ACTIVITY_TYPES } from '@/lib/constants'
 import { toast } from 'sonner'
 
-export type ZayavkaTab = 'all' | 'Отклонена' | 'На паузе'
-
 export function useLeads() {
   const user = useAppStore((s) => s.user)
   const globalSearch = useAppStore((s) => s.globalSearch)
@@ -22,8 +20,8 @@ export function useLeads() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
 
-  // Tab filter inside Лиды page
-  const [zayavkaTab, setZayavkaTab] = useState<ZayavkaTab>('all')
+  // Folder toggle state: which archive folders are expanded
+  const [expandedFolder, setExpandedFolder] = useState<'rejected' | 'paused' | null>(null)
 
   // Multi-select filters
   const [partnerFilter, setPartnerFilter] = useState<string[]>([])
@@ -45,21 +43,19 @@ export function useLeads() {
   const dynamicStatus = useMemo(() => settings.status.length > 0 ? settings.status : [...STATUS_OPTIONS], [settings.status])
   const dynamicActivityTypes = useMemo(() => settings.activityType.length > 0 ? settings.activityType : [...ACTIVITY_TYPES], [settings.activityType])
 
-  // Client-side filter
+  // Main leads: exclude combat-only, rejected, and paused
   const leads = useMemo(() => {
-    let result = allLeads
-
-    // Tab filter: show only selected category, or all (except combat-only)
-    if (zayavkaTab === 'Отклонена') {
-      result = result.filter((l) => l.zayavka === 'Отклонена')
-    } else if (zayavkaTab === 'На паузе') {
-      result = result.filter((l) => l.zayavka === 'На паузе')
-    } else {
-      // "All" — exclude combat-only leads for uniteller
-      result = result.filter((l) =>
-        isVTB || (l.zayavka !== 'Выполнена' && l.zayavka !== 'Входящий' && l.status !== 'пошли боевые платежи')
-      )
-    }
+    let result = allLeads.filter((l) => {
+      // For uniteller: exclude Входящий, Выполнена, combat-only
+      if (!isVTB && (l.zayavka === 'Выполнена' || l.zayavka === 'Входящий' || l.status === 'пошли боевые платежи')) {
+        return false
+      }
+      // Always exclude archive folders from main table
+      if (l.zayavka === 'Отклонена' || l.zayavka === 'На паузе') {
+        return false
+      }
+      return true
+    })
 
     if (globalFilter) {
       const q = globalFilter.toLowerCase()
@@ -83,16 +79,63 @@ export function useLeads() {
       return dateB - dateA
     })
     return result
-  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, zayavkaTab, isVTB])
+  }, [allLeads, globalFilter, partnerFilter, zayavkaFilter, statusFilter, managerFilter, isVTB])
+
+  // Rejected leads for folder
+  const rejectedLeads = useMemo(() => {
+    let result = allLeads.filter((l) => l.zayavka === 'Отклонена')
+    if (globalFilter) {
+      const q = globalFilter.toLowerCase()
+      result = result.filter((l) =>
+        l.organization.toLowerCase().includes(q) ||
+        l.contactInfo.toLowerCase().includes(q) ||
+        l.comment?.toLowerCase().includes(q) ||
+        l.manager?.toLowerCase().includes(q)
+      )
+    }
+    result.sort((a, b) => {
+      const dateA = new Date(a.statusChangedAt || a.createdAt || 0).getTime()
+      const dateB = new Date(b.statusChangedAt || b.createdAt || 0).getTime()
+      return dateB - dateA
+    })
+    return result
+  }, [allLeads, globalFilter])
+
+  // Paused leads for folder
+  const pausedLeads = useMemo(() => {
+    let result = allLeads.filter((l) => l.zayavka === 'На паузе')
+    if (globalFilter) {
+      const q = globalFilter.toLowerCase()
+      result = result.filter((l) =>
+        l.organization.toLowerCase().includes(q) ||
+        l.contactInfo.toLowerCase().includes(q) ||
+        l.comment?.toLowerCase().includes(q) ||
+        l.manager?.toLowerCase().includes(q)
+      )
+    }
+    result.sort((a, b) => {
+      const dateA = new Date(a.statusChangedAt || a.createdAt || 0).getTime()
+      const dateB = new Date(b.statusChangedAt || b.createdAt || 0).getTime()
+      return dateB - dateA
+    })
+    return result
+  }, [allLeads, globalFilter])
+
+  // Folder counts
+  const folderCounts = useMemo(() => ({
+    rejected: allLeads.filter((l) => l.zayavka === 'Отклонена').length,
+    paused: allLeads.filter((l) => l.zayavka === 'На паузе').length,
+  }), [allLeads])
 
   const fetchLeads = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/leads')
+      // Fetch ALL leads (limit=5000) — client does filtering/sorting
+      const res = await fetch('/api/leads?limit=5000&page=1')
       if (res.ok) {
         const data = await res.json()
-        const leads = Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : []
-        setAllLeads(leads)
+        const list = Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : []
+        setAllLeads(list)
       }
     } catch {
       toast.error('Ошибка загрузки лидов')
@@ -151,6 +194,10 @@ export function useLeads() {
     setGlobalFilter('')
   }
 
+  function toggleFolder(folder: 'rejected' | 'paused') {
+    setExpandedFolder((prev) => prev === folder ? null : folder)
+  }
+
   return {
     user, isVTB, isAdmin: user?.role === 'uniteller',
     allLeads, setAllLeads, leads, loading, fetchLeads, inlineSave,
@@ -158,8 +205,10 @@ export function useLeads() {
     partnerFilter, setPartnerFilter, zayavkaFilter, setZayavkaFilter,
     statusFilter, setStatusFilter, managerFilter, setManagerFilter,
     hasActiveFilters, clearFilters,
-    zayavkaTab, setZayavkaTab,
     dynamicPartners, dynamicManagers, dynamicZayavka, dynamicStatus, dynamicActivityTypes,
     partners, managers,
+    // Folder system
+    expandedFolder, toggleFolder,
+    rejectedLeads, pausedLeads, folderCounts,
   }
 }
