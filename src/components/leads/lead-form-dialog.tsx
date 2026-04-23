@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { leadSchema, type LeadFormData } from '@/lib/validations'
 import { useAppStore } from '@/lib/store'
-import type { Lead, AuthUser } from '@/lib/types'
+import type { Lead } from '@/lib/types'
 import { PhoneInput } from '@/components/ui/phone-input'
 import {
   Dialog,
@@ -29,7 +29,7 @@ import { Loader2, AlertTriangle } from 'lucide-react'
 import { useSettings } from '@/hooks/use-settings'
 import { PARTNERS, MANAGERS, ZAYAVKA_OPTIONS, STATUS_OPTIONS, ACTIVITY_TYPES } from '@/lib/constants'
 import { toast } from 'sonner'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { staggerContainer } from '@/lib/motion'
 
@@ -47,7 +47,6 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
   const { settings } = useSettings()
   const [loading, setLoading] = useState(false)
   const [duplicate, setDuplicate] = useState<{ organization: string; partner: string; manager: string; zayavka: string } | null>(null)
-  const [checkingDup, setCheckingDup] = useState(false)
 
   // Use settings from API, fall back to hardcoded constants
   const dynamicPartners = settings.partner.length > 0 ? settings.partner : [...PARTNERS]
@@ -90,7 +89,6 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
       return
     }
     const timer = setTimeout(async () => {
-      setCheckingDup(true)
       try {
         const res = await fetch(`/api/leads?search=${encodeURIComponent(watchOrg)}`)
         if (res.ok) {
@@ -99,7 +97,6 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
           setDuplicate(match ? { organization: match.organization, partner: match.partner, manager: match.manager, zayavka: match.zayavka } : null)
         }
       } catch { /* ignore */ }
-      finally { setCheckingDup(false) }
     }, 500)
     return () => clearTimeout(timer)
   }, [watchOrg, open, lead?.id])

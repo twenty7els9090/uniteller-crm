@@ -94,9 +94,7 @@ function MultiSelectFilter({
 // ─── LeadsFilters ───
 interface LeadsFiltersProps {
   showFilters: boolean
-  showDelete: boolean
   isVTB: boolean
-  isAdmin: boolean
   globalFilter: string
   onGlobalFilterChange: (v: string) => void
   onAddLead: () => void
@@ -124,9 +122,7 @@ interface LeadsFiltersProps {
 
 export function LeadsFilters({
   showFilters,
-  showDelete,
   isVTB,
-  isAdmin,
   globalFilter,
   onGlobalFilterChange,
   onAddLead,

@@ -26,7 +26,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Search, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Loader2, Swords, MoreHorizontal, Trash2, ArrowLeft, MessageSquare } from 'lucide-react'
+import { DataTablePagination } from '@/components/ui/data-table-pagination'
+import { Search, Loader2, Swords, MoreHorizontal, Trash2, ArrowLeft, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
@@ -423,32 +424,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
         </div>
 
         {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 border-t px-4 py-3">
-          <p className="text-sm text-muted-foreground">
-            Всего: <span className="font-medium text-foreground">{filteredLeads.length}</span> записей
-          </p>
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-8 w-8"
-              onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8"
-              onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-sm px-3">
-              {table.getState().pagination.pageIndex + 1} из {table.getPageCount()}
-            </span>
-            <Button variant="outline" size="icon" className="h-8 w-8"
-              onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-8 w-8"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <DataTablePagination table={table} totalRows={filteredLeads.length} />
       </div>
 
       {/* ─── Mobile Card View ─── */}
@@ -555,32 +531,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
         )}
 
         {/* Mobile pagination */}
-        <div className="flex items-center justify-between gap-3 pt-2">
-          <p className="text-xs text-muted-foreground">
-            <span className="font-medium text-foreground">{filteredLeads.length}</span> записей
-          </p>
-          <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-10 w-10"
-              onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10"
-              onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span className="text-xs px-2">
-              {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
-            </span>
-            <Button variant="outline" size="icon" className="h-10 w-10"
-              onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button variant="outline" size="icon" className="h-10 w-10"
-              onClick={() => table.setPageIndex(table.getPageCount() - 1)} disabled={!table.getCanNextPage()}>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+        <DataTablePagination table={table} totalRows={filteredLeads.length} variant="mobile" />
       </motion.div>
 
       {/* Delete Confirmation */}

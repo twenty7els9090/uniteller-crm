@@ -103,7 +103,6 @@ function CombatPage() {
 }
 
 function RejectedPage() {
-  const isVTB = useAppStore((s) => s.user?.role === 'vtb')
   return (
     <PageWrapper pageKey="rejected">
       <PageSection>

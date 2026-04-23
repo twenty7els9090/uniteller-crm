@@ -3,7 +3,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { relegalSchema, type RelegalFormData } from '@/lib/validations'
-import { useAppStore } from '@/lib/store'
 import type { Relegal } from '@/lib/types'
 import { useSettings } from '@/hooks/use-settings'
 import { MANAGERS } from '@/lib/constants'
@@ -51,7 +50,6 @@ export function RelegalFormDialog({ open, onOpenChange, relegal, onSaved }: Rele
     reset,
     setValue,
     watch,
-    formState: { errors },
   } = useForm<RelegalFormData>({
     resolver: zodResolver(relegalSchema),
     defaultValues: {

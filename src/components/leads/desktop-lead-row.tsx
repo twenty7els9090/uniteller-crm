@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/editable-cells'
 import { Mail, MessageSquare, Trash2 } from 'lucide-react'
 
-// ─── NewBadge ───
 export function NewBadge() {
   return (
     <Badge variant="default" className="bg-emerald-500 text-white text-[10px] px-1.5 py-0 font-semibold">
@@ -51,7 +50,6 @@ export function DesktopLeadRow({
   isAdmin,
   showDelete,
   inlineSave,
-  openDetails,
   onDelete,
   dynamicPartners,
   dynamicManagers,

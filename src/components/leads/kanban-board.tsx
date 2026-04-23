@@ -427,12 +427,6 @@ export function KanbanBoard() {
     [fetchLeads],
   )
 
-  // ─── Native HTML5 DnD handlers ───
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.dataTransfer.dropEffect = 'move'
-  }, [])
-
   const handleColumnDragOver = useCallback(
     (columnId: string) => (e: React.DragEvent) => {
       e.preventDefault()
@@ -443,8 +437,7 @@ export function KanbanBoard() {
   )
 
   const handleColumnDragLeave = useCallback(
-    (columnId: string) => (e: React.DragEvent) => {
-      // Only clear if actually leaving the column (not entering a child)
+    (_columnId: string) => (e: React.DragEvent) => {
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
       const x = e.clientX
       const y = e.clientY

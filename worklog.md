@@ -93,3 +93,34 @@ Stage Summary:
 - Removed ~200 stray duplicate files from project root
 - Fixed 5 TypeScript compilation errors
 - Project is ready for development
+
+---
+Task ID: 8
+Agent: main-coordinator
+Task: Deep cleanup — remove unused packages, dead code, duplicate imports, polish design
+
+Work Log:
+- Deleted tailwind.config.ts (Tailwind v3 relict, v4 doesn't use it)
+- Deleted src/components/ui/sonner.tsx (unused custom wrapper, layout uses Sonner directly)
+- Removed ~40 unused npm packages:
+  - UI primitives: @dnd-kit/core, @dnd-kit/sortable, @dnd-kit/utilities
+  - Radix for deleted UI: @radix-ui/react-{accordion,aspect-ratio,avatar,collapsible,context-menu,hover-card,menubar,navigation-menu,progress,radio-group,scroll-area,separator,slider,switch,tabs,toast,toggle,toggle-group,tooltip}
+  - Unused libs: @mdxeditor/editor, @reactuses/core, @tanstack/react-query, cmdk, date-fns, embla-carousel-react, input-otp, next-auth, next-intl, next-themes, react-day-picker, react-markdown, react-resizable-panels, react-syntax-highlighter, sharp, uuid, vaul, tailwindcss-animate
+- Eliminated duplicate NewBadge component (mobile-lead-card.tsx → import from desktop-lead-row.tsx)
+- Replaced duplicate formatCurrency in top-organizations.tsx with import from @/lib/format
+- Removed 16 sidebar CSS variables from globals.css (no sidebar component exists)
+- Replaced inline pagination blocks in leads-table.tsx (×2) and combat-leads-table.tsx (×2) with DataTablePagination
+- Cleaned motion.ts: removed 3 duplicate variants (pageStagger, quickStagger, fadeLeft)
+- Removed STATUS_TABLE_COLORS map (identical to STATUS_COLORS with no-op hover classes)
+- Fixed 3 ESLint errors (set-state-in-effect, prefer-const) in global-search.tsx, editable-cells.tsx, use-settings.ts
+- Removed 21 unused imports/variables across 14 files
+- Removed unused eslint-disable directives
+- Added card-soft class to TopOrganizations Card
+- Cleaned upload/ directory
+
+Stage Summary:
+- 0 ESLint errors (down from 4), 7 benign warnings (exhaustive-deps, incompatible-library)
+- ~300 lines of duplicate/unused code removed
+- ~40 unused npm packages removed
+- Build compiles successfully
+- Dev server runs without errors

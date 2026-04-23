@@ -195,10 +195,12 @@ export function EditableNumberCell({
   const [saving, setSaving] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const cleanValue = (value ?? '').replace('%', '')
     if (!editing) setDraft(cleanValue)
   }, [value, editing])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (editing && inputRef.current) {
@@ -321,7 +323,7 @@ export function EditableSelectCell({
       )}
       onClick={(e) => {
         e.stopPropagation()
-        !disabled && setEditing(true)
+        if (!disabled) setEditing(true)
       }}
       title={disabled ? undefined : 'Нажмите для редактирования'}
     >

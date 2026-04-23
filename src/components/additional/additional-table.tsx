@@ -33,7 +33,6 @@ import {
   Plug, MoreHorizontal, Loader2, Pencil,
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { EditableTextCell, EditableSelectCell } from '@/components/ui/editable-cells'

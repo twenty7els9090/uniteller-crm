@@ -45,7 +45,6 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
 
   const dynamicPartners = settings.partner.length > 0 ? settings.partner : [...PARTNERS]
 
-  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (open) {
       setOrganization('')
@@ -54,7 +53,6 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
       setEmail('')
     }
   }, [open, isVTB])
-  /* eslint-enable react-hooks/set-state-in-effect */
 
   const canSubmit = organization.trim() && partner
 

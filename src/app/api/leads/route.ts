@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { getCurrentUser } from '@/lib/auth'
 import { leadSchema } from '@/lib/validations'
 import { requireAuth, handleApiError, cleanLeadFields, handleValidationError } from '@/lib/api-helpers'
 

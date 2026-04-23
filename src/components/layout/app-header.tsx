@@ -27,7 +27,7 @@ const tabs: NavTab[] = [
 ]
 
 export function AppHeader() {
-  const { user, currentPage, setCurrentPage, logout, globalSearch } = useAppStore()
+  const { user, currentPage, setCurrentPage, logout } = useAppStore()
 
   if (!user) return null
 

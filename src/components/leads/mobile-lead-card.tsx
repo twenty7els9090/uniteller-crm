@@ -16,15 +16,7 @@ import { formatDate } from '@/lib/format'
 import { motion } from 'framer-motion'
 import { slideUp } from '@/lib/motion'
 import { Building2, User, Calendar, Eye, Trash2 } from 'lucide-react'
-
-// ─── NewBadge (duplicated from desktop-lead-row) ───
-function NewBadge() {
-  return (
-    <Badge variant="default" className="bg-emerald-500 text-white text-[10px] px-1.5 py-0 font-semibold">
-      новый
-    </Badge>
-  )
-}
+import { NewBadge } from './desktop-lead-row'
 
 // ─── MobileLeadCard ───
 interface MobileLeadCardProps {

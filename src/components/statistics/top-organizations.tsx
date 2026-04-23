@@ -5,16 +5,7 @@ import { useStats } from '@/hooks/use-stats'
 import { Loader2, Trophy } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { scaleIn } from '@/lib/motion'
-
-function formatCurrency(n: number): string {
-  return new Intl.NumberFormat('ru-RU', {
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  })
-    .format(n)
-    .replace(/,/g, '.')
-    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1 ') + ' Р'
-}
+import { formatCurrency } from '@/lib/format'
 
 export function TopOrganizations() {
   const { stats, loading } = useStats()
@@ -35,7 +26,7 @@ export function TopOrganizations() {
       initial="hidden"
       animate="visible"
     >
-    <Card>
+    <Card className="card-soft">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
           <Trophy className="w-5 h-5 text-amber-500" />

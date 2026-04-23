@@ -3,7 +3,6 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { churnSchema, type ChurnFormData } from '@/lib/validations'
-import { useAppStore } from '@/lib/store'
 import type { Churn } from '@/lib/types'
 import { useSettings } from '@/hooks/use-settings'
 import { MANAGERS, CHURN_STATUS_OPTIONS } from '@/lib/constants'
@@ -30,7 +29,7 @@ import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { staggerContainer, scaleIn } from '@/lib/motion'
+import { staggerContainer } from '@/lib/motion'
 
 interface ChurnFormDialogProps {
   open: boolean
@@ -40,7 +39,6 @@ interface ChurnFormDialogProps {
 }
 
 export function ChurnFormDialog({ open, onOpenChange, churn, onSaved }: ChurnFormDialogProps) {
-  const user = useAppStore((s) => s.user)
   const { settings } = useSettings()
   const [loading, setLoading] = useState(false)
 

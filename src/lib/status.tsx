@@ -34,25 +34,6 @@ export const STATUS_COLORS: Record<string, string> = {
   'Нужна интеграция': 'bg-teal-100 text-teal-700',
 }
 
-/** Extended status colors for table badges (includes hover states) */
-export const STATUS_TABLE_COLORS: Record<string, string> = {
-  'пошли боевые платежи': 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100',
-  'личный кабинет создан': 'bg-teal-100 text-teal-700 hover:bg-teal-100',
-  'заключаем договор': 'bg-sky-100 text-sky-700 hover:bg-sky-100',
-  'ожидаем банковские параметры': 'bg-sky-100 text-sky-700 hover:bg-sky-100',
-  'параметры получены': 'bg-cyan-100 text-cyan-700 hover:bg-cyan-100',
-  'настраиваем сервис': 'bg-cyan-100 text-cyan-700 hover:bg-cyan-100',
-  'ожидание боевых платежей': 'bg-indigo-100 text-indigo-700 hover:bg-indigo-100',
-  'не открыт ОКВЭД': 'bg-amber-100 text-amber-700 hover:bg-amber-100',
-  'высокая комиссия': 'bg-orange-100 text-orange-700 hover:bg-orange-100',
-  'высокая процентная ставка': 'bg-orange-100 text-orange-700 hover:bg-orange-100',
-  'не актуально': 'bg-red-100 text-red-700 hover:bg-red-100',
-  'не поддерживаем оборудование': 'bg-rose-100 text-rose-700 hover:bg-rose-100',
-  'нет совместной интеграции': 'bg-red-100 text-red-700 hover:bg-red-100',
-  'отказ СБ': 'bg-red-100 text-red-800 hover:bg-red-100',
-  'другая причина': 'bg-stone-100 text-stone-600 hover:bg-stone-100',
-}
-
 /** Zayavka (request status) → Tailwind classes */
 export const ZAYAVKA_COLORS: Record<string, string> = {
   'Выполнена': 'bg-emerald-100 text-emerald-800',
@@ -79,15 +60,13 @@ export const REJECTION_STATUSES = new Set([
 export function StatusBadge({
   status,
   compact = false,
-  hover = false,
 }: {
   status: string
   compact?: boolean
   hover?: boolean
 }) {
   const size = compact ? 'text-xs px-1.5 py-0' : 'text-xs px-2 py-0.5'
-  const colors = hover ? STATUS_TABLE_COLORS[status] || `bg-gray-100 text-gray-600 hover:bg-gray-100`
-    : STATUS_COLORS[status] || 'bg-gray-100 text-gray-600'
+  const colors = STATUS_COLORS[status] || 'bg-gray-100 text-gray-600'
   return (
     <Badge
       variant="default"

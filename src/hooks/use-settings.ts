@@ -20,7 +20,7 @@ const defaultSettings: AppSettings = {
 
 let settingsCache: AppSettings | null = null
 let fetchPromise: Promise<AppSettings> | null = null
-let listeners: Set<() => void> = new Set()
+const listeners: Set<() => void> = new Set()
 
 function notifyListeners() {
   for (const fn of listeners) fn()

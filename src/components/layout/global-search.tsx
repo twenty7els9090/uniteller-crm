@@ -5,7 +5,7 @@ import { useAppStore, type PageType } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Search, X, Loader2, Building2, User, Phone, FileText, ArrowRightLeft, TrendingDown, Plug } from 'lucide-react'
+import { Search, X, Loader2, Building2, FileText, ArrowRightLeft, TrendingDown, Plug } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Lead, Relegal, Churn, Additional } from '@/lib/types'
 
@@ -19,11 +19,11 @@ interface SearchResult {
 }
 
 export function GlobalSearch() {
-  const { currentPage, setCurrentPage, setGlobalSearch, globalSearch } = useAppStore()
+  const { setCurrentPage, setGlobalSearch, globalSearch } = useAppStore()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [loaded, setLoaded] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -37,19 +37,14 @@ export function GlobalSearch() {
     }
   }, [open])
 
-  // Sync global search to local
-  useEffect(() => {
-    if (globalSearch && !query) {
-      setQuery(globalSearch)
-    }
-  }, [globalSearch])
+  // Effective search term: prefer globalSearch from store, fall back to local query
+  const effectiveQuery = globalSearch || query
 
   // Fetch ALL entities once on first open
   const cacheRef = useRef<{ leads: Lead[]; relegal: Relegal[]; churn: Churn[]; additional: Additional[] }>({ leads: [], relegal: [], churn: [], additional: [] })
 
   useEffect(() => {
     if (!open || loaded) return
-    setLoading(true)
     Promise.all([
       fetch('/api/leads').then((r) => r.ok ? r.json() : []).catch(() => []),
       fetch('/api/relegal').then((r) => r.ok ? r.json() : []).catch(() => []),
@@ -158,9 +153,9 @@ export function GlobalSearch() {
   // Debounced search
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => filterAll(query), 150)
+    debounceRef.current = setTimeout(() => filterAll(effectiveQuery), 150)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [query, filterAll])
+  }, [effectiveQuery, filterAll])
 
   // Close on click outside
   useEffect(() => {
@@ -203,7 +198,7 @@ export function GlobalSearch() {
     )
   }
 
-  const hasDropdown = open && query.trim().length > 0
+  const hasDropdown = open && effectiveQuery.trim().length > 0
 
   return (
     <div ref={containerRef} className="relative">
@@ -364,12 +359,12 @@ export function GlobalSearch() {
                       <div className="flex items-center gap-2">
                         <span className="text-muted-foreground shrink-0">{result.icon}</span>
                         <span className="text-sm font-medium truncate">
-                          {highlight(result.title, query)}
+                          {highlight(result.title, effectiveQuery)}
                         </span>
                       </div>
                       {result.subtitle && (
                         <p className="text-xs text-muted-foreground truncate pl-[22px]">
-                          {highlight(result.subtitle, query)}
+                          {highlight(result.subtitle, effectiveQuery)}
                         </p>
                       )}
                     </div>

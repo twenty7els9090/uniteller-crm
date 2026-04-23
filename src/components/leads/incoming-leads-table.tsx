@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
@@ -21,7 +21,7 @@ import { IncomingLeadFormDialog } from './incoming-lead-form-dialog'
 import { REJECTION_REASONS, WORK_STATUSES } from '@/lib/constants'
 import {
   Plus, Phone, Mail, Building2, Calendar, Clock, XCircle,
-  ArrowRight, Trash2, PhoneOff, AlertTriangle, Check, ChevronDown,
+  ArrowRight, Trash2, PhoneOff, AlertTriangle, Check,
 } from 'lucide-react'
 
 // ─── Helpers ──────────────────────────────────────────────────────
@@ -29,12 +29,6 @@ import {
 function isOverdue(callDate: string | null): boolean {
   if (!callDate) return false
   return new Date(callDate) < new Date()
-}
-
-function getDaysUntilCall(callDate: string | null): number | null {
-  if (!callDate) return null
-  const diff = new Date(callDate).getTime() - Date.now()
-  return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
 function formatCallDate(callDate: string): string {
@@ -60,7 +54,6 @@ function InlineStatusControls({
 
   const isNotStarted = !lead.status || lead.status === 'Не начато'
   const overdue = lead.status === 'Перезвонить' && isOverdue(lead.callDate)
-  const daysUntil = getDaysUntilCall(lead.callDate)
 
   async function saveStatus(newZayavka: string, newStatus: string, newCallDate: string | null) {
     setSaving(true)
@@ -269,7 +262,6 @@ function IncomingDesktopRow({
   const month = d.toLocaleDateString('ru-RU', { month: 'short' })
   const isNotStarted = !lead.status || lead.status === 'Не начато'
   const overdue = lead.status === 'Перезвонить' && isOverdue(lead.callDate)
-  const daysUntil = getDaysUntilCall(lead.callDate)
 
   return (
     <div className={cn(
@@ -445,7 +437,6 @@ export function IncomingLeadsTable() {
     }
   }, [])
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchLeads() }, [fetchLeads])
 
   // Sort: not started first, then overdue, then by callDate, then newest

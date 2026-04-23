@@ -10,7 +10,7 @@ interface UseLeadActionsParams {
   fetchLeads: () => Promise<void>
 }
 
-export function useLeadActions({ allLeads, setAllLeads, fetchLeads }: UseLeadActionsParams) {
+export function useLeadActions({ setAllLeads, fetchLeads }: UseLeadActionsParams) {
   const [formOpen, setFormOpen] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [viewLead, setViewLead] = useState<Lead | null>(null)

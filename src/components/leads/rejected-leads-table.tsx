@@ -11,16 +11,14 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { StatusBadge } from '@/lib/status'
-import { REJECTION_REASONS } from '@/lib/constants'
 import { useAppStore } from '@/lib/store'
 import type { Lead } from '@/lib/types'
 import { formatDate } from '@/lib/format'
-import { Trash2, XCircle, Search, Phone, Mail, Building2 } from 'lucide-react'
+import { Trash2, XCircle, Search, Phone, Mail } from 'lucide-react'
 
 export function RejectedLeadsTable() {
   const isVTB = useAppStore((s) => s.user?.role === 'vtb')
@@ -46,7 +44,6 @@ export function RejectedLeadsTable() {
     }
   }, [])
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { fetchLeads() }, [fetchLeads])
 
   // Get unique reasons from data

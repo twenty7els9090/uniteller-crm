@@ -41,32 +41,3 @@ export const staggerContainer: Variants = {
     transition: { staggerChildren: 0.06, delayChildren: 0.05 },
   },
 }
-
-/** Faster stagger for lists inside dialogs */
-export const quickStagger: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.04, delayChildren: 0.02 },
-  },
-}
-
-/** Stagger for page-level transitions */
-export const pageStagger: Variants = {
-  hidden: {},
-  visible: {
-    transition: { staggerChildren: 0.05, delayChildren: 0.02 },
-  },
-}
-
-/** Smooth expand/collapse (height auto) */
-export const expandIn: Variants = {
-  hidden: { opacity: 0, height: 0, marginTop: 0 },
-  visible: { opacity: 1, height: 'auto', marginTop: 16, transition: { duration: 0.3, ease: [0.22, 0.61, 0.36, 1] } },
-  exit: { opacity: 0, height: 0, marginTop: 0, transition: { duration: 0.2 } },
-}
-
-/** Subtle fade in from left (for list items) */
-export const fadeLeft: Variants = {
-  hidden: { opacity: 0, x: 12 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.25, ease: 'easeOut' } },
-}
