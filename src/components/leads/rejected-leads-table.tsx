@@ -36,8 +36,11 @@ export function RejectedLeadsTable() {
       if (res.ok) {
         const data = await res.json()
         setLeads(Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : [])
+      } else {
+        console.error('[RejectedLeads] API error:', res.status, await res.text().catch(() => ''))
       }
-    } catch {
+    } catch (err) {
+      console.error('[RejectedLeads] fetch error:', err)
       toast.error('Ошибка загрузки')
     } finally {
       setLoading(false)
