@@ -1,6 +1,6 @@
 'use client'
 
-import { motion, type Variants } from 'framer-motion'
+import { motion, type Variants, type TargetAndTransition } from 'framer-motion'
 import { fadeIn, slideUp } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
@@ -10,12 +10,12 @@ const pageTransition: Variants = {
   visible: {
     ...fadeIn.visible,
     scale: 1,
-    transition: { ...fadeIn.visible.transition, duration: 0.22 },
+    transition: { ...(fadeIn.visible as TargetAndTransition).transition, duration: 0.22 },
   },
   exit: {
     ...fadeIn.exit,
     scale: 0.995,
-    transition: { ...fadeIn.exit.transition, duration: 0.1 },
+    transition: { ...(fadeIn.exit as TargetAndTransition).transition, duration: 0.1 },
   },
 }
 
@@ -25,15 +25,15 @@ const sectionTransition: Variants = {
   visible: {
     ...slideUp.visible,
     transition: {
-      ...slideUp.visible.transition,
+      ...(slideUp.visible as TargetAndTransition).transition,
       duration: 0.32,
-      ease: [0.25, 0.46, 0.45, 0.94],
+      ease: [0.25, 0.46, 0.45, 0.94] as const,
     },
   },
   exit: {
     ...slideUp.exit,
     y: -4,
-    transition: { ...slideUp.exit.transition, duration: 0.12 },
+    transition: { ...(slideUp.exit as TargetAndTransition).transition, duration: 0.12 },
   },
 }
 
