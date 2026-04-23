@@ -79,7 +79,8 @@ export function useLeads() {
     try {
       const res = await fetch('/api/leads')
       if (res.ok) {
-        const data = await res.json(); const leads = data.leads || data
+        const data = await res.json()
+        const leads = Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : []
         setAllLeads(leads)
       }
     } catch {

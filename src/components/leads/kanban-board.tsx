@@ -359,7 +359,7 @@ export function KanbanBoard() {
       const res = await fetch('/api/leads')
       if (res.ok) {
         const data = await res.json()
-        setLeads(data)
+        setLeads(Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : [])
       }
     } catch {
       toast.error('Ошибка загрузки лидов')

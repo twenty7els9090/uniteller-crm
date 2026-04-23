@@ -46,7 +46,7 @@ export function GlobalSearch() {
   useEffect(() => {
     if (!open || loaded) return
     Promise.all([
-      fetch('/api/leads').then((r) => r.ok ? r.json() : []).catch(() => []),
+      fetch('/api/leads').then((r) => r.ok ? r.json().then((d: Record<string, unknown>) => Array.isArray(d.leads) ? d.leads : Array.isArray(d) ? d : []) : []).catch(() => []),
       fetch('/api/relegal').then((r) => r.ok ? r.json() : []).catch(() => []),
       fetch('/api/churn').then((r) => r.ok ? r.json() : []).catch(() => []),
       fetch('/api/additional').then((r) => r.ok ? r.json() : []).catch(() => []),

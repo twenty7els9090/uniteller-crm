@@ -52,7 +52,7 @@ export function LeadsFunnel() {
   useEffect(() => {
     fetch('/api/leads')
       .then((r) => { if (r.ok) return r.json(); throw new Error() })
-      .then((data) => setLeads(data))
+      .then((data) => setLeads(Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])

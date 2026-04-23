@@ -36,7 +36,10 @@ export function StatisticsCharts() {
 
   if (!stats) return null
 
-  const partnerData = stats.leadsByPartner.map((item) => ({
+  const leadsByPartner = stats.leadsByPartner || []
+  const rejectedByReason = stats.rejectedByReason || []
+
+  const partnerData = leadsByPartner.map((item) => ({
     name: item.partner,
     count: item._count.id,
     fill: PARTNER_COLORS[item.partner] || '#6b7280',
@@ -80,13 +83,13 @@ export function StatisticsCharts() {
             <CardContent>
               <div className="h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={stats.rejectedByReason} layout="vertical">
+                  <BarChart data={rejectedByReason} layout="vertical">
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                     <XAxis type="number" allowDecimals={false} />
                     <YAxis dataKey="name" type="category" width={220} tick={{ fontSize: 11 }} />
                     <Tooltip formatter={(value: number) => [`${value} шт.`, 'Количество']} />
                     <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={28}>
-                      {stats.rejectedByReason.map((_, index) => (
+                      {rejectedByReason.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={REJECT_COLORS[index % REJECT_COLORS.length]} />
                       ))}
                     </Bar>

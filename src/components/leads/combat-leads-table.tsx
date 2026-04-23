@@ -91,7 +91,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
       const res = await fetch('/api/leads')
       if (res.ok) {
         const data = await res.json()
-        setAllLeads(data)
+        setAllLeads(Array.isArray(data.leads) ? data.leads : Array.isArray(data) ? data : [])
       }
     } catch {
       toast.error('Ошибка загрузки боевых лидов')
