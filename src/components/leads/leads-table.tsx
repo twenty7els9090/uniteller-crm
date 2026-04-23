@@ -122,12 +122,12 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
             Нажмите на ячейку для редактирования прямо в таблице. Изменения сохраняются автоматически.
           </p>
         )}
-        <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
+        <div className="hidden md:block rounded-xl border border-slate-200 bg-white overflow-hidden card-elevated">
           <Table>
             <TableHeader>
-              <TableRow className="bg-muted/30 hover:bg-muted/30 border-b">
+              <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 border-b">
                 {['Организация', 'Партнёр', 'Заявка', 'Статус', 'Контакты', 'Менеджер', ''].map((h) => (
-                  <TableHead key={h} className="text-[11px] uppercase tracking-wider font-medium text-muted-foreground px-2 first:pl-4 py-3">
+                  <TableHead key={h} className="text-[11px] uppercase tracking-wider font-medium text-slate-400 px-2 first:pl-4 py-3">
                     {h}
                   </TableHead>
                 ))}
@@ -180,7 +180,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
       />
 
       {/* ─── Desktop Card-Table ─── */}
-      <div className="hidden md:block rounded-xl border border-border/60 bg-card overflow-hidden card-soft">
+      <div className="hidden md:block rounded-xl border border-slate-200 bg-white overflow-hidden card-elevated">
         <AnimatePresence mode="wait">
           <motion.div
             key={data.expandedFolder || 'main'}
@@ -208,7 +208,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
               />
             )) : (
               <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
-                <svg className="h-12 w-12 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="h-12 w-12 opacity-15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
                 <p className="text-sm text-muted-foreground/70">{folderLabel ? `${folderLabel} нет` : 'Лиды не найдены'}</p>
@@ -265,7 +265,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
       {!data.isVTB && (
         <button
           onClick={() => actions.setFormOpen(true)}
-          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 ring-4 ring-primary/10 flex items-center justify-center active:scale-95 transition-transform"
+          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-xl shadow-teal-600/25 ring-4 ring-teal-600/10 flex items-center justify-center active:scale-95 transition-transform"
           aria-label="Новый лид"
         >
           <Plus className="h-6 w-6" />

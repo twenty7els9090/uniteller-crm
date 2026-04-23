@@ -39,11 +39,11 @@ interface CategoryConfig {
 }
 
 const categories: CategoryConfig[] = [
-  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров для лидов', iconBg: 'bg-teal-100/60 text-teal-600 rounded-lg p-1.5' },
-  { key: 'manager', label: 'Менеджеры', icon: <Users className="h-4 w-4" />, description: 'Список менеджеров', iconBg: 'bg-sky-100/60 text-sky-600 rounded-lg p-1.5' },
-  { key: 'zayavka', label: 'Статусы заявки', icon: <ClipboardCheck className="h-4 w-4" />, description: 'Выполнена, В работе, На паузе, Отклонена', iconBg: 'bg-amber-100/60 text-amber-600 rounded-lg p-1.5' },
-  { key: 'status', label: 'Детальные статусы', icon: <FileText className="h-4 w-4" />, description: 'Детализация текущего этапа работы', iconBg: 'bg-violet-100/60 text-violet-600 rounded-lg p-1.5' },
-  { key: 'activityType', label: 'Виды деятельности', icon: <Briefcase className="h-4 w-4" />, description: 'Автомойка, Паркинг, Вендинг и т.д.', iconBg: 'bg-rose-100/60 text-rose-600 rounded-lg p-1.5' },
+  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров для лидов', iconBg: 'bg-teal-100/60 text-teal-600 rounded-lg p-1.5 ring-1 ring-teal-200/40' },
+  { key: 'manager', label: 'Менеджеры', icon: <Users className="h-4 w-4" />, description: 'Список менеджеров', iconBg: 'bg-sky-100/60 text-sky-600 rounded-lg p-1.5 ring-1 ring-sky-200/40' },
+  { key: 'zayavka', label: 'Статусы заявки', icon: <ClipboardCheck className="h-4 w-4" />, description: 'Выполнена, В работе, На паузе, Отклонена', iconBg: 'bg-amber-100/60 text-amber-600 rounded-lg p-1.5 ring-1 ring-amber-200/40' },
+  { key: 'status', label: 'Детальные статусы', icon: <FileText className="h-4 w-4" />, description: 'Детализация текущего этапа работы', iconBg: 'bg-violet-100/60 text-violet-600 rounded-lg p-1.5 ring-1 ring-violet-200/40' },
+  { key: 'activityType', label: 'Виды деятельности', icon: <Briefcase className="h-4 w-4" />, description: 'Автомойка, Паркинг, Вендинг и т.д.', iconBg: 'bg-rose-100/60 text-rose-600 rounded-lg p-1.5 ring-1 ring-rose-200/40' },
 ]
 
 function SettingsCategory({ config }: { config: CategoryConfig }) {
@@ -104,7 +104,7 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
 
   return (
     <motion.div variants={scaleIn}>
-      <Card className="card-soft border-border/60">
+      <Card className="card-elevated border-slate-200">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
             <div className={config.iconBg}>{config.icon}</div>
@@ -121,11 +121,11 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
               placeholder="Новое значение..."
-              className="h-8 text-sm bg-white/70 backdrop-blur-sm border-border/60"
+              className="h-8 text-sm bg-white border-slate-200"
             />
             <Button
               size="sm"
-              className="h-8 px-3 shrink-0 shadow-sm shadow-primary/10"
+              className="h-8 px-3 shrink-0 bg-gradient-to-r from-teal-600 to-teal-500"
               onClick={handleAdd}
               disabled={adding || !newItem.trim()}
             >
@@ -153,7 +153,7 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
                   >
                     <Badge
                       variant="outline"
-                      className="text-xs pl-2.5 pr-1 py-1 group cursor-default whitespace-normal break-words border-border/50 hover:border-destructive/30 transition-colors"
+                      className="text-xs pl-2.5 pr-1 py-1 group cursor-default whitespace-normal break-words border-slate-200 hover:border-red-200/40 transition-colors"
                     >
                       {item}
                       <button
@@ -214,8 +214,8 @@ export function SettingsPage() {
     <main className="flex-1 overflow-auto p-4 md:p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <motion.div variants={slideUp} initial="hidden" animate="visible">
-          <h1 className="text-xl font-semibold tracking-tight">Настройки</h1>
-          <p className="text-sm text-muted-foreground mt-1">
+          <h1 className="text-slate-900 text-xl font-semibold tracking-tight">Настройки</h1>
+          <p className="text-sm text-slate-400 mt-1">
             Управление справочниками: {totalItems} значений в {categories.length} категориях
           </p>
         </motion.div>

@@ -28,8 +28,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'zvonok',
     title: 'Входящий',
-    dotColor: 'bg-sky-500',
-    headerBg: 'bg-sky-500/[0.07]',
+    dotColor: 'bg-sky-600',
+    headerBg: 'bg-sky-500/10',
     borderColor: 'border-sky-200',
     filter: (l) => l.zayavka === 'Входящий' || l.zayavka === 'Звонок',
     defaultZayavka: 'Входящий',
@@ -38,8 +38,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'dogovor',
     title: 'Договор',
-    dotColor: 'bg-teal-500',
-    headerBg: 'bg-teal-500/[0.07]',
+    dotColor: 'bg-teal-600',
+    headerBg: 'bg-teal-500/10',
     borderColor: 'border-teal-200',
     filter: (l) => l.status === 'заключаем договор',
     defaultZayavka: 'В работе',
@@ -48,8 +48,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'bank-params',
     title: 'Ожидание банковских параметров',
-    dotColor: 'bg-amber-500',
-    headerBg: 'bg-amber-500/[0.07]',
+    dotColor: 'bg-amber-600',
+    headerBg: 'bg-amber-500/10',
     borderColor: 'border-amber-200',
     filter: (l) =>
       ['ожидаем банковские параметры', 'параметры получены'].includes(l.status || ''),
@@ -59,8 +59,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'nastroyka',
     title: 'Настройка',
-    dotColor: 'bg-cyan-500',
-    headerBg: 'bg-cyan-500/[0.07]',
+    dotColor: 'bg-cyan-600',
+    headerBg: 'bg-cyan-500/10',
     borderColor: 'border-cyan-200',
     filter: (l) => l.status === 'настраиваем сервис',
     defaultZayavka: 'В работе',
@@ -69,8 +69,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'boevye-platezhi',
     title: 'Ожидание боевых платежей',
-    dotColor: 'bg-emerald-500',
-    headerBg: 'bg-emerald-500/[0.07]',
+    dotColor: 'bg-emerald-600',
+    headerBg: 'bg-emerald-500/10',
     borderColor: 'border-emerald-200',
     filter: (l) =>
       ['ожидание боевых платежей', 'личный кабинет создан'].includes(
@@ -82,8 +82,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'na-pauze',
     title: 'На паузе',
-    dotColor: 'bg-orange-500',
-    headerBg: 'bg-orange-500/[0.07]',
+    dotColor: 'bg-orange-600',
+    headerBg: 'bg-orange-500/10',
     borderColor: 'border-orange-200',
     filter: (l) => l.zayavka === 'На паузе',
     defaultZayavka: 'На паузе',
@@ -92,8 +92,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'otkazy',
     title: 'Отказы',
-    dotColor: 'bg-red-500',
-    headerBg: 'bg-red-500/[0.07]',
+    dotColor: 'bg-red-600',
+    headerBg: 'bg-red-500/10',
     borderColor: 'border-red-200',
     filter: (l) =>
       l.zayavka === 'Отклонена' ||
@@ -133,7 +133,7 @@ function LeadCard({
         e.dataTransfer.effectAllowed = 'move'
       }}
       className={cn(
-        'group relative rounded-xl border bg-card p-3 card-soft transition-all duration-200 hover:-translate-y-0.5 hover:card-soft-hover',
+        'group relative rounded-lg border border-slate-200 bg-white p-3 card-elevated transition-all duration-200 hover:-translate-y-0.5 hover:card-elevated-hover',
         isDragging && 'opacity-35 scale-[0.97] ring-1 ring-primary/10',
         !isReadOnly && 'cursor-grab active:cursor-grabbing',
       )}
@@ -143,7 +143,7 @@ function LeadCard({
         <div
           className={cn(
             'absolute top-2.5 right-2 p-0.5 rounded transition-colors pointer-events-none',
-            'text-muted-foreground/20 hover:text-muted-foreground/50',
+            'text-slate-300 hover:text-slate-400',
             'opacity-0 group-hover:opacity-40',
           )}
         >
@@ -254,14 +254,14 @@ function KanbanColumn({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={cn(
-        'flex flex-col rounded-xl border border-border/60 bg-muted/[0.08] min-w-[280px] w-[280px] shrink-0 transition-all duration-200',
+        'flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm min-w-[280px] w-[280px] shrink-0 transition-all duration-200',
         highlight && 'ring-2 ring-primary/15 bg-primary/[0.03]',
       )}
     >
       {/* Column header */}
       <div
         className={cn(
-          'px-3 py-2.5 rounded-t-[11px] border-b border-border/40 flex items-center justify-between shrink-0',
+          'px-3 py-2.5 rounded-t-[11px] border-b border-slate-100 flex items-center justify-between shrink-0',
           column.headerBg,
         )}
       >
@@ -286,7 +286,7 @@ function KanbanColumn({
         ))}
 
         {leads.length === 0 && !highlight && (
-          <div className="flex flex-col items-center justify-center h-20 text-xs text-muted-foreground/40 gap-1">
+          <div className="flex flex-col items-center justify-center h-20 text-xs text-slate-300 gap-1">
             <MessageSquare className="h-4 w-4 opacity-20" />
             <span>Пусто</span>
           </div>
@@ -310,23 +310,23 @@ function SkeletonBoard() {
       {COLUMNS.map((col) => (
         <div
           key={col.id}
-          className="flex flex-col rounded-xl border border-border/60 bg-muted/[0.08] min-w-[280px] w-[280px] shrink-0"
+          className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm min-w-[280px] w-[280px] shrink-0"
         >
-          <div className={cn('px-3 py-2.5 rounded-t-[11px] border-b border-border/40', col.headerBg)}>
+          <div className={cn('px-3 py-2.5 rounded-t-[11px] border-b border-slate-100', col.headerBg)}>
             <div className="flex items-center gap-2">
               <div className={cn('w-2 h-2 rounded-full', col.dotColor)} />
-              <div className="h-3.5 w-16 rounded bg-muted/60 animate-pulse" />
+              <div className="h-3.5 w-16 rounded bg-slate-100 animate-pulse" />
             </div>
           </div>
           <div className="p-2 space-y-2">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-xl border border-border/40 bg-card/60 p-2.5 space-y-1.5"
+                className="rounded-lg border border-slate-200 bg-white p-2.5 space-y-1.5"
               >
-                <div className="h-3.5 w-3/4 rounded bg-muted/50 animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-muted/40 animate-pulse" />
-                <div className="h-3 w-full rounded bg-muted/40 animate-pulse" />
+                <div className="h-3.5 w-3/4 rounded bg-slate-100 animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-slate-100 animate-pulse" />
+                <div className="h-3 w-full rounded bg-slate-100 animate-pulse" />
               </div>
             ))}
           </div>
@@ -489,7 +489,7 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="space-y-3 bg-gradient-to-br from-muted/20 to-background p-4 rounded-xl">
+    <div className="space-y-3 bg-slate-50/50 p-4 rounded-xl">
       {/* Search bar */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -497,7 +497,7 @@ export function KanbanBoard() {
           placeholder="Поиск по доске..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-9 bg-white/70 backdrop-blur-sm border-border/60"
+          className="pl-9 h-9 bg-white border-slate-200"
         />
       </div>
 

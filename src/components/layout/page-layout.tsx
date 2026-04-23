@@ -4,7 +4,7 @@ import { motion, type Variants, type TargetAndTransition } from 'framer-motion'
 import { fadeIn, slideUp } from '@/lib/motion'
 import { cn } from '@/lib/utils'
 
-/** Refined crossfade with subtle scale — faster, more polished page transitions */
+/** Refined crossfade with subtle scale — page transitions */
 const pageTransition: Variants = {
   hidden: { ...fadeIn.hidden, scale: 0.995 },
   visible: {
@@ -19,7 +19,7 @@ const pageTransition: Variants = {
   },
 }
 
-/** Refined slide-up with smoother easing for section entrances */
+/** Refined slide-up for section entrances */
 const sectionTransition: Variants = {
   hidden: { ...slideUp.hidden, y: 10 },
   visible: {

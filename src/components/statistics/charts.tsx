@@ -50,9 +50,9 @@ export function StatisticsCharts() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Bar Chart - Leads by Partner */}
         <motion.div variants={scaleIn}>
-          <Card className="card-soft border-border/60">
+          <Card className="card-elevated border-slate-200">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Лиды по партнёрам</CardTitle>
+              <CardTitle className="text-slate-900 text-sm font-semibold">Лиды по партнёрам</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[260px]">
@@ -76,9 +76,9 @@ export function StatisticsCharts() {
 
         {/* Bar Chart - Rejected leads by reason */}
         <motion.div variants={scaleIn}>
-          <Card className="card-soft border-border/60">
+          <Card className="card-elevated border-slate-200">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Причины отказа лидов</CardTitle>
+              <CardTitle className="text-slate-900 text-sm font-semibold">Причины отказа лидов</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="h-[260px]">

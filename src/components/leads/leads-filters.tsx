@@ -151,16 +151,16 @@ export function LeadsFilters({
       {/* Search & Add */}
       <div className="flex flex-col sm:flex-row gap-2.5">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/70" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
             placeholder="Поиск..."
             value={globalFilter}
             onChange={(e) => onGlobalFilterChange(e.target.value)}
-            className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm border-white/40 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] focus-visible:ring-primary/20 focus-visible:border-primary/30 focus-visible:bg-white transition-all duration-200"
+            className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm border-slate-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)] focus-visible:ring-primary/20 focus-visible:border-primary/30 focus-visible:bg-white transition-all duration-200"
           />
         </div>
         {!isVTB && (
-          <Button onClick={onAddLead} size="default" className="hidden sm:flex shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-200">
+          <Button onClick={onAddLead} size="default" className="hidden sm:flex bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 shadow-md shadow-primary/15 hover:shadow-lg hover:shadow-primary/20 transition-shadow duration-200">
             <Plus className="h-4 w-4 mr-2" />
             Новый лид
           </Button>
@@ -169,10 +169,10 @@ export function LeadsFilters({
 
       {/* Filters row */}
       {showFilters && (
-        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0 pt-1 border-t border-border/50">
+        <div className="flex flex-nowrap items-center gap-2 overflow-x-auto no-scrollbar md:flex-wrap pb-1 md:pb-0 pt-1 border-t border-slate-100">
           <div className="flex items-center gap-1.5 shrink-0">
-            <Filter className="h-4 w-4 text-muted-foreground/70" />
-            <span className="text-sm text-muted-foreground font-medium whitespace-nowrap">Фильтры:</span>
+            <Filter className="h-4 w-4 text-slate-400" />
+            <span className="text-sm text-slate-400 font-medium whitespace-nowrap">Фильтры:</span>
           </div>
 
           <MultiSelectFilter label="Партнёр" options={partners} selected={partnerFilter} onChange={onPartnerFilterChange} />
@@ -194,7 +194,7 @@ export function LeadsFilters({
 
           {/* Folder buttons — only for uniteller, not VTB */}
           {!isVTB && (folderCounts.rejected > 0 || folderCounts.paused > 0) && (
-            <div className="w-px h-5 bg-gradient-to-b from-transparent via-border/60 to-transparent mx-1 shrink-0 hidden sm:block" />
+            <div className="w-px h-5 bg-gradient-to-b from-transparent via-slate-200 to-transparent mx-1 shrink-0 hidden sm:block" />
           )}
 
           {!isVTB && folderCounts.rejected > 0 && (

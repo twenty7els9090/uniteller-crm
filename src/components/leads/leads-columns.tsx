@@ -34,7 +34,7 @@ export function SkeletonRows({ count = 8 }: { count?: number }) {
           {widths.map((w, j) => (
             <TableCell key={j} className="py-2.5 px-2 first:pl-4">
               <div
-                className="h-5 rounded-md bg-muted animate-pulse"
+                className="h-5 rounded-md bg-slate-100/60 animate-pulse"
                 style={{ width: w, opacity: 1 - i * 0.09 }}
               />
             </TableCell>

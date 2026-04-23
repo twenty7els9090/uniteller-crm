@@ -4,44 +4,44 @@ import type { Lead } from '@/lib/types'
 
 // ─── Status color maps ────────────────────────────────────────────────
 
-/** Detailed status → color config */
-const STATUS_STYLES: Record<string, { dot: string; bg: string; text: string }> = {
+/** Detailed status → pill color config */
+const STATUS_STYLES: Record<string, { dot: string; bg: string; text: string; ring: string }> = {
   // Gray — not started
-  'Не начато': { dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-600' },
-  'Не звонили': { dot: 'bg-gray-400', bg: 'bg-gray-50', text: 'text-gray-600' },
+  'Не начато': { dot: 'bg-slate-400', bg: 'bg-slate-50', text: 'text-slate-600', ring: 'ring-slate-200' },
+  'Не звонили': { dot: 'bg-slate-400', bg: 'bg-slate-50', text: 'text-slate-600', ring: 'ring-slate-200' },
   // Green — success/progress
-  'Звонок выполнен': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700' },
-  'пошли боевые платежи': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700' },
-  'личный кабинет создан': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+  'Звонок выполнен': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-200' },
+  'пошли боевые платежи': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-700', ring: 'ring-emerald-200' },
+  'личный кабинет создан': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700', ring: 'ring-teal-200' },
   // Amber — pending
-  'Перезвонить': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700' },
-  'ожидание боевых платежей': { dot: 'bg-violet-400', bg: 'bg-violet-50', text: 'text-violet-700' },
-  // Blue-cyan — in progress
-  'заключаем договор': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700' },
-  'ожидаем банковские параметры': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700' },
-  'параметры получены': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700' },
-  'настраиваем сервис': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700' },
+  'Перезвонить': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700', ring: 'ring-amber-200' },
+  'ожидание боевых платежей': { dot: 'bg-violet-500', bg: 'bg-violet-50', text: 'text-violet-700', ring: 'ring-violet-200' },
+  // Sky — in progress
+  'заключаем договор': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700', ring: 'ring-sky-200' },
+  'ожидаем банковские параметры': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-700', ring: 'ring-sky-200' },
+  'параметры получены': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700', ring: 'ring-cyan-200' },
+  'настраиваем сервис': { dot: 'bg-cyan-500', bg: 'bg-cyan-50', text: 'text-cyan-700', ring: 'ring-cyan-200' },
   // Orange — issues
-  'не открыт ОКВЭД': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700' },
-  'высокая комиссия': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700' },
-  'высокая процентная ставка': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700' },
+  'не открыт ОКВЭД': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-700', ring: 'ring-amber-200' },
+  'высокая комиссия': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700', ring: 'ring-orange-200' },
+  'высокая процентная ставка': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-700', ring: 'ring-orange-200' },
   // Red — rejected
-  'Отказался': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
-  'не актуально': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
-  'не поддерживаем оборудование': { dot: 'bg-rose-500', bg: 'bg-rose-50', text: 'text-rose-700' },
-  'нет совместной интеграции': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700' },
-  'отказ СБ': { dot: 'bg-red-600', bg: 'bg-red-50', text: 'text-red-800' },
-  'другая причина': { dot: 'bg-stone-400', bg: 'bg-stone-50', text: 'text-stone-600' },
-  'Нужна интеграция': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700' },
+  'Отказался': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-200' },
+  'не актуально': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-200' },
+  'не поддерживаем оборудование': { dot: 'bg-rose-500', bg: 'bg-rose-50', text: 'text-rose-700', ring: 'ring-rose-200' },
+  'нет совместной интеграции': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-700', ring: 'ring-red-200' },
+  'отказ СБ': { dot: 'bg-red-600', bg: 'bg-red-50', text: 'text-red-800', ring: 'ring-red-200' },
+  'другая причина': { dot: 'bg-stone-400', bg: 'bg-stone-50', text: 'text-stone-600', ring: 'ring-stone-200' },
+  'Нужна интеграция': { dot: 'bg-teal-500', bg: 'bg-teal-50', text: 'text-teal-700', ring: 'ring-teal-200' },
 }
 
-/** Zayavka (request status) → color config */
-const ZAYAVKA_STYLES: Record<string, { dot: string; bg: string; text: string }> = {
-  'Выполнена': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-800' },
-  'В работе': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-800' },
-  'На паузе': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-800' },
-  'Отклонена': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-800' },
-  'Входящий': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-800' },
+/** Zayavka (request status) → pill color config */
+const ZAYAVKA_STYLES: Record<string, { dot: string; bg: string; text: string; ring: string }> = {
+  'Выполнена': { dot: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-800', ring: 'ring-emerald-200' },
+  'В работе': { dot: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-800', ring: 'ring-amber-200' },
+  'На паузе': { dot: 'bg-orange-500', bg: 'bg-orange-50', text: 'text-orange-800', ring: 'ring-orange-200' },
+  'Отклонена': { dot: 'bg-red-500', bg: 'bg-red-50', text: 'text-red-800', ring: 'ring-red-200' },
+  'Входящий': { dot: 'bg-sky-500', bg: 'bg-sky-50', text: 'text-sky-800', ring: 'ring-sky-200' },
 }
 
 // ─── Rejection statuses ───────────────────────────────────────────────
@@ -56,7 +56,7 @@ export const REJECTION_STATUSES = new Set([
   'другая причина',
 ])
 
-// ─── Badge components ─────────────────────────────────────────────────
+// ─── Pill Badge components ────────────────────────────────────────────
 
 export function StatusBadge({
   status,
@@ -67,14 +67,14 @@ export function StatusBadge({
   hover?: boolean
 }) {
   const styles = STATUS_STYLES[status]
-  const size = compact ? 'text-[11px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5'
+  const size = compact ? 'text-[11px] px-2 py-0.5' : 'text-xs px-2.5 py-0.5'
 
   if (styles) {
     return (
       <span
         className={cn(
-          'inline-flex items-center font-medium rounded-md whitespace-nowrap border-0',
-          styles.bg, styles.text, size,
+          'inline-flex items-center font-medium rounded-full whitespace-nowrap border-0 ring-1 ring-inset transition-all',
+          styles.bg, styles.text, styles.ring, size,
         )}
       >
         <span className={cn('inline-block w-1.5 h-1.5 rounded-full mr-1.5 -translate-y-px', styles.dot)} />
@@ -86,7 +86,7 @@ export function StatusBadge({
   return (
     <Badge
       variant="secondary"
-      className={cn(size, 'whitespace-nowrap font-medium')}
+      className={cn(size, 'whitespace-nowrap font-medium rounded-full')}
     >
       {status}
     </Badge>
@@ -103,14 +103,14 @@ export function ZayavkaBadge({
   hover?: boolean
 }) {
   const styles = ZAYAVKA_STYLES[zayavka]
-  const size = compact ? 'text-[11px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5'
+  const size = compact ? 'text-[11px] px-2 py-0.5' : 'text-xs px-2.5 py-0.5'
 
   if (styles) {
     return (
       <span
         className={cn(
-          'inline-flex items-center font-medium rounded-md whitespace-nowrap border-0 transition-colors',
-          styles.bg, styles.text, size,
+          'inline-flex items-center font-medium rounded-full whitespace-nowrap border-0 ring-1 ring-inset transition-all',
+          styles.bg, styles.text, styles.ring, size,
           hover && 'hover:brightness-95 cursor-default',
         )}
       >
@@ -121,7 +121,7 @@ export function ZayavkaBadge({
   }
 
   return (
-    <Badge variant="secondary" className={cn(size, 'whitespace-nowrap font-medium')}>
+    <Badge variant="secondary" className={cn(size, 'whitespace-nowrap font-medium rounded-full')}>
       {zayavka}
     </Badge>
   )
@@ -159,11 +159,11 @@ export function isNewLead(createdAt: string | null | undefined): boolean {
 export function getZayavkaRowClass(zayavka: string): string {
   switch (zayavka) {
     case 'Входящий':
-    case 'Звонок': return 'border-l-sky-400 hover:bg-sky-50/40'
+    case 'Звонок': return 'border-l-sky-400 hover:bg-sky-50/30'
     case 'В работе': return 'border-l-teal-400 hover:bg-teal-50/30'
-    case 'На паузе': return 'border-l-orange-400 bg-orange-50/30 hover:bg-orange-50/60'
-    case 'Отклонена': return 'border-l-red-300 bg-red-50/20 opacity-70 hover:opacity-100'
-    default: return 'border-l-border hover:bg-muted/40'
+    case 'На паузе': return 'border-l-orange-400 bg-orange-50/20 hover:bg-orange-50/40'
+    case 'Отклонена': return 'border-l-red-300 bg-red-50/10 opacity-70 hover:opacity-100'
+    default: return 'border-l-slate-200 hover:bg-slate-50/60'
   }
 }
 

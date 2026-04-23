@@ -98,7 +98,7 @@ export function IncomingLeadFormDialog({ open, onOpenChange, onSaved }: Incoming
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-b-none md:rounded-b-lg">
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-2xl border-slate-200 rounded-b-none md:rounded-b-2xl">
         <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50">
           <DialogTitle className="text-lg font-semibold flex items-center gap-2">
             <PhoneIncoming className="h-5 w-5 text-sky-500" />

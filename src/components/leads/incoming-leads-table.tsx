@@ -110,8 +110,8 @@ function InlineStatusControls({
     <div className="flex items-center gap-1.5 shrink-0 flex-wrap justify-end">
       {/* Current status badge */}
       {isNotStarted && mode === 'idle' && (
-        <Badge className="bg-gray-50 text-gray-500 text-[11px] px-2 py-0 border border-gray-200/60">
-          <span className="h-1.5 w-1.5 rounded-full bg-gray-400 mr-1.5" />
+        <Badge className="bg-slate-50 text-slate-500 text-[11px] px-2 py-0 border border-slate-200">
+          <span className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1.5" />
           Не начато
         </Badge>
       )}
@@ -120,7 +120,7 @@ function InlineStatusControls({
         <div className="flex items-center gap-1.5">
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-50 text-red-600 border-red-200/60' : 'bg-amber-50 text-amber-600 border-amber-200/60',
+            overdue ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-600 border-amber-200',
           )}>
             {overdue ? (
               <span className="flex items-center gap-1">
@@ -364,10 +364,10 @@ function IncomingMobileCard({
     <motion.div
       variants={slideUp}
       className={cn(
-        'rounded-2xl border bg-card p-4 space-y-3 transition-all duration-200 card-soft hover:card-soft-hover',
+        'rounded-xl border border-slate-200 bg-white p-4 space-y-3 transition-all duration-200 card-elevated hover:card-elevated-hover',
         isNotStarted && 'border-dashed border-gray-200/70 bg-gray-50/20',
-        overdue && 'bg-amber-50/30 border-amber-200/60',
-        lead.status === 'Перезвонить' && !overdue && 'border-amber-200/60',
+        overdue && 'bg-amber-50/30 border-amber-200',
+        lead.status === 'Перезвонить' && !overdue && 'border-amber-200',
       )}
     >
       {/* Header: date + status */}
@@ -377,15 +377,15 @@ function IncomingMobileCard({
           <span>{day} {month}</span>
         </div>
         {isNotStarted && (
-          <Badge className="bg-gray-50 text-gray-500 text-[11px] px-2 py-0 border border-gray-200/60">
-            <span className="h-1.5 w-1.5 rounded-full bg-gray-400 mr-1.5" />
+          <Badge className="bg-slate-50 text-slate-500 text-[11px] px-2 py-0 border border-slate-200">
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1.5" />
             Не начато
           </Badge>
         )}
         {lead.status === 'Перезвонить' && (
           <Badge className={cn(
             'text-[11px] px-2 py-0 border',
-            overdue ? 'bg-red-50 text-red-600 border-red-200/60' : 'bg-amber-50 text-amber-600 border-amber-200/60',
+            overdue ? 'bg-red-50 text-red-600 border-red-200' : 'bg-amber-50 text-amber-600 border-amber-200',
           )}>
             {overdue ? (
               <span className="flex items-center gap-1">
@@ -554,24 +554,24 @@ export function IncomingLeadsTable() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-sky-100/80 ring-1 ring-sky-200/50 flex items-center justify-center">
-              <Building2 className="h-4 w-4 text-sky-600" />
+            <div className="w-8 h-8 rounded-xl bg-teal-50 ring-1 ring-teal-200/60 flex items-center justify-center">
+              <Building2 className="h-4 w-4 text-teal-600" />
             </div>
             <h2 className="text-lg font-semibold">Входящие</h2>
           </div>
           <Badge variant="secondary" className="text-xs tabular-nums">{leads.length}</Badge>
           {notStartedCount > 0 && (
-            <Badge className="bg-gray-50 text-gray-500 text-xs border border-gray-200/60 tabular-nums">
+            <Badge className="bg-slate-50 text-slate-500 text-xs border border-slate-200 tabular-nums">
               {notStartedCount} новых
             </Badge>
           )}
           {callbackCount > 0 && (
-            <Badge className="bg-amber-50 text-amber-600 text-xs border border-amber-200/60 tabular-nums">
+            <Badge className="bg-amber-50 text-amber-600 text-xs border border-amber-200 tabular-nums">
               📞 {callbackCount} перезвонить
             </Badge>
           )}
           {overdueCount > 0 && (
-            <Badge className="bg-red-500/90 text-white text-xs border-0 tabular-nums shadow-sm shadow-red-500/20">
+            <Badge className="bg-red-50 text-red-600 text-xs border border-red-200 tabular-nums">
               <AlertTriangle className="h-3 w-3 mr-1" />
               {overdueCount} просрочено
             </Badge>
@@ -584,11 +584,11 @@ export function IncomingLeadsTable() {
               placeholder="Поиск..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 h-9 text-sm"
+              className="pl-9 h-9 text-sm border-slate-200 bg-white"
             />
           </div>
           {!isVTB && (
-            <Button onClick={() => setFormOpen(true)} size="default" className="hidden sm:flex">
+            <Button onClick={() => setFormOpen(true)} size="default" className="hidden sm:flex bg-gradient-to-r from-teal-600 to-teal-500">
               <Plus className="h-4 w-4 mr-2" />
               Новый входящий
             </Button>
@@ -597,7 +597,7 @@ export function IncomingLeadsTable() {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block rounded-xl border bg-card overflow-hidden card-soft">
+      <div className="hidden md:block rounded-xl border border-slate-200 bg-white overflow-hidden card-elevated">
         <div className="divide-y">
           {sorted.length ? sorted.map((lead) => (
             <IncomingDesktopRow
@@ -644,7 +644,7 @@ export function IncomingLeadsTable() {
       {!isVTB && (
         <button
           onClick={() => setFormOpen(true)}
-          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl shadow-primary/25 flex items-center justify-center active:scale-95 transition-transform ring-4 ring-primary/10"
+          className="sm:hidden fixed right-4 bottom-28 z-30 w-14 h-14 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 text-white shadow-xl shadow-teal-600/25 flex items-center justify-center active:scale-95 transition-transform ring-4 ring-teal-600/10"
           aria-label="Новый входящий"
         >
           <Plus className="h-6 w-6" />

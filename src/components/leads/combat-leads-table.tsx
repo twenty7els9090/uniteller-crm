@@ -337,7 +337,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-8 w-8 animate-shimmer text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-shimmer text-slate-400" />
       </div>
     )
   }
@@ -347,8 +347,8 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
       {/* Header */}
       <motion.div variants={slideUp} initial="hidden" animate="visible">
         <div className="flex items-center gap-2.5 mb-4">
-          <div className="bg-primary/10 rounded-xl p-2">
-            <Swords className="h-5 w-5 text-primary" />
+          <div className="bg-teal-50 text-teal-600 ring-1 ring-teal-200/60 rounded-xl p-2">
+            <Swords className="h-5 w-5 text-teal-600" />
           </div>
           <h2 className="text-lg font-semibold">Боевые лиды</h2>
           <Badge variant="secondary" className="text-xs font-normal">{filteredLeads.length} записей</Badge>
@@ -369,7 +369,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
             placeholder="Поиск по организации или партнёру..."
             value={globalFilter}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-9 h-11 md:h-9 bg-white/80 backdrop-blur-sm"
+            className="pl-9 h-11 md:h-9 border-slate-200 bg-white"
           />
         </div>
         <Button
@@ -377,7 +377,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
           size="sm"
           className={cn(
             'h-9 md:h-9 text-sm shrink-0 gap-1.5 rounded-lg',
-            showComments && 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm shadow-primary/15'
+            showComments && 'bg-slate-900 hover:bg-slate-800 text-white shadow-sm shadow-teal-500/20'
           )}
           onClick={() => setShowComments(!showComments)}
         >
@@ -387,16 +387,16 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
       </div>
 
       {/* ─── Desktop Table ─── */}
-      <div className="hidden md:block rounded-xl border bg-card overflow-hidden card-soft">
+      <div className="hidden md:block rounded-xl border border-slate-200 bg-white overflow-hidden card-elevated">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="bg-muted/30 hover:bg-muted/30 border-b-border/50">
+                <TableRow key={headerGroup.id} className="bg-slate-50/80 hover:bg-slate-50/80 border-b">
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="whitespace-nowrap text-[11px] uppercase tracking-wider text-muted-foreground font-semibold"
+                      className="whitespace-nowrap text-[11px] uppercase tracking-wider text-slate-400 font-semibold"
                     >
                       {header.isPlaceholder
                         ? null
@@ -421,7 +421,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-32 text-center">
                     <div className="flex flex-col items-center gap-2">
-                      <Swords className="h-10 w-10 text-muted-foreground opacity-20" />
+                      <Swords className="h-10 w-10 text-muted-foreground opacity-15" />
                       <p className="text-muted-foreground text-sm">Боевых лидов пока нет</p>
                     </div>
                   </TableCell>
@@ -442,7 +442,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
             const lead = row.original
             return (
               <motion.div key={row.id} variants={slideUp}>
-              <div className="rounded-xl card-soft border bg-card p-4 space-y-3 transition-all duration-200 hover:card-soft-hover active:scale-[0.997]">
+              <div className="rounded-xl border border-slate-200 bg-white p-4 card-elevated space-y-3 transition-all duration-200 hover:card-elevated-hover active:scale-[0.997]">
                 {/* Header */}
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-medium text-sm leading-tight">{lead.organization}</span>
@@ -507,7 +507,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
 
                 {/* Action buttons — mobile */}
                 {!readOnly && (
-                  <div className="flex items-center gap-2 pt-2 border-t">
+                  <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
                     <Button
                       variant="outline"
                       size="sm"
@@ -534,7 +534,7 @@ export function CombatLeadsTable({ readOnly = false }: CombatLeadsTableProps) {
           })
         ) : (
           <div className="flex flex-col items-center justify-center py-16 gap-2">
-            <Swords className="h-10 w-10 text-muted-foreground opacity-20" />
+            <Swords className="h-10 w-10 text-muted-foreground opacity-15" />
             <p className="text-muted-foreground text-sm">Боевых лидов пока нет</p>
           </div>
         )}

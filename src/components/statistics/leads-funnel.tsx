@@ -8,10 +8,10 @@ import { Funnel, BarChart3, PieChartIcon } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 const STAGES = [
-  { key: 'В работе', color: 'bg-amber-100 text-amber-800 border-amber-200', barColor: 'bg-amber-400', fill: '#f59e0b' },
-  { key: 'На паузе', color: 'bg-orange-100 text-orange-800 border-orange-200', barColor: 'bg-orange-400', fill: '#f97316' },
-  { key: 'Выполнена', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', barColor: 'bg-emerald-500', fill: '#10b981' },
-  { key: 'Отклонена', color: 'bg-red-100 text-red-800 border-red-200', barColor: 'bg-red-400', fill: '#ef4444' },
+  { key: 'В работе', color: 'bg-amber-100 text-amber-800 border-amber-200 ring-1 ring-amber-200/60', barColor: 'bg-amber-500', fill: '#f59e0b' },
+  { key: 'На паузе', color: 'bg-orange-100 text-orange-800 border-orange-200 ring-1 ring-orange-200/60', barColor: 'bg-orange-500', fill: '#f97316' },
+  { key: 'Выполнена', color: 'bg-emerald-100 text-emerald-800 border-emerald-200 ring-1 ring-emerald-200/60', barColor: 'bg-emerald-600', fill: '#10b981' },
+  { key: 'Отклонена', color: 'bg-red-100 text-red-800 border-red-200 ring-1 ring-red-200/60', barColor: 'bg-red-500', fill: '#ef4444' },
 ] as const
 
 const PERIODS = [
@@ -105,7 +105,7 @@ export function LeadsFunnel() {
 
   if (loading) {
     return (
-      <Card className="card-soft border-border/60">
+      <Card className="card-elevated border-slate-200">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Funnel className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function LeadsFunnel() {
   }
 
   return (
-    <Card className="card-soft border-border/60">
+    <Card className="card-elevated border-slate-200">
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -138,7 +138,7 @@ export function LeadsFunnel() {
                 <button
                   className={cn(
                     'p-1.5 rounded-md transition-colors duration-150',
-                    viewMode === 'bar' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    viewMode === 'bar' ? 'bg-slate-900 text-white' : 'text-muted-foreground hover:text-foreground'
                   )}
                   onClick={() => setViewMode('bar')}
                   title="Столбцы"
@@ -148,7 +148,7 @@ export function LeadsFunnel() {
                 <button
                   className={cn(
                     'p-1.5 rounded-md transition-colors duration-150',
-                    viewMode === 'pie' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+                    viewMode === 'pie' ? 'bg-slate-900 text-white' : 'text-muted-foreground hover:text-foreground'
                   )}
                   onClick={() => setViewMode('pie')}
                   title="Круговая"
@@ -163,10 +163,10 @@ export function LeadsFunnel() {
                   <button
                     key={p.key}
                     className={cn(
-                      'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                      'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
                       period === p.key
-                        ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
-                        : 'bg-background border-border/60 hover:bg-accent'
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : 'bg-background border-slate-200 hover:bg-accent'
                     )}
                     onClick={() => setPeriod(p.key)}
                   >
@@ -182,10 +182,10 @@ export function LeadsFunnel() {
             <div className="flex flex-wrap gap-1.5">
               <button
                 className={cn(
-                  'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                  'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
                   !partnerFilter
-                    ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
-                    : 'bg-background border-border/60 hover:bg-accent'
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-background border-slate-200 hover:bg-accent'
                 )}
                 onClick={() => setPartnerFilter('')}
               >
@@ -195,10 +195,10 @@ export function LeadsFunnel() {
                 <button
                   key={p}
                   className={cn(
-                    'text-[11px] px-2.5 py-1 rounded-lg border border-border/60 transition-colors duration-150',
+                    'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
                     partnerFilter === p
-                      ? 'bg-primary text-primary-foreground border-primary shadow-sm shadow-primary/10'
-                      : 'bg-background border-border/60 hover:bg-accent'
+                      ? 'bg-slate-900 text-white border-slate-900'
+                      : 'bg-background border-slate-200 hover:bg-accent'
                   )}
                   onClick={() => setPartnerFilter(partnerFilter === p ? '' : p)}
                 >
@@ -217,7 +217,7 @@ export function LeadsFunnel() {
               <div key={stage.key}>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <Badge variant="outline" className={cn('text-xs font-medium', stage.color)}>
+                    <Badge variant="outline" className={cn('text-xs font-medium rounded-full', stage.color)}>
                       {stage.key}
                     </Badge>
                     <span className="font-semibold tabular-nums">

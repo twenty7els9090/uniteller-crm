@@ -62,7 +62,7 @@ export function DesktopLeadRow({
   return (
     <div
       className={cn(
-        'group flex flex-col gap-1.5 px-4 py-3 hover:bg-accent/40 transition-all duration-150 border-l-[3px]',
+        'group flex flex-col gap-1.5 px-4 py-3 hover:bg-slate-50/60 transition-all duration-150 border-l-[3px]',
         getZayavkaRowClass(lead.zayavka),
       )}
     >

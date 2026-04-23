@@ -17,14 +17,28 @@ import { RelegalTable } from '@/components/relegal/relegal-table'
 import { AdditionalTable } from '@/components/additional/additional-table'
 import { SettingsPage } from '@/components/settings/settings-page'
 import { PageWrapper, PageSection } from '@/components/layout/page-layout'
-import { Loader2, LayoutGrid, Columns3 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { LayoutGrid, Columns3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ErrorBoundary } from '@/components/error-boundary'
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="flex flex-col items-center gap-4"
+      >
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center shadow-xl shadow-slate-900/20 animate-pulse">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 3h18v18H3z" />
+            <path d="M3 9h18" />
+            <path d="M9 21V9" />
+          </svg>
+        </div>
+        <span className="text-xs text-slate-400 font-medium">Загрузка...</span>
+      </motion.div>
     </div>
   )
 }
@@ -38,16 +52,16 @@ function MainPage() {
     <PageWrapper pageKey="main">
       <PageSection>
         {/* View toggle */}
-        <div className="flex justify-end mb-3">
-          <div className="inline-flex items-center rounded-lg border bg-muted/60 p-0.5 gap-0.5">
+        <div className="flex justify-end mb-4">
+          <div className="inline-flex items-center rounded-xl border border-slate-200 bg-white p-[3px] gap-[2px] shadow-sm">
             <button
               type="button"
               onClick={() => setViewMode('table')}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150',
+                'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-[7px] text-xs font-medium transition-all duration-200',
                 viewMode === 'table'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/60',
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
               )}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
@@ -57,10 +71,10 @@ function MainPage() {
               type="button"
               onClick={() => setViewMode('kanban')}
               className={cn(
-                'inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors duration-150',
+                'inline-flex items-center gap-1.5 rounded-lg px-3.5 py-[7px] text-xs font-medium transition-all duration-200',
                 viewMode === 'kanban'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-background/60',
+                  ? 'bg-slate-900 text-white shadow-sm'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
               )}
             >
               <Columns3 className="h-3.5 w-3.5" />
@@ -139,7 +153,7 @@ function StatisticsPage() {
     <PageWrapper pageKey="statistics">
       <PageSection className="p-4 md:p-6">
         <div className="space-y-6">
-          {/* Bento Grid: funnel large, top orgs side */}
+          {/* Bento Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
             <div className="lg:col-span-3">
               <LeadsFunnel />
@@ -148,7 +162,6 @@ function StatisticsPage() {
               <TopOrganizations />
             </div>
           </div>
-          {/* Charts row */}
           <StatisticsCharts />
         </div>
       </PageSection>
@@ -182,7 +195,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc]">
       <AppHeader />
       <div className="flex-1 flex flex-col pb-24 md:pb-0">
         <ErrorBoundary>

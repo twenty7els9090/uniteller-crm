@@ -59,11 +59,11 @@ export function TopOrganizations() {
       initial="hidden"
       animate="visible"
     >
-    <Card className="card-soft border-border/60">
+    <Card className="card-elevated border-slate-200">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
           <span className="bg-amber-100/60 rounded-lg p-1.5">
-            <Trophy className="w-4 h-4 text-amber-500" />
+            <Trophy className="w-4 h-4 text-amber-600" />
           </span>
           <CardTitle className="text-base font-semibold">Топ организаций по обороту</CardTitle>
         </div>
@@ -99,11 +99,11 @@ export function TopOrganizations() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-2 pr-3 text-xs font-medium text-muted-foreground w-8">#</th>
-                <th className="text-left py-2 pr-3 text-xs font-medium text-muted-foreground">Организация</th>
-                <th className="text-right py-2 px-3 text-xs font-medium text-muted-foreground">Оборот ТСП</th>
-                <th className="text-right py-2 px-3 text-xs font-medium text-muted-foreground">Выручка</th>
-                <th className="text-center py-2 pl-3 text-xs font-medium text-muted-foreground w-20">Статус</th>
+                <th className="text-left py-2 pr-3 text-xs font-medium text-slate-400 w-8">#</th>
+                <th className="text-left py-2 pr-3 text-xs font-medium text-slate-400">Организация</th>
+                <th className="text-right py-2 px-3 text-xs font-medium text-slate-400">Оборот ТСП</th>
+                <th className="text-right py-2 px-3 text-xs font-medium text-slate-400">Выручка</th>
+                <th className="text-center py-2 pl-3 text-xs font-medium text-slate-400 w-20">Статус</th>
               </tr>
             </thead>
             <tbody>
@@ -121,7 +121,7 @@ export function TopOrganizations() {
                     </span>
                   </td>
                   <td className="py-2.5 pr-3 font-medium text-foreground max-w-[200px] truncate">{org.organization}</td>
-                  <td className="py-2.5 px-3 text-right font-semibold text-emerald-600">{formatCurrency(org.turnover)}</td>
+                  <td className="py-2.5 px-3 text-right font-semibold text-teal-600">{formatCurrency(org.turnover)}</td>
                   <td className="py-2.5 px-3 text-right font-medium text-foreground">{formatCurrency(org.revenue)}</td>
                   <td className="py-2.5 pl-3 text-center">
                     <StatusBadge status={org.zayavka} />

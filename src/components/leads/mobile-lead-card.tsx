@@ -40,7 +40,7 @@ export function MobileLeadCard({
     <motion.div
       variants={slideUp}
       className={cn(
-        'rounded-xl border bg-card p-4 space-y-2.5 transition-all duration-200 card-soft hover:card-soft-hover active:scale-[0.997]',
+        'rounded-xl border border-slate-200 bg-white p-4 space-y-2.5 transition-all duration-200 card-elevated hover:card-elevated-hover active:scale-[0.997]',
         getZayavkaRowClass(lead.zayavka),
       )}
     >
@@ -72,7 +72,7 @@ export function MobileLeadCard({
 
       {/* Comment */}
       {lead.comment && (
-        <p className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-2.5 whitespace-pre-wrap break-words leading-relaxed">{lead.comment}</p>
+        <p className="text-sm text-muted-foreground bg-slate-50 rounded-lg p-2.5 whitespace-pre-wrap break-words leading-relaxed">{lead.comment}</p>
       )}
 
       {/* Details grid */}

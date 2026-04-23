@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import { BarChart3, Users, LogOut, Swords, Plug, Building2, TrendingDown, Settings, PhoneIncoming } from 'lucide-react'
 import { GlobalSearch } from './global-search'
+import { SPRING } from '@/lib/motion'
 
 interface NavTab {
   label: string
@@ -39,28 +40,28 @@ export function AppHeader() {
 
   return (
     <>
-      {/* ─── Desktop Header ─── */}
-      <header className="hidden md:block sticky top-0 z-30 glass-strong border-b border-border/40">
-        <div className="flex items-center justify-between h-[52px] px-4 lg:px-6">
+      {/* ─── Desktop Header — Dark ─── */}
+      <header className="hidden md:block sticky top-0 z-30 bg-slate-900 border-b border-white/[0.06] shadow-lg shadow-black/10">
+        <div className="flex items-center justify-between h-[54px] px-5 lg:px-6">
           {/* Left: logo */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shadow-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-md shadow-teal-500/20">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3h18v18H3z" />
                 <path d="M3 9h18" />
                 <path d="M9 21V9" />
               </svg>
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-semibold text-[13px] text-foreground">
+              <span className="font-semibold text-[13px] text-white tracking-tight">
                 {isAdmin ? 'Uniteller CRM' : 'ВТБ Партнёр'}
               </span>
-              <span className="text-[10px] text-muted-foreground/60 leading-none">{user.fullName}</span>
+              <span className="text-[10px] text-white/30 leading-none">{user.fullName}</span>
             </div>
           </div>
 
-          {/* Center: nav tabs with animated pill indicator */}
-          <nav className="relative flex items-center gap-0.5 bg-muted/50 rounded-xl p-0.5">
+          {/* Center: nav tabs with animated pill */}
+          <nav className="relative flex items-center gap-0.5 bg-white/[0.06] rounded-xl p-[3px]">
             {visibleTabs.map((tab) => {
               const isActive = currentPage === tab.page
               return (
@@ -68,10 +69,10 @@ export function AppHeader() {
                   key={tab.page}
                   onClick={() => setCurrentPage(tab.page)}
                   className={cn(
-                    'relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12.5px] font-medium transition-colors duration-150 z-10',
+                    'relative flex items-center gap-1.5 px-3.5 py-[7px] rounded-lg text-[12.5px] font-medium transition-colors duration-150 z-10',
                     isActive
-                      ? 'text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'text-white'
+                      : 'text-white/40 hover:text-white/70'
                   )}
                 >
                   {tab.icon}
@@ -79,8 +80,8 @@ export function AppHeader() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute inset-0 bg-primary rounded-lg -z-10"
-                      transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+                      className="absolute inset-0 bg-white/[0.12] rounded-lg -z-10"
+                      transition={SPRING}
                     />
                   )}
                 </button>
@@ -93,52 +94,52 @@ export function AppHeader() {
             <GlobalSearch />
             <button
               onClick={logout}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors duration-150"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-white/40 hover:text-red-300 hover:bg-red-500/10 transition-colors duration-150"
             >
               <LogOut className="h-4 w-4" />
-              <span className="hidden xl:inline">Выйти</span>
+              <span className="hidden xl:inline text-[12.5px]">Выйти</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* ─── Mobile Header (compact) ─── */}
-      <header className="md:hidden sticky top-0 z-30 glass-strong border-b border-border/40 safe-top">
-        <div className="flex items-center justify-between h-11 px-3">
-          <div className="flex items-center gap-1.5 shrink-0">
-            <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      {/* ─── Mobile Header ─── */}
+      <header className="md:hidden sticky top-0 z-30 bg-slate-900 border-b border-white/[0.06] safe-top shadow-lg shadow-black/10">
+        <div className="flex items-center justify-between h-[48px] px-3">
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-md shadow-teal-500/20">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 3h18v18H3z" />
                 <path d="M3 9h18" />
                 <path d="M9 21V9" />
               </svg>
             </div>
-            <div className="flex items-center gap-1">
-              <span className="font-semibold text-[13px]">
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-[13px] text-white">
                 {isAdmin ? 'Uniteller' : 'ВТБ'}
               </span>
-              <span className="text-muted-foreground/30 text-xs">·</span>
-              <span className="text-[11px] text-muted-foreground font-medium">
+              <span className="text-white/20 text-xs">·</span>
+              <span className="text-[11px] text-white/40 font-medium">
                 {PAGE_LABELS[currentPage]}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
             <GlobalSearch />
             <button
               onClick={logout}
-              className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-white/40 hover:text-red-300 hover:bg-red-500/10 transition-colors"
             >
-              <LogOut className="h-[15px] w-[15px]" />
+              <LogOut className="h-[14px] w-[14px]" />
             </button>
           </div>
         </div>
       </header>
 
-      {/* ─── Mobile Bottom Navigation (floating pill) ─── */}
+      {/* ─── Mobile Bottom Navigation ─── */}
       <nav className="md:hidden fixed bottom-4 left-3 right-3 z-40">
-        <div className="glass-strong rounded-2xl border border-border/40 shadow-lg shadow-black/[0.08] safe-bottom">
+        <div className="bg-slate-900/95 backdrop-blur-xl rounded-2xl border border-white/[0.08] shadow-2xl shadow-black/30 safe-bottom">
           <div className="flex items-stretch overflow-x-auto no-scrollbar">
             {visibleTabs.map((tab) => {
               const isActive = currentPage === tab.page
@@ -147,30 +148,28 @@ export function AppHeader() {
                   key={tab.page}
                   onClick={() => setCurrentPage(tab.page)}
                   className={cn(
-                    'flex flex-col items-center justify-center gap-0.5 min-w-[52px] flex-1 py-2.5 px-1 transition-colors duration-150 relative',
+                    'flex flex-col items-center justify-center gap-1 min-w-[52px] flex-1 py-2.5 px-1 transition-colors duration-150 relative',
                     isActive
-                      ? 'text-primary'
-                      : 'text-muted-foreground/70 active:text-foreground'
+                      ? 'text-teal-400'
+                      : 'text-white/30 active:text-white/60'
                   )}
                 >
-                  <div className="relative flex items-center justify-center">
-                    <span className={cn(
-                      'transition-all duration-200',
-                      isActive && 'scale-110'
-                    )}>
-                      {tab.icon}
-                    </span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="mobile-nav-dot"
-                        className="absolute -bottom-1.5 w-1 h-1 rounded-full bg-primary"
-                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </div>
                   <span className={cn(
-                    'text-[10.5px] leading-tight font-medium whitespace-normal break-words text-center transition-colors duration-150',
-                    isActive && 'font-semibold text-primary'
+                    'transition-all duration-200',
+                    isActive && 'scale-110'
+                  )}>
+                    {tab.icon}
+                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="mobile-nav-dot"
+                      className="absolute -bottom-0 w-6 h-0.5 rounded-full bg-teal-400"
+                      transition={SPRING}
+                    />
+                  )}
+                  <span className={cn(
+                    'text-[10px] leading-tight font-medium whitespace-normal break-words text-center transition-colors duration-150',
+                    isActive && 'font-semibold text-teal-400'
                   )}>
                     {tab.label}
                   </span>
