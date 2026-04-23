@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,18 +9,94 @@ datasource db {
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
+  username  String   @unique
+  password  String
+  fullName  String
+  role      String   @default("vtb")
+  sessions  Session[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Post {
+model Session {
   id        String   @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  authorId  String
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model Lead {
+  id              String    @id @default(cuid())
+  organization    String
+  partner         String
+  zayavka         String
+  status          String    @default("")
+  activityType    String    @default("")
+  comment         String    @default("")
+  contactInfo     String    @default("")
+  email           String    @default("")
+  margin          String    @default("")
+  manager         String
+  turnoverTsp     String    @default("")
+  ourRate         String    @default("")
+  revenue         String    @default("")
+  callDate        DateTime?
+  reported        Boolean   @default(false)
+  statusChangedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([partner])
+  @@index([zayavka])
+  @@index([status])
+  @@index([manager])
+  @@index([createdAt])
+  @@index([statusChangedAt])
+}
+
+model Relegal {
+  id        String   @id @default(cuid())
+  fromOrg   String   @default("")
+  toOrg     String   @default("")
+  action    String   @default("")
+  manager   String   @default("")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Additional {
+  id            String   @id @default(cuid())
+  organization  String
+  partner       String   @default("")
+  finInstrument String   @default("")
+  turnover      String   @default("")
+  revenue       String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Churn {
+  id           String   @id @default(cuid())
+  organization String
+  turnoverTsp  String   @default("")
+  revenue      String   @default("")
+  status       String   @default("")
+  comment      String   @default("")
+  reported     Boolean  @default(false)
+  manager      String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  category  String
+  value     String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([category, value])
+  @@index([category])
 }
