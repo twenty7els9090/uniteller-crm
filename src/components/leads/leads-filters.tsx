@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Popover,
@@ -15,6 +16,8 @@ import {
   Filter,
   X,
   ChevronDown,
+  XCircle,
+  PauseCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -97,6 +100,10 @@ interface LeadsFiltersProps {
   globalFilter: string
   onGlobalFilterChange: (v: string) => void
   onAddLead: () => void
+  // folder state
+  expandedFolder: 'rejected' | 'paused' | null
+  folderCounts: { rejected: number; paused: number }
+  onToggleFolder: (folder: 'rejected' | 'paused') => void
   // filter states
   partners: string[]
   managers: string[]
@@ -121,6 +128,9 @@ export function LeadsFilters({
   globalFilter,
   onGlobalFilterChange,
   onAddLead,
+  expandedFolder,
+  folderCounts,
+  onToggleFolder,
   partners,
   managers,
   dynamicZayavka,
@@ -179,6 +189,48 @@ export function LeadsFilters({
             >
               <X className="h-3.5 w-3.5 mr-1" />
               Сбросить
+            </Button>
+          )}
+
+          {/* Folder buttons */}
+          {(folderCounts.rejected > 0 || folderCounts.paused > 0) && (
+            <div className="w-px h-5 bg-border mx-1 shrink-0 hidden sm:block" />
+          )}
+
+          {folderCounts.rejected > 0 && (
+            <Button
+              variant={expandedFolder === 'rejected' ? 'destructive' : 'outline'}
+              size="sm"
+              className={cn(
+                'h-8 text-xs gap-1.5 shrink-0',
+                expandedFolder !== 'rejected' && 'text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700',
+              )}
+              onClick={() => onToggleFolder('rejected')}
+            >
+              <XCircle className="h-3.5 w-3.5" />
+              Отклонённые
+              <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0 min-w-[20px]">
+                {folderCounts.rejected}
+              </Badge>
+            </Button>
+          )}
+
+          {folderCounts.paused > 0 && (
+            <Button
+              variant={expandedFolder === 'paused' ? 'default' : 'outline'}
+              size="sm"
+              className={cn(
+                'h-8 text-xs gap-1.5 shrink-0',
+                expandedFolder !== 'paused' && 'text-orange-600 border-orange-200 hover:bg-orange-50 hover:text-orange-700',
+                expandedFolder === 'paused' && 'bg-orange-600 hover:bg-orange-700 border-orange-600',
+              )}
+              onClick={() => onToggleFolder('paused')}
+            >
+              <PauseCircle className="h-3.5 w-3.5" />
+              На паузе
+              <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0 min-w-[20px]">
+                {folderCounts.paused}
+              </Badge>
             </Button>
           )}
         </div>

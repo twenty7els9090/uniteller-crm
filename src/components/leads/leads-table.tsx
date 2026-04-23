@@ -48,16 +48,11 @@ import {
   Loader2,
   Mail,
   Trash2,
-  ChevronRight,
-  XCircle,
-  PauseCircle,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { slideUp, staggerContainer } from '@/lib/motion'
 import { formatCurrency } from '@/lib/format'
-import {
-  StatusBadge,
-} from '@/lib/status'
+import { StatusBadge } from '@/lib/status'
 import { LeadFormDialog } from './lead-form-dialog'
 import { useLeads } from './use-leads'
 import { useLeadActions } from './use-lead-actions'
@@ -65,48 +60,11 @@ import { getLeadColumns, SkeletonRows } from './leads-columns'
 import { LeadsFilters } from './leads-filters'
 import { DesktopLeadRow } from './desktop-lead-row'
 import { MobileLeadCard } from './mobile-lead-card'
-import { cn } from '@/lib/utils'
+
 interface LeadsTableProps {
   showFilters?: boolean
   showDelete?: boolean
 }
-
-// ─── Archive Folder Row (desktop) ───
-function ArchiveFolderRow({
-  icon: Icon,
-  label,
-  count,
-  expanded,
-  onClick,
-  colorClass,
-}: {
-  icon: React.ElementType
-  label: string
-  count: number
-  expanded: boolean
-  onClick: () => void
-  colorClass: string
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        'group w-full flex items-center gap-3 px-4 py-3 transition-all duration-200 border-l-[3px] hover:bg-accent/40',
-        colorClass,
-      )}
-    >
-      <Icon className="h-4.5 w-4.5 shrink-0 opacity-60" />
-      <span className="font-semibold text-sm">{label}</span>
-      <Badge variant="secondary" className="text-[10px] tabular-nums font-bold">{count}</Badge>
-      <div className="flex-1" />
-      <ChevronRight className={cn(
-        'h-4 w-4 text-muted-foreground transition-transform duration-200',
-        expanded && 'rotate-90',
-      )} />
-    </button>
-  )
-}
-
 
 export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTableProps) {
   const data = useLeads()
@@ -115,6 +73,13 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     setAllLeads: data.setAllLeads,
     fetchLeads: data.fetchLeads,
   })
+
+  // Which leads to show in the table
+  const displayLeads = data.expandedFolder === 'rejected'
+    ? data.rejectedLeads
+    : data.expandedFolder === 'paused'
+      ? data.pausedLeads
+      : data.leads
 
   const columns = getLeadColumns({
     isVTB: data.isVTB,
@@ -130,7 +95,7 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
   })
 
   const table = useReactTable({
-    data: data.leads,
+    data: displayLeads,
     columns,
     state: { sorting: data.sorting, columnFilters: data.columnFilters, globalFilter: data.globalFilter },
     onSortingChange: data.setSorting,
@@ -144,6 +109,9 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
   })
 
   const currentRows = table.getRowModel().rows
+
+  // Folder label for empty state
+  const folderLabel = data.expandedFolder === 'rejected' ? 'Отклонённых' : data.expandedFolder === 'paused' ? 'На паузе' : null
 
   // ─── Loading state ───
   if (data.loading && data.leads.length === 0) {
@@ -174,18 +142,6 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
     )
   }
 
-  // Handle archive folder delete
-  async function handleArchiveDelete(id: string) {
-    try {
-      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' })
-      if (res.ok) {
-        const { toast } = await import('sonner')
-        toast.success('Запись удалена')
-        data.setAllLeads((prev) => prev.filter((l) => l.id !== id))
-      }
-    } catch { /* silent */ }
-  }
-
   return (
     <>
       {/* Hint — hidden on mobile */}
@@ -197,13 +153,16 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
         </motion.div>
       )}
 
-      {/* Toolbar */}
+      {/* Toolbar with folder buttons */}
       <LeadsFilters
         showFilters={showFilters}
         isVTB={data.isVTB}
         globalFilter={data.globalFilter}
         onGlobalFilterChange={data.setGlobalFilter}
         onAddLead={() => actions.setFormOpen(true)}
+        expandedFolder={data.expandedFolder}
+        folderCounts={data.folderCounts}
+        onToggleFolder={data.toggleFolder}
         partners={data.partners}
         managers={data.managers}
         dynamicZayavka={data.dynamicZayavka}
@@ -222,255 +181,85 @@ export function LeadsTable({ showFilters = true, showDelete = true }: LeadsTable
 
       {/* ─── Desktop Card-Table ─── */}
       <div className="hidden md:block rounded-xl border bg-card overflow-hidden card-soft">
-        {/* Main leads rows */}
-        <div className="divide-y">
-          {currentRows.length ? currentRows.map((row) => (
-            <DesktopLeadRow
-              key={row.id}
-              lead={row.original}
-              isVTB={data.isVTB}
-              isAdmin={data.isAdmin}
-              showDelete={showDelete}
-              inlineSave={data.inlineSave}
-              openDetails={actions.openDetails}
-              onDelete={actions.setDeleteId}
-              dynamicPartners={data.dynamicPartners}
-              dynamicManagers={data.dynamicManagers}
-              dynamicZayavka={data.dynamicZayavka}
-              dynamicStatus={data.dynamicStatus}
-              dynamicActivityTypes={data.dynamicActivityTypes}
-            />
-          )) : (
-            <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
-              <svg className="h-9 w-9 opacity-25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-              <p className="text-sm">Лиды не найдены</p>
-              {data.hasActiveFilters && (
-                <button onClick={data.clearFilters} className="text-xs text-primary hover:underline mt-0.5">
-                  Сбросить фильтры
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={data.expandedFolder || 'main'}
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            className="divide-y"
+          >
+            {currentRows.length ? currentRows.map((row) => (
+              <DesktopLeadRow
+                key={row.id}
+                lead={row.original}
+                isVTB={data.isVTB}
+                isAdmin={data.isAdmin}
+                showDelete={showDelete}
+                inlineSave={data.inlineSave}
+                openDetails={actions.openDetails}
+                onDelete={actions.setDeleteId}
+                dynamicPartners={data.dynamicPartners}
+                dynamicManagers={data.dynamicManagers}
+                dynamicZayavka={data.dynamicZayavka}
+                dynamicStatus={data.dynamicStatus}
+                dynamicActivityTypes={data.dynamicActivityTypes}
+              />
+            )) : (
+              <div className="flex flex-col items-center gap-2 py-16 text-muted-foreground">
+                <svg className="h-9 w-9 opacity-25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <p className="text-sm">{folderLabel ? `${folderLabel} нет` : 'Лиды не найдены'}</p>
+                {(data.hasActiveFilters || data.globalFilter) && (
+                  <button onClick={data.clearFilters} className="text-xs text-primary hover:underline mt-0.5">
+                    Сбросить фильтры
+                  </button>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
         {/* Pagination */}
-        <DataTablePagination table={table} totalRows={data.leads.length} />
-
-        {/* ─── Archive Folders ─── */}
-        {(data.folderCounts.rejected > 0 || data.folderCounts.paused > 0) && (
-          <div className="border-t-2 border-dashed">
-            {/* Rejected folder */}
-            {data.folderCounts.rejected > 0 && (
-              <>
-                <ArchiveFolderRow
-                  icon={XCircle}
-                  label="Отклонённые"
-                  count={data.folderCounts.rejected}
-                  expanded={data.expandedFolder === 'rejected'}
-                  onClick={() => data.toggleFolder('rejected')}
-                  colorClass="border-l-red-300"
-                />
-                <AnimatePresence>
-                  {data.expandedFolder === 'rejected' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="divide-y max-h-[600px] overflow-y-auto">
-                        {data.rejectedLeads.length ? data.rejectedLeads.map((lead) => (
-                          <DesktopLeadRow
-                            key={lead.id}
-                            lead={lead}
-                            isVTB={data.isVTB}
-                            isAdmin={data.isAdmin}
-                            showDelete={showDelete}
-                            inlineSave={data.inlineSave}
-                            openDetails={actions.openDetails}
-                            onDelete={actions.setDeleteId}
-                            dynamicPartners={data.dynamicPartners}
-                            dynamicManagers={data.dynamicManagers}
-                            dynamicZayavka={data.dynamicZayavka}
-                            dynamicStatus={data.dynamicStatus}
-                            dynamicActivityTypes={data.dynamicActivityTypes}
-                          />
-                        )) : (
-                          <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-
-            {/* Paused folder */}
-            {data.folderCounts.paused > 0 && (
-              <>
-                <ArchiveFolderRow
-                  icon={PauseCircle}
-                  label="На паузе"
-                  count={data.folderCounts.paused}
-                  expanded={data.expandedFolder === 'paused'}
-                  onClick={() => data.toggleFolder('paused')}
-                  colorClass="border-l-orange-300"
-                />
-                <AnimatePresence>
-                  {data.expandedFolder === 'paused' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="divide-y max-h-[600px] overflow-y-auto">
-                        {data.pausedLeads.length ? data.pausedLeads.map((lead) => (
-                          <DesktopLeadRow
-                            key={lead.id}
-                            lead={lead}
-                            isVTB={data.isVTB}
-                            isAdmin={data.isAdmin}
-                            showDelete={showDelete}
-                            inlineSave={data.inlineSave}
-                            openDetails={actions.openDetails}
-                            onDelete={actions.setDeleteId}
-                            dynamicPartners={data.dynamicPartners}
-                            dynamicManagers={data.dynamicManagers}
-                            dynamicZayavka={data.dynamicZayavka}
-                            dynamicStatus={data.dynamicStatus}
-                            dynamicActivityTypes={data.dynamicActivityTypes}
-                          />
-                        )) : (
-                          <div className="py-6 text-center text-xs text-muted-foreground">Ничего не найдено</div>
-                        )}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </>
-            )}
-          </div>
-        )}
+        <DataTablePagination table={table} totalRows={displayLeads.length} />
       </div>
 
       {/* Mobile Card View */}
       <motion.div className="md:hidden space-y-3 pb-24" variants={staggerContainer} initial="hidden" animate="visible">
-        {currentRows.length ? (
-          currentRows.map((row) => (
-            <MobileLeadCard
-              key={row.id}
-              lead={row.original}
-              isVTB={data.isVTB}
-              isAdmin={data.isAdmin}
-              showDelete={showDelete}
-              openDetails={actions.openDetails}
-              onDelete={actions.setDeleteId}
-            />
-          ))
-        ) : (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-muted-foreground text-sm">Лиды не найдены</p>
-          </div>
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={data.expandedFolder || 'main'}
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+          >
+            {currentRows.length ? (
+              currentRows.map((row) => (
+                <MobileLeadCard
+                  key={row.id}
+                  lead={row.original}
+                  isVTB={data.isVTB}
+                  isAdmin={data.isAdmin}
+                  showDelete={showDelete}
+                  openDetails={actions.openDetails}
+                  onDelete={actions.setDeleteId}
+                />
+              ))
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-muted-foreground text-sm">
+                  {folderLabel ? `${folderLabel} нет` : 'Лиды не найдены'}
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
         {/* Mobile pagination */}
-        <DataTablePagination table={table} totalRows={data.leads.length} variant="mobile" />
-
-        {/* Mobile archive folders */}
-        {(data.folderCounts.rejected > 0 || data.folderCounts.paused > 0) && (
-          <div className="space-y-2 pt-2">
-            {data.folderCounts.rejected > 0 && (
-              <motion.div variants={slideUp}>
-                <button
-                  onClick={() => data.toggleFolder('rejected')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-200 bg-red-50/30 transition-all"
-                >
-                  <XCircle className="h-4.5 w-4.5 text-red-500 shrink-0" />
-                  <span className="font-semibold text-sm">Отклонённые</span>
-                  <Badge variant="secondary" className="text-[10px] tabular-nums">{data.folderCounts.rejected}</Badge>
-                  <div className="flex-1" />
-                  <ChevronRight className={cn(
-                    'h-4 w-4 text-muted-foreground transition-transform',
-                    data.expandedFolder === 'rejected' && 'rotate-90',
-                  )} />
-                </button>
-                <AnimatePresence>
-                  {data.expandedFolder === 'rejected' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="space-y-3 mt-2 max-h-[600px] overflow-y-auto">
-                        {data.rejectedLeads.map((lead) => (
-                          <MobileLeadCard
-                            key={lead.id}
-                            lead={lead}
-                            isVTB={data.isVTB}
-                            isAdmin={data.isAdmin}
-                            showDelete={showDelete}
-                            openDetails={actions.openDetails}
-                            onDelete={actions.setDeleteId}
-                          />
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
-
-            {data.folderCounts.paused > 0 && (
-              <motion.div variants={slideUp}>
-                <button
-                  onClick={() => data.toggleFolder('paused')}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-orange-200 bg-orange-50/30 transition-all"
-                >
-                  <PauseCircle className="h-4.5 w-4.5 text-orange-500 shrink-0" />
-                  <span className="font-semibold text-sm">На паузе</span>
-                  <Badge variant="secondary" className="text-[10px] tabular-nums">{data.folderCounts.paused}</Badge>
-                  <div className="flex-1" />
-                  <ChevronRight className={cn(
-                    'h-4 w-4 text-muted-foreground transition-transform',
-                    data.expandedFolder === 'paused' && 'rotate-90',
-                  )} />
-                </button>
-                <AnimatePresence>
-                  {data.expandedFolder === 'paused' && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="space-y-3 mt-2 max-h-[600px] overflow-y-auto">
-                        {data.pausedLeads.map((lead) => (
-                          <MobileLeadCard
-                            key={lead.id}
-                            lead={lead}
-                            isVTB={data.isVTB}
-                            isAdmin={data.isAdmin}
-                            showDelete={showDelete}
-                            openDetails={actions.openDetails}
-                            onDelete={actions.setDeleteId}
-                          />
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            )}
-          </div>
-        )}
+        <DataTablePagination table={table} totalRows={displayLeads.length} variant="mobile" />
       </motion.div>
 
       {!data.isVTB && (
