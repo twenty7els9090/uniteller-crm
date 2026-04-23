@@ -18,18 +18,14 @@ export function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleLogin(role: 'uniteller' | 'vtb') {
-    if (!password.trim()) {
-      toast.error('Введите пароль')
-      return
-    }
-
+  /** VTB — instant login by button, no password */
+  async function handleVtbLogin() {
     setLoading(true)
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, password: password.trim() }),
+        body: JSON.stringify({ role: 'vtb' }),
       })
 
       const result = await res.json()
@@ -41,7 +37,37 @@ export function LoginForm() {
 
       toast.success('Добро пожаловать!')
       setUser(result)
-      setCurrentPage('main')
+    } catch {
+      toast.error('Ошибка соединения с сервером')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  /** Uniteller — requires password */
+  async function handleUnitellerLogin() {
+    if (!password.trim()) {
+      toast.error('Введите пароль')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: 'uniteller', password: password.trim() }),
+      })
+
+      const result = await res.json()
+
+      if (!res.ok) {
+        toast.error(result.error || 'Ошибка входа')
+        return
+      }
+
+      toast.success('Добро пожаловать!')
+      setUser(result)
     } catch {
       toast.error('Ошибка соединения с сервером')
     } finally {
@@ -109,7 +135,7 @@ export function LoginForm() {
           {/* Desktop heading */}
           <motion.div variants={fadeIn} className="hidden lg:block mb-8">
             <h2 className="text-2xl font-bold tracking-tight">Вход в систему</h2>
-            <p className="text-muted-foreground mt-1.5 text-sm">Выберите роль и введите пароль</p>
+            <p className="text-muted-foreground mt-1.5 text-sm">Выберите способ входа</p>
           </motion.div>
 
           <motion.p
@@ -120,24 +146,12 @@ export function LoginForm() {
           </motion.p>
 
           <motion.div variants={slideUp} className="space-y-2.5">
+            {/* VTB — instant login button */}
             <motion.button
-              onClick={() => setSelectedRole('uniteller')}
+              onClick={handleVtbLogin}
               whileTap={{ scale: 0.98 }}
               whileHover={{ y: -1 }}
-              className={cn(
-                'w-full rounded-xl py-3.5 text-center text-sm font-semibold transition-all duration-200',
-                selectedRole === 'uniteller'
-                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 ring-2 ring-primary/30'
-                  : 'bg-primary/5 text-primary hover:bg-primary/10 active:bg-primary/10 border border-primary/10'
-              )}
-            >
-              UNITELLER
-            </motion.button>
-
-            <motion.button
-              onClick={() => setSelectedRole('vtb')}
-              whileTap={{ scale: 0.98 }}
-              whileHover={{ y: -1 }}
+              disabled={loading}
               className={cn(
                 'w-full rounded-xl py-3.5 text-center text-sm font-semibold transition-all duration-200',
                 selectedRole === 'vtb'
@@ -145,12 +159,37 @@ export function LoginForm() {
                   : 'bg-blue-500/5 text-blue-600 hover:bg-blue-500/10 active:bg-blue-500/10 border border-blue-500/10'
               )}
             >
-              ВТБ
+              {loading && selectedRole === 'vtb' ? (
+                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+              ) : (
+                'ВТБ Партнёр'
+              )}
+            </motion.button>
+
+            {/* Uniteller — expand to password */}
+            <motion.button
+              onClick={() => setSelectedRole(selectedRole === 'uniteller' ? null : 'uniteller')}
+              whileTap={{ scale: 0.98 }}
+              whileHover={{ y: -1 }}
+              disabled={loading}
+              className={cn(
+                'w-full rounded-xl py-3.5 text-center text-sm font-semibold transition-all duration-200',
+                selectedRole === 'uniteller'
+                  ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 ring-2 ring-primary/30'
+                  : 'bg-primary/5 text-primary hover:bg-primary/10 active:bg-primary/10 border border-primary/10'
+              )}
+            >
+              {loading && selectedRole === 'uniteller' ? (
+                <Loader2 className="h-4 w-4 animate-spin mx-auto" />
+              ) : (
+                'UNITELLER'
+              )}
             </motion.button>
           </motion.div>
 
+          {/* Uniteller password field */}
           <AnimatePresence>
-            {selectedRole && (
+            {selectedRole === 'uniteller' && (
               <motion.div
                 key="password-field"
                 initial={{ opacity: 0, height: 0, marginTop: 0 }}
@@ -165,21 +204,16 @@ export function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleLogin(selectedRole)
+                    if (e.key === 'Enter') handleUnitellerLogin()
                   }}
                   autoFocus
                   className="h-12 rounded-xl bg-white/80 border-border/80 text-base backdrop-blur-sm"
                 />
                 <motion.div whileTap={{ scale: 0.98 }}>
                   <Button
-                    className={cn(
-                      'w-full h-12 rounded-xl text-base font-semibold transition-all duration-200 shadow-lg',
-                      selectedRole === 'uniteller'
-                        ? 'bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20'
-                        : 'bg-blue-500 hover:bg-blue-600 text-white shadow-blue-500/20'
-                    )}
+                    className="w-full h-12 rounded-xl text-base font-semibold transition-all duration-200 shadow-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20"
                     disabled={loading}
-                    onClick={() => handleLogin(selectedRole)}
+                    onClick={handleUnitellerLogin}
                   >
                     {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     Войти

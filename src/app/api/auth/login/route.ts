@@ -3,10 +3,7 @@ import { db } from '@/lib/db'
 import { createSession, setSessionCookie, deleteSession, deleteSessionCookie } from '@/lib/auth'
 import { cookies } from 'next/headers'
 
-const PASSWORDS: Record<string, string> = {
-  uniteller: 'cat16',
-  vtb: 'vtbx',
-}
+const UNITELLER_PASSWORD = 'cat16'
 
 const ROLE_DISPLAY: Record<string, string> = {
   uniteller: 'Uniteller',
@@ -18,16 +15,20 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { role, password } = body
 
-    if (!role || !password) {
-      return NextResponse.json({ error: 'Укажите роль и пароль' }, { status: 400 })
+    if (!role) {
+      return NextResponse.json({ error: 'Укажите роль' }, { status: 400 })
     }
 
     if (!['uniteller', 'vtb'].includes(role)) {
       return NextResponse.json({ error: 'Неверная роль' }, { status: 400 })
     }
 
-    if (PASSWORDS[role] !== password) {
-      return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 })
+    // VTB — no password required
+    // Uniteller — password required
+    if (role === 'uniteller') {
+      if (!password || UNITELLER_PASSWORD !== password) {
+        return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 })
+      }
     }
 
     // Find or create a session user for this role
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
       user = await db.user.create({
         data: {
           username: role,
-          password: PASSWORDS[role],
+          password: role === 'uniteller' ? UNITELLER_PASSWORD : '',
           fullName: ROLE_DISPLAY[role],
           role,
         },
