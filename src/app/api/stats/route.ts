@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import { getCurrentUser } from '@/lib/auth'
 
 /** Parse a Russian-formatted currency string like "1 500 000 Р" to a number */
-function parseCurrency(val: string): number {
+function parseCurrency(val: string | null): number {
   if (!val) return 0
   const cleaned = val.replace(/[^\d.,]/g, '').replace(/\s/g, '').replace(',', '.')
   const n = Number(cleaned)
