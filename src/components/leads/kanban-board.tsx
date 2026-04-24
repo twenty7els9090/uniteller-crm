@@ -28,8 +28,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'zvonok',
     title: 'Входящий',
-    dotColor: 'bg-sky-600',
-    headerBg: 'bg-sky-500/10',
+    dotColor: 'bg-sky-500',
+    headerBg: 'bg-sky-50/60',
     borderColor: 'border-sky-200',
     filter: (l) => l.zayavka === 'Входящий' || l.zayavka === 'Звонок',
     defaultZayavka: 'Входящий',
@@ -38,8 +38,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'dogovor',
     title: 'Договор',
-    dotColor: 'bg-teal-600',
-    headerBg: 'bg-teal-500/10',
+    dotColor: 'bg-teal-500',
+    headerBg: 'bg-teal-50/60',
     borderColor: 'border-teal-200',
     filter: (l) => l.status === 'заключаем договор',
     defaultZayavka: 'В работе',
@@ -48,8 +48,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'bank-params',
     title: 'Ожидание банковских параметров',
-    dotColor: 'bg-amber-600',
-    headerBg: 'bg-amber-500/10',
+    dotColor: 'bg-amber-500',
+    headerBg: 'bg-amber-50/60',
     borderColor: 'border-amber-200',
     filter: (l) =>
       ['ожидаем банковские параметры', 'параметры получены'].includes(l.status || ''),
@@ -59,8 +59,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'nastroyka',
     title: 'Настройка',
-    dotColor: 'bg-cyan-600',
-    headerBg: 'bg-cyan-500/10',
+    dotColor: 'bg-cyan-500',
+    headerBg: 'bg-cyan-50/60',
     borderColor: 'border-cyan-200',
     filter: (l) => l.status === 'настраиваем сервис',
     defaultZayavka: 'В работе',
@@ -69,8 +69,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'boevye-platezhi',
     title: 'Ожидание боевых платежей',
-    dotColor: 'bg-emerald-600',
-    headerBg: 'bg-emerald-500/10',
+    dotColor: 'bg-emerald-500',
+    headerBg: 'bg-emerald-50/60',
     borderColor: 'border-emerald-200',
     filter: (l) =>
       ['ожидание боевых платежей', 'личный кабинет создан'].includes(
@@ -82,8 +82,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'na-pauze',
     title: 'На паузе',
-    dotColor: 'bg-orange-600',
-    headerBg: 'bg-orange-500/10',
+    dotColor: 'bg-orange-500',
+    headerBg: 'bg-orange-50',
     borderColor: 'border-orange-200',
     filter: (l) => l.zayavka === 'На паузе',
     defaultZayavka: 'На паузе',
@@ -92,8 +92,8 @@ const COLUMNS: ColumnDef[] = [
   {
     id: 'otkazy',
     title: 'Отказы',
-    dotColor: 'bg-red-600',
-    headerBg: 'bg-red-500/10',
+    dotColor: 'bg-red-500',
+    headerBg: 'bg-red-50/60',
     borderColor: 'border-red-200',
     filter: (l) =>
       l.zayavka === 'Отклонена' ||
@@ -133,8 +133,8 @@ function LeadCard({
         e.dataTransfer.effectAllowed = 'move'
       }}
       className={cn(
-        'group relative rounded-lg border border-slate-200 bg-white p-3 card-elevated transition-all duration-200 hover:-translate-y-0.5 hover:card-elevated-hover',
-        isDragging && 'opacity-35 scale-[0.97] ring-1 ring-primary/10',
+        'group relative rounded-xl border bg-card p-3 card-soft transition-all duration-200 hover:-translate-y-0.5 hover:card-soft-hover',
+        isDragging && 'opacity-40 shadow-lg ring-2 ring-primary/20 scale-[0.97]',
         !isReadOnly && 'cursor-grab active:cursor-grabbing',
       )}
     >
@@ -142,9 +142,9 @@ function LeadCard({
       {!isReadOnly && (
         <div
           className={cn(
-            'absolute top-2.5 right-2 p-0.5 rounded transition-colors pointer-events-none',
-            'text-slate-300 hover:text-slate-400',
-            'opacity-0 group-hover:opacity-40',
+            'absolute top-2.5 right-2 p-0.5 rounded transition-colors',
+            'text-muted-foreground/20 hover:text-muted-foreground/50',
+            'opacity-0 group-hover:opacity-100 focus:opacity-100 pointer-events-none',
           )}
         >
           <GripVertical className="h-3.5 w-3.5" />
@@ -156,7 +156,7 @@ function LeadCard({
         <div className="flex items-start justify-between gap-1.5">
           <span
             className={cn(
-              'font-semibold text-[13px] leading-tight truncate',
+              'font-semibold text-sm leading-tight truncate',
               isRejection && 'line-through decoration-red-300',
             )}
             title={lead.organization}
@@ -174,7 +174,7 @@ function LeadCard({
         </div>
 
         {/* Manager + Contact */}
-        <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground/70 min-w-0">
+        <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground min-w-0">
           {lead.manager && (
             <span className="flex items-center gap-0.5 truncate">
               <User className="h-3 w-3 shrink-0" />
@@ -207,7 +207,7 @@ function LeadCard({
         {/* Comment (truncated) */}
         {lead.comment && (
           <p
-            className="text-[11px] text-muted-foreground/70 leading-relaxed truncate"
+            className="text-[11px] text-muted-foreground leading-relaxed truncate"
             title={lead.comment}
           >
             {lead.comment}
@@ -216,7 +216,7 @@ function LeadCard({
 
         {/* Date */}
         {lead.createdAt && (
-          <span className="text-[10px] text-muted-foreground/40">
+          <span className="text-[10px] text-muted-foreground/50">
             {getRelativeTime(lead.createdAt)}
           </span>
         )}
@@ -254,22 +254,23 @@ function KanbanColumn({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
       className={cn(
-        'flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm min-w-[280px] w-[280px] shrink-0 transition-all duration-200',
-        highlight && 'ring-2 ring-primary/15 bg-primary/[0.03]',
+        'flex flex-col rounded-2xl border bg-muted/15 min-w-[290px] w-[290px] shrink-0 transition-all duration-200',
+        column.borderColor,
+        highlight && 'bg-primary/5 ring-2 ring-primary/20 scale-[1.01]',
       )}
     >
       {/* Column header */}
       <div
         className={cn(
-          'px-3 py-2.5 rounded-t-[11px] border-b border-slate-100 flex items-center justify-between shrink-0',
+          'px-3.5 py-3 rounded-t-[15px] border-b flex items-center justify-between shrink-0',
           column.headerBg,
         )}
       >
         <div className="flex items-center gap-2">
-          <div className={cn('w-2 h-2 rounded-full shrink-0', column.dotColor)} />
-          <h3 className="text-[13px] font-semibold select-none">{column.title}</h3>
+          <div className={cn('w-2.5 h-2.5 rounded-full shrink-0', column.dotColor)} />
+          <h3 className="text-sm font-semibold select-none">{column.title}</h3>
         </div>
-        <span className="text-xs font-bold tabular-nums text-muted-foreground bg-white/80 rounded-full px-2 py-0.5 min-w-[24px] text-center shadow-sm">
+        <span className="text-xs font-bold tabular-nums text-muted-foreground bg-white/70 rounded-full px-2 py-0.5 min-w-[24px] text-center">
           {leads.length}
         </span>
       </div>
@@ -286,14 +287,14 @@ function KanbanColumn({
         ))}
 
         {leads.length === 0 && !highlight && (
-          <div className="flex flex-col items-center justify-center h-20 text-xs text-slate-300 gap-1">
-            <MessageSquare className="h-4 w-4 opacity-20" />
+          <div className="flex flex-col items-center justify-center h-20 text-xs text-muted-foreground/40 gap-1">
+            <MessageSquare className="h-4 w-4" />
             <span>Пусто</span>
           </div>
         )}
 
         {highlight && leads.length === 0 && (
-          <div className="flex items-center justify-center h-20 border-2 border-dashed border-primary/20 rounded-lg bg-primary/[0.02]">
+          <div className="flex items-center justify-center h-20 border-2 border-dashed border-primary/30 rounded-lg">
             <span className="text-xs text-primary/60">Переместить сюда</span>
           </div>
         )}
@@ -310,23 +311,23 @@ function SkeletonBoard() {
       {COLUMNS.map((col) => (
         <div
           key={col.id}
-          className="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm min-w-[280px] w-[280px] shrink-0"
+          className="flex flex-col rounded-xl border bg-muted/20 min-w-[290px] w-[290px] shrink-0"
         >
-          <div className={cn('px-3 py-2.5 rounded-t-[11px] border-b border-slate-100', col.headerBg)}>
+          <div className={cn('px-3 py-2.5 rounded-t-[11px] border-b', col.headerBg)}>
             <div className="flex items-center gap-2">
-              <div className={cn('w-2 h-2 rounded-full', col.dotColor)} />
-              <div className="h-3.5 w-16 rounded bg-slate-100 animate-pulse" />
+              <div className={cn('w-2.5 h-2.5 rounded-full', col.dotColor)} />
+              <div className="h-4 w-16 rounded bg-muted animate-pulse" />
             </div>
           </div>
           <div className="p-2 space-y-2">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-lg border border-slate-200 bg-white p-2.5 space-y-1.5"
+                className="rounded-lg border bg-card p-3 space-y-2"
               >
-                <div className="h-3.5 w-3/4 rounded bg-slate-100 animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-slate-100 animate-pulse" />
-                <div className="h-3 w-full rounded bg-slate-100 animate-pulse" />
+                <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-muted animate-pulse" />
+                <div className="h-3 w-full rounded bg-muted animate-pulse" />
               </div>
             ))}
           </div>
@@ -489,7 +490,7 @@ export function KanbanBoard() {
   }
 
   return (
-    <div className="space-y-3 bg-slate-50/50 p-4 rounded-xl">
+    <div className="space-y-3">
       {/* Search bar */}
       <div className="relative max-w-sm">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -497,7 +498,7 @@ export function KanbanBoard() {
           placeholder="Поиск по доске..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9 h-9 bg-white border-slate-200"
+          className="pl-9 h-9"
         />
       </div>
 

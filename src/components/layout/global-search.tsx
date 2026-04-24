@@ -29,14 +29,18 @@ export function GlobalSearch() {
   const containerRef = useRef<HTMLDivElement>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
+  // Focus input when opened
   useEffect(() => {
     if (open && inputRef.current) {
+      // Small delay so animation starts first
       setTimeout(() => inputRef.current?.focus(), 50)
     }
   }, [open])
 
+  // Effective search term: prefer globalSearch from store, fall back to local query
   const effectiveQuery = globalSearch || query
 
+  // Fetch ALL entities once on first open
   const cacheRef = useRef<{ leads: Lead[]; relegal: Relegal[]; churn: Churn[]; additional: Additional[] }>({ leads: [], relegal: [], churn: [], additional: [] })
 
   useEffect(() => {
@@ -52,65 +56,108 @@ export function GlobalSearch() {
     }).finally(() => setLoading(false))
   }, [open, loaded])
 
+  // Search across all entities
   const filterAll = useCallback((search: string) => {
     if (!search.trim()) { setResults([]); return }
     const q = search.toLowerCase()
     const found: SearchResult[] = []
     const { leads, relegal, churn, additional } = cacheRef.current
 
+    // Leads — non-combat
     for (const l of leads) {
       if (found.length >= 10) break
       const isCombat = l.zayavka === 'Выполнена' || l.status === 'пошли боевых платежи'
       if (isCombat) continue
       const haystack = `${l.organization} ${l.contactInfo} ${l.manager} ${l.comment || ''} ${l.partner}`.toLowerCase()
       if (haystack.includes(q)) {
-        found.push({ id: l.id, title: l.organization, subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '), page: 'main' as PageType, pageLabel: 'Лиды', icon: <Building2 className="h-3.5 w-3.5" /> })
+        found.push({
+          id: l.id,
+          title: l.organization,
+          subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '),
+          page: 'main' as PageType,
+          pageLabel: 'Лиды',
+          icon: <Building2 className="h-3.5 w-3.5" />,
+        })
       }
     }
 
+    // Combat leads
     for (const l of leads) {
       if (found.length >= 10) break
       const isCombat = l.zayavka === 'Выполнена' || l.status === 'пошли боевых платежи'
       if (!isCombat) continue
       const haystack = `${l.organization} ${l.contactInfo} ${l.manager} ${l.comment || ''} ${l.partner}`.toLowerCase()
       if (haystack.includes(q)) {
-        found.push({ id: l.id, title: l.organization, subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '), page: 'combat' as PageType, pageLabel: 'Боевые', icon: <FileText className="h-3.5 w-3.5" /> })
+        found.push({
+          id: l.id,
+          title: l.organization,
+          subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '),
+          page: 'combat' as PageType,
+          pageLabel: 'Боевые',
+          icon: <FileText className="h-3.5 w-3.5" />,
+        })
       }
     }
 
+    // Relegal (Юр.лица)
     for (const r of relegal) {
       if (found.length >= 10) break
       const haystack = `${r.fromOrg} ${r.toOrg} ${r.action} ${r.manager}`.toLowerCase()
       if (haystack.includes(q)) {
-        found.push({ id: r.id, title: r.fromOrg || r.toOrg, subtitle: [r.toOrg && r.fromOrg ? `→ ${r.toOrg}` : '', r.action, r.manager].filter(Boolean).join(' · '), page: 'relegal' as PageType, pageLabel: 'Юр.лица', icon: <ArrowRightLeft className="h-3.5 w-3.5" /> })
+        found.push({
+          id: r.id,
+          title: r.fromOrg || r.toOrg,
+          subtitle: [r.toOrg && r.fromOrg ? `→ ${r.toOrg}` : '', r.action, r.manager].filter(Boolean).join(' · '),
+          page: 'relegal' as PageType,
+          pageLabel: 'Юр.лица',
+          icon: <ArrowRightLeft className="h-3.5 w-3.5" />,
+        })
       }
     }
 
+    // Churn (Оттоки)
     for (const c of churn) {
       if (found.length >= 10) break
       const haystack = `${c.organization} ${c.manager} ${c.comment || ''} ${c.status}`.toLowerCase()
       if (haystack.includes(q)) {
-        found.push({ id: c.id, title: c.organization, subtitle: [c.manager, c.status].filter(Boolean).join(' · '), page: 'churn' as PageType, pageLabel: 'Оттоки', icon: <TrendingDown className="h-3.5 w-3.5" /> })
+        found.push({
+          id: c.id,
+          title: c.organization,
+          subtitle: [c.manager, c.status].filter(Boolean).join(' · '),
+          page: 'churn' as PageType,
+          pageLabel: 'Оттоки',
+          icon: <TrendingDown className="h-3.5 w-3.5" />,
+        })
       }
     }
 
+    // Additional (Доп. сервисы)
     for (const a of additional) {
       if (found.length >= 10) break
       const haystack = `${a.organization} ${a.partner} ${a.finInstrument}`.toLowerCase()
       if (haystack.includes(q)) {
-        found.push({ id: a.id, title: a.organization, subtitle: [a.partner, a.finInstrument].filter(Boolean).join(' · '), page: 'dop' as PageType, pageLabel: 'Доп.', icon: <Plug className="h-3.5 w-3.5" /> })
+        found.push({
+          id: a.id,
+          title: a.organization,
+          subtitle: [a.partner, a.finInstrument].filter(Boolean).join(' · '),
+          page: 'dop' as PageType,
+          pageLabel: 'Доп.',
+          icon: <Plug className="h-3.5 w-3.5" />,
+        })
       }
     }
 
     setResults(found.slice(0, 10))
   }, [])
 
+  // Debounced search
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => filterAll(effectiveQuery), 150)
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [effectiveQuery, filterAll])
 
+  // Close on click outside
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -137,6 +184,7 @@ export function GlobalSearch() {
     setOpen(false)
   }
 
+  // Highlight matching text
   function highlight(text: string, search: string) {
     if (!search.trim()) return text
     const idx = text.toLowerCase().indexOf(search.toLowerCase())
@@ -161,22 +209,25 @@ export function GlobalSearch() {
             <motion.div
               key="search-input"
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 300, opacity: 1 }}
+              animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="relative overflow-hidden"
             >
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 ref={inputRef}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') { e.preventDefault(); if (results.length > 0) handleResultClick(results[0]) }
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (results.length > 0) handleResultClick(results[0])
+                  }
                   if (e.key === 'Escape') handleClear()
                 }}
                 placeholder="Поиск..."
-                className="h-9 w-full text-sm pl-10 pr-9 bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:bg-white focus-visible:border-slate-300"
+                className="h-10 w-full text-sm pl-10 pr-9"
               />
               <AnimatePresence>
                 {query && (
@@ -186,7 +237,7 @@ export function GlobalSearch() {
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.15 }}
                     onClick={handleClear}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   >
                     <X className="h-4 w-4" />
                   </motion.button>
@@ -202,10 +253,10 @@ export function GlobalSearch() {
               transition={{ duration: 0.15 }}
               onClick={() => setOpen(true)}
               className={cn(
-                'flex items-center gap-1.5 px-2.5 py-2 rounded-lg text-sm transition-all hover:scale-[1.02]',
+                'flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-sm transition-colors',
                 globalSearch
-                  ? 'text-teal-600'
-                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                  ? 'text-primary bg-primary/10'
+                  : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               )}
             >
               <Search className="h-4 w-4" />
@@ -220,7 +271,7 @@ export function GlobalSearch() {
         onClick={() => setOpen(true)}
         className={cn(
           'md:hidden flex items-center justify-center w-9 h-9 rounded-lg transition-colors',
-          globalSearch ? 'text-teal-600' : 'text-slate-400'
+          globalSearch ? 'text-primary' : 'text-muted-foreground'
         )}
       >
         <Search className="h-4 w-4" />
@@ -239,20 +290,23 @@ export function GlobalSearch() {
           {open && (
             <div className="px-3 pb-2 flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   ref={inputRef}
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') { e.preventDefault(); if (results.length > 0) handleResultClick(results[0]) }
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (results.length > 0) handleResultClick(results[0])
+                    }
                     if (e.key === 'Escape') handleClear()
                   }}
                   placeholder="Поиск..."
-                  className="pl-9 h-10 text-sm bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400"
+                  className="pl-9 h-10 text-sm"
                 />
                 {query && (
-                  <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <button onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
                     <X className="h-4 w-4" />
                   </button>
                 )}
@@ -270,7 +324,7 @@ export function GlobalSearch() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="absolute top-full right-0 mt-2 w-[360px] sm:w-[420px] bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-black/[0.12] z-50 overflow-hidden origin-top-right"
+            className="absolute top-full right-0 mt-2 w-[340px] sm:w-[400px] glass-strong border border-border/60 rounded-xl shadow-xl shadow-black/[0.06] z-50 overflow-hidden origin-top-right"
           >
             {loading ? (
               <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -281,9 +335,9 @@ export function GlobalSearch() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="py-10 text-center text-sm text-slate-400"
+                className="py-6 text-center text-sm text-muted-foreground"
               >
-                <Search className="h-6 w-6 mx-auto mb-2 opacity-20" />
+                <Search className="h-5 w-5 mx-auto mb-1.5 opacity-30" />
                 Ничего не найдено
               </motion.div>
             ) : (
@@ -296,30 +350,30 @@ export function GlobalSearch() {
                     transition={{ duration: 0.15, delay: i * 0.03 }}
                     onClick={() => handleResultClick(result)}
                     className={cn(
-                      'w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors',
-                      i === 0 && 'bg-slate-50/50',
-                      i > 0 && 'border-t border-slate-100',
+                      'w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-accent transition-colors',
+                      i === 0 && 'bg-muted/30',
+                      i > 0 && 'border-t',
                     )}
                   >
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-slate-400 shrink-0">{result.icon}</span>
-                        <span className="text-sm font-medium truncate text-slate-900">
+                        <span className="text-muted-foreground shrink-0">{result.icon}</span>
+                        <span className="text-sm font-medium truncate">
                           {highlight(result.title, effectiveQuery)}
                         </span>
                       </div>
                       {result.subtitle && (
-                        <p className="text-xs text-slate-400 truncate pl-[22px]">
+                        <p className="text-xs text-muted-foreground truncate pl-[22px]">
                           {highlight(result.subtitle, effectiveQuery)}
                         </p>
                       )}
                     </div>
-                    <Badge variant="secondary" className="text-[10px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full shrink-0 mt-0.5 font-medium">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 shrink-0 mt-0.5">
                       {result.pageLabel}
                     </Badge>
                   </motion.button>
                 ))}
-                <div className="border-t border-slate-100 px-4 py-2.5 text-[11px] text-slate-400 font-medium">
+                <div className="border-t px-3 py-2 text-[11px] text-muted-foreground">
                   Найдено: {results.length}
                 </div>
               </div>

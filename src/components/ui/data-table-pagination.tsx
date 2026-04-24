@@ -12,7 +12,7 @@ interface DataTablePaginationProps<TData> {
 
 export function DataTablePagination<TData>({ table, totalRows, variant = 'desktop' }: DataTablePaginationProps<TData>) {
   const isMobile = variant === 'mobile'
-  const btnSize = isMobile ? 'h-10 w-10' : 'h-8 w-8'
+  const btnSize = isMobile ? 'h-10 w-10' : 'h-8 w-8 rounded-lg'
   const textSize = isMobile ? 'text-xs' : 'text-sm'
   const iconSize = 'h-4 w-4'
   const pageText = isMobile

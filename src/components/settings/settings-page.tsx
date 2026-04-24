@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { AnimatePresence, motion } from 'framer-motion'
-import { staggerContainer, scaleIn, slideUp, popIn } from '@/lib/motion'
+import { staggerContainer, scaleIn, slideUp } from '@/lib/motion'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,15 +35,14 @@ interface CategoryConfig {
   label: string
   icon: React.ReactNode
   description: string
-  iconBg: string
 }
 
 const categories: CategoryConfig[] = [
-  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров для лидов', iconBg: 'bg-teal-100/60 text-teal-600 rounded-lg p-1.5 ring-1 ring-teal-200/40' },
-  { key: 'manager', label: 'Менеджеры', icon: <Users className="h-4 w-4" />, description: 'Список менеджеров', iconBg: 'bg-sky-100/60 text-sky-600 rounded-lg p-1.5 ring-1 ring-sky-200/40' },
-  { key: 'zayavka', label: 'Статусы заявки', icon: <ClipboardCheck className="h-4 w-4" />, description: 'Выполнена, В работе, На паузе, Отклонена', iconBg: 'bg-amber-100/60 text-amber-600 rounded-lg p-1.5 ring-1 ring-amber-200/40' },
-  { key: 'status', label: 'Детальные статусы', icon: <FileText className="h-4 w-4" />, description: 'Детализация текущего этапа работы', iconBg: 'bg-violet-100/60 text-violet-600 rounded-lg p-1.5 ring-1 ring-violet-200/40' },
-  { key: 'activityType', label: 'Виды деятельности', icon: <Briefcase className="h-4 w-4" />, description: 'Автомойка, Паркинг, Вендинг и т.д.', iconBg: 'bg-rose-100/60 text-rose-600 rounded-lg p-1.5 ring-1 ring-rose-200/40' },
+  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров для лидов' },
+  { key: 'manager', label: 'Менеджеры', icon: <Users className="h-4 w-4" />, description: 'Список менеджеров' },
+  { key: 'zayavka', label: 'Статусы заявки', icon: <ClipboardCheck className="h-4 w-4" />, description: 'Выполнена, В работе, На паузе, Отклонена' },
+  { key: 'status', label: 'Детальные статусы', icon: <FileText className="h-4 w-4" />, description: 'Детализация текущего этапа работы' },
+  { key: 'activityType', label: 'Виды деятельности', icon: <Briefcase className="h-4 w-4" />, description: 'Автомойка, Паркинг, Вендинг и т.д.' },
 ]
 
 function SettingsCategory({ config }: { config: CategoryConfig }) {
@@ -104,10 +103,10 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
 
   return (
     <motion.div variants={scaleIn}>
-      <Card className="card-elevated border-slate-200">
+      <Card className="card-soft">
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2">
-            <div className={config.iconBg}>{config.icon}</div>
+            <div className="text-muted-foreground">{config.icon}</div>
             <CardTitle className="text-base">{config.label}</CardTitle>
             <Badge variant="secondary" className="ml-auto text-xs">{items.length}</Badge>
           </div>
@@ -121,11 +120,11 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
               onChange={(e) => setNewItem(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAdd() } }}
               placeholder="Новое значение..."
-              className="h-8 text-sm bg-white border-slate-200"
+              className="h-8 text-sm"
             />
             <Button
               size="sm"
-              className="h-8 px-3 shrink-0 bg-gradient-to-r from-teal-600 to-teal-500"
+              className="h-8 px-3 shrink-0"
               onClick={handleAdd}
               disabled={adding || !newItem.trim()}
             >
@@ -136,24 +135,21 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
 
           {/* Items list */}
           {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
-              <ClipboardCheck className="h-8 w-8 opacity-20 mb-2" />
-              <p className="text-sm">Список пуст</p>
-            </div>
+            <p className="text-sm text-muted-foreground text-center py-4">Список пуст</p>
           ) : (
             <div className="flex flex-wrap gap-1.5">
               <AnimatePresence>
                 {items.map((item) => (
                   <motion.div
                     key={item}
-                    variants={popIn}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
                   >
                     <Badge
                       variant="outline"
-                      className="text-xs pl-2.5 pr-1 py-1 group cursor-default whitespace-normal break-words border-slate-200 hover:border-red-200/40 transition-colors"
+                      className="text-xs pl-2.5 pr-1 py-1 group cursor-default whitespace-normal break-words"
                     >
                       {item}
                       <button
@@ -214,13 +210,13 @@ export function SettingsPage() {
     <main className="flex-1 overflow-auto p-4 md:p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         <motion.div variants={slideUp} initial="hidden" animate="visible">
-          <h1 className="text-slate-900 text-xl font-semibold tracking-tight">Настройки</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-xl font-semibold">Настройки</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Управление справочниками: {totalItems} значений в {categories.length} категориях
           </p>
         </motion.div>
 
-        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {categories.map((cat) => (
             <SettingsCategory key={cat.key} config={cat} />
           ))}

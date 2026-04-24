@@ -8,10 +8,10 @@ import { Funnel, BarChart3, PieChartIcon } from 'lucide-react'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 const STAGES = [
-  { key: 'В работе', color: 'bg-amber-100 text-amber-800 border-amber-200 ring-1 ring-amber-200/60', barColor: 'bg-amber-500', fill: '#f59e0b' },
-  { key: 'На паузе', color: 'bg-orange-100 text-orange-800 border-orange-200 ring-1 ring-orange-200/60', barColor: 'bg-orange-500', fill: '#f97316' },
-  { key: 'Выполнена', color: 'bg-emerald-100 text-emerald-800 border-emerald-200 ring-1 ring-emerald-200/60', barColor: 'bg-emerald-600', fill: '#10b981' },
-  { key: 'Отклонена', color: 'bg-red-100 text-red-800 border-red-200 ring-1 ring-red-200/60', barColor: 'bg-red-500', fill: '#ef4444' },
+  { key: 'В работе', color: 'bg-amber-100 text-amber-800 border-amber-200', barColor: 'bg-amber-400', fill: '#f59e0b' },
+  { key: 'На паузе', color: 'bg-orange-100 text-orange-800 border-orange-200', barColor: 'bg-orange-400', fill: '#f97316' },
+  { key: 'Выполнена', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', barColor: 'bg-emerald-500', fill: '#10b981' },
+  { key: 'Отклонена', color: 'bg-red-100 text-red-800 border-red-200', barColor: 'bg-red-400', fill: '#ef4444' },
 ] as const
 
 const PERIODS = [
@@ -105,7 +105,7 @@ export function LeadsFunnel() {
 
   if (loading) {
     return (
-      <Card className="card-elevated border-slate-200">
+      <Card className="card-soft">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
             <Funnel className="h-4 w-4" />
@@ -113,7 +113,7 @@ export function LeadsFunnel() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 animate-shimmer">
+          <div className="space-y-4 animate-pulse">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="h-10 bg-muted/60 rounded-lg" />
             ))}
@@ -124,7 +124,7 @@ export function LeadsFunnel() {
   }
 
   return (
-    <Card className="card-elevated border-slate-200">
+    <Card className="card-soft">
       <CardHeader className="pb-3">
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -134,11 +134,11 @@ export function LeadsFunnel() {
             </CardTitle>
             <div className="flex items-center gap-2 flex-wrap">
               {/* View toggle */}
-              <div className="flex items-center bg-muted/40 rounded-lg p-0.5">
+              <div className="flex items-center bg-muted/60 rounded-lg p-0.5">
                 <button
                   className={cn(
                     'p-1.5 rounded-md transition-colors duration-150',
-                    viewMode === 'bar' ? 'bg-slate-900 text-white' : 'text-muted-foreground hover:text-foreground'
+                    viewMode === 'bar' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
                   )}
                   onClick={() => setViewMode('bar')}
                   title="Столбцы"
@@ -148,7 +148,7 @@ export function LeadsFunnel() {
                 <button
                   className={cn(
                     'p-1.5 rounded-md transition-colors duration-150',
-                    viewMode === 'pie' ? 'bg-slate-900 text-white' : 'text-muted-foreground hover:text-foreground'
+                    viewMode === 'pie' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
                   )}
                   onClick={() => setViewMode('pie')}
                   title="Круговая"
@@ -163,10 +163,8 @@ export function LeadsFunnel() {
                   <button
                     key={p.key}
                     className={cn(
-                      'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
-                      period === p.key
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-background border-slate-200 hover:bg-accent'
+                      'text-xs px-2.5 py-1 rounded-full border transition-colors duration-150',
+                      period === p.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
                     )}
                     onClick={() => setPeriod(p.key)}
                   >
@@ -182,10 +180,8 @@ export function LeadsFunnel() {
             <div className="flex flex-wrap gap-1.5">
               <button
                 className={cn(
-                  'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
-                  !partnerFilter
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-background border-slate-200 hover:bg-accent'
+                  'text-xs px-2 py-1 rounded-full border transition-colors duration-150',
+                  !partnerFilter ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
                 )}
                 onClick={() => setPartnerFilter('')}
               >
@@ -195,10 +191,8 @@ export function LeadsFunnel() {
                 <button
                   key={p}
                   className={cn(
-                    'text-[11px] px-2.5 py-1 rounded-lg border border-slate-200 transition-colors duration-150',
-                    partnerFilter === p
-                      ? 'bg-slate-900 text-white border-slate-900'
-                      : 'bg-background border-slate-200 hover:bg-accent'
+                    'text-xs px-2 py-1 rounded-full border transition-colors duration-150',
+                    partnerFilter === p ? 'bg-primary text-primary-foreground border-primary' : 'bg-background border-border hover:bg-accent'
                   )}
                   onClick={() => setPartnerFilter(partnerFilter === p ? '' : p)}
                 >
@@ -217,7 +211,7 @@ export function LeadsFunnel() {
               <div key={stage.key}>
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between text-sm">
-                    <Badge variant="outline" className={cn('text-xs font-medium rounded-full', stage.color)}>
+                    <Badge variant="outline" className={cn('text-xs font-medium', stage.color)}>
                       {stage.key}
                     </Badge>
                     <span className="font-semibold tabular-nums">
@@ -225,7 +219,7 @@ export function LeadsFunnel() {
                       <span className="text-muted-foreground font-normal ml-1">({stage.pct}%)</span>
                     </span>
                   </div>
-                  <div className="h-2 bg-muted/40 rounded-full overflow-hidden">
+                  <div className="h-2.5 bg-muted/60 rounded-full overflow-hidden">
                     <div
                       className={cn('h-full rounded-full transition-all duration-500', stage.barColor)}
                       style={{ width: `${maxCount ? (stage.count / maxCount) * 100 : 0}%`, minWidth: stage.count > 0 ? '4px' : '0px' }}
@@ -235,7 +229,7 @@ export function LeadsFunnel() {
                 {/* Conversion rate to next stage */}
                 {idx < funnel.length - 1 && stage.count > 0 && (
                   <div className="flex items-center justify-center py-1">
-                    <span className="text-[11px] text-muted-foreground/50">
+                    <span className="text-[11px] text-muted-foreground/60">
                       ↓ {funnel[idx + 1].key}:&nbsp;
                       <span className="font-medium text-muted-foreground">
                         {Math.round((funnel[idx + 1].count / stage.count) * 100)}%
@@ -277,7 +271,7 @@ export function LeadsFunnel() {
           </>
         )}
 
-        <p className="text-[11px] text-muted-foreground/50 pt-1">
+        <p className="text-[11px] text-muted-foreground/60 pt-1">
           Всего лидов: {filteredLeads.length}
           {partnerFilter && ` · ${partnerFilter}`}
           {period !== 'all' && (

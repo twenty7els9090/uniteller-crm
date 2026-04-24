@@ -168,8 +168,8 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-b-none md:rounded-b-lg">
-        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border/50">
-          <DialogTitle className="text-lg font-semibold">{isEditing ? 'Редактировать лид' : 'Новый лид'}</DialogTitle>
+        <DialogHeader className="px-6 pt-6 pb-4 border-b">
+          <DialogTitle className="text-lg">{isEditing ? 'Редактировать лид' : 'Новый лид'}</DialogTitle>
           <DialogDescription>
             {isEditing
               ? 'Измените данные лида и сохраните'
@@ -379,7 +379,7 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
           </div>
           </motion.div>
 
-          <DialogFooter className="px-6 py-3 border-t border-border/50 gap-2 sm:gap-0 shrink-0">
+          <DialogFooter className="px-6 py-3 border-t gap-2 sm:gap-0 shrink-0">
             <Button
               type="button"
               variant="outline"
@@ -387,7 +387,7 @@ export function LeadFormDialog({ open, onOpenChange, lead, onSaved }: LeadFormDi
             >
               Отмена
             </Button>
-            <Button type="submit" disabled={loading} className="shadow-sm shadow-primary/10">
+            <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {isEditing ? 'Сохранить' : 'Создать'}
             </Button>

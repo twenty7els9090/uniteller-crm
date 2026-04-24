@@ -114,7 +114,7 @@ export function RelegalFormDialog({ open, onOpenChange, relegal, onSaved }: Rele
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-2xl border-slate-200 rounded-b-none md:rounded-b-2xl">
+      <DialogContent className="max-w-lg p-0 gap-0 max-h-[100dvh] md:my-4 my-0 rounded-b-none md:rounded-b-lg">
         <DialogHeader className="px-6 pt-6 pb-4 border-b">
           <DialogTitle className="text-lg">{dialogTitle}</DialogTitle>
           <DialogDescription>

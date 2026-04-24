@@ -1,24 +1,15 @@
 'use client'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Lead } from '@/lib/types'
-import {
-  StatusBadge,
-  ZayavkaBadge,
-  getSlaDays,
-  getSlaColorClass,
-  isNewLead,
-  getZayavkaRowClass,
-} from '@/lib/status'
+import { StatusBadge, ZayavkaBadge, getSlaDays, getSlaBadgeClass, isNewLead, getZayavkaRowClass } from '@/lib/status'
 import { formatDate } from '@/lib/format'
 import { motion } from 'framer-motion'
-import { slideUp } from '@/lib/motion'
-import { Building2, User, Calendar, Eye, Trash2 } from 'lucide-react'
+import { listItem } from '@/lib/motion'
+import { User, Calendar, Eye, Trash2, Phone, MessageSquare } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { NewBadge } from './desktop-lead-row'
 
-// ─── MobileLeadCard ───
 interface MobileLeadCardProps {
   lead: Lead
   isVTB: boolean
@@ -28,88 +19,90 @@ interface MobileLeadCardProps {
   onDelete: (id: string) => void
 }
 
-export function MobileLeadCard({
-  lead,
-  isVTB,
-  isAdmin,
-  showDelete,
-  openDetails,
-  onDelete,
-}: MobileLeadCardProps) {
+export function MobileLeadCard({ lead, isVTB, isAdmin, showDelete, openDetails, onDelete }: MobileLeadCardProps) {
+  const slaDays = getSlaDays(lead.updatedAt)
+
   return (
     <motion.div
-      variants={slideUp}
+      variants={listItem}
       className={cn(
-        'rounded-xl border border-slate-200 bg-white p-4 space-y-2.5 transition-all duration-200 card-elevated hover:card-elevated-hover active:scale-[0.997]',
+        'rounded-xl border bg-card px-4 py-3.5 space-y-2.5 shadow-card active:scale-[0.99] transition-all duration-150 border-l-[2.5px]',
         getZayavkaRowClass(lead.zayavka),
       )}
     >
-      {/* Header: org + date */}
+      {/* Header row */}
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span className="font-semibold text-sm leading-tight">{lead.organization}</span>
-          {(() => { const d = getSlaDays(lead.updatedAt); return d > 0 ? <span className={cn('text-[10px] font-semibold shrink-0', getSlaColorClass(d))}>{d}</span> : null })()}
-        </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <Calendar className="h-3 w-3 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(lead.createdAt)}</span>
+        <div className="flex items-center gap-2 min-w-0 flex-1">
+          <span className="font-semibold text-[14.5px] leading-tight truncate">{lead.organization}</span>
+          {slaDays >= 3 && (
+            <span className={cn('inline-flex items-center rounded-md border text-[10px] font-bold tabular-nums px-1.5 py-0 shrink-0', getSlaBadgeClass(slaDays))}>
+              {slaDays}д
+            </span>
+          )}
           {isNewLead(lead.createdAt) && <NewBadge />}
+        </div>
+        <div className="flex items-center gap-1 shrink-0 text-[11px] text-muted-foreground/60">
+          <Calendar className="h-3 w-3" />
+          {formatDate(lead.createdAt)}
         </div>
       </div>
 
-      {/* Badges row: partner + zayavka */}
+      {/* Badges */}
       <div className="flex flex-wrap gap-1.5">
-        <Badge variant="outline" className="text-xs px-2 py-0.5 whitespace-nowrap border-border/50">{lead.partner}</Badge>
-        <ZayavkaBadge zayavka={lead.zayavka} compact hover />
+        <span className="inline-flex items-center rounded-md border border-border/70 bg-muted/60 text-foreground/70 text-[11px] px-2 py-0.5 font-medium">
+          {lead.partner}
+        </span>
+        <ZayavkaBadge zayavka={lead.zayavka} compact />
         {lead.activityType && (
-          <Badge variant="outline" className="text-xs px-2 py-0.5 border-border/50">{lead.activityType}</Badge>
+          <span className="inline-flex items-center rounded-full bg-muted/60 text-muted-foreground text-[11px] px-2 py-0.5">
+            {lead.activityType}
+          </span>
         )}
       </div>
 
       {/* Status */}
-      {lead.status && <StatusBadge status={lead.status} compact hover />}
+      {lead.status && <StatusBadge status={lead.status} compact />}
 
       {/* Comment */}
       {lead.comment && (
-        <p className="text-sm text-muted-foreground bg-slate-50 rounded-lg p-2.5 whitespace-pre-wrap break-words leading-relaxed">{lead.comment}</p>
+        <div className="flex items-start gap-1.5 text-[12.5px] text-muted-foreground bg-muted/40 rounded-lg p-2.5">
+          <MessageSquare className="h-3 w-3 shrink-0 mt-0.5 opacity-60" />
+          <p className="leading-relaxed break-words">{lead.comment}</p>
+        </div>
       )}
 
-      {/* Details grid */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-        <div className="text-muted-foreground">
-          <User className="inline h-3.5 w-3.5 mr-1" />
+      {/* Details */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-[12.5px]">
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <User className="h-3 w-3" />
           <span className="text-foreground">{lead.manager}</span>
         </div>
-        {lead.margin && !isVTB && (
-          <div className="text-muted-foreground">
-            Маржа: <span className="text-foreground">{lead.margin}%</span>
-          </div>
-        )}
         {lead.contactInfo && (
-          <div className="text-muted-foreground col-span-2">
+          <div className="flex items-center gap-1 text-muted-foreground">
+            <Phone className="h-3 w-3" />
             <span className="text-foreground">{lead.contactInfo}</span>
           </div>
         )}
+        {!isVTB && lead.margin && (
+          <span className="text-muted-foreground">
+            Маржа: <span className="text-foreground">{lead.margin}%</span>
+          </span>
+        )}
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-2 pt-2 border-t border-border/50">
-        <Button
-          variant="outline"
-          className="h-11 text-sm flex-1 rounded-lg hover:bg-primary/5 transition-colors"
-          onClick={() => openDetails(lead)}
-        >
-          <Eye className="h-4 w-4 mr-1.5" />
+      {/* Actions */}
+      <div className="flex gap-2 pt-1 border-t border-border/60">
+        <Button variant="outline" className="h-10 text-sm flex-1 rounded-lg" onClick={() => openDetails(lead)}>
+          <Eye className="h-3.5 w-3.5" />
           Подробнее
         </Button>
         {!isVTB && showDelete && isAdmin && (
           <Button
             variant="outline"
-            className="h-11 text-sm text-destructive hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+            className="h-10 text-sm text-destructive hover:text-destructive hover:bg-destructive/8 rounded-lg"
             onClick={() => onDelete(lead.id)}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         )}
       </div>
