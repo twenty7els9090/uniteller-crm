@@ -224,44 +224,32 @@ function InlineStatusControls({
               className={`${btnBase} min-w-[100px] bg-white hover:bg-slate-50 text-slate-900 border border-slate-300`}
               onClick={() => { if (mode !== 'callback') setMode('callback') }}
             >
-              <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
               Перезвонить
             </Button>
           </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 border-slate-200/80 rounded-xl shadow-lg" align="end" sideOffset={8}>
-          <div className="px-3 pt-3 pb-1">
-            <p className="text-xs font-medium text-slate-500">Выберите дату</p>
-          </div>
-          <Calendar
-            mode="single"
-            selected={callDate ? new Date(callDate) : undefined}
-            onSelect={(date) => {
-              if (date) {
-                const dateStr = date.toISOString().slice(0, 10)
-                setCallDate(dateStr)
-                saveStatus('Входящий', 'Перезвонить', dateStr)
-              }
-            }}
-            disabled={{ before: new Date() }}
-            showOutsideDays={false}
-            defaultMonth={new Date()}
-            classNames={{
-              root: 'w-fit',
-              months: 'flex flex-col',
-              month: 'flex flex-col gap-2',
-              month_caption: 'flex justify-center h-8 w-full px-8',
-              caption_label: 'text-sm font-medium',
-              nav: 'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
-              button_previous: 'size-7 aria-disabled:opacity-50 p-0',
-              button_next: 'size-7 aria-disabled:opacity-50 p-0',
-              table: 'w-full border-collapse',
-              weekdays: 'flex',
-              weekday: 'text-muted-foreground rounded-md flex-1 font-normal text-[0.7rem] select-none',
-              week: 'flex w-full mt-1',
-              day: 'relative w-full h-full p-0 text-center aspect-square select-none',
-            }}
-          />
-        </PopoverContent>
+          <PopoverContent className="w-auto p-0 border border-slate-200 rounded-2xl shadow-xl" align="end" sideOffset={6}>
+            <Calendar
+              mode="single"
+              selected={callDate ? new Date(callDate) : undefined}
+              onSelect={(date) => {
+                if (date) {
+                  const d = new Date(date)
+                  d.setHours(d.getHours() + 3) // fix timezone offset for .slice
+                  const dateStr = d.toISOString().slice(0, 10)
+                  setCallDate(dateStr)
+                  saveStatus('Входящий', 'Перезвонить', dateStr)
+                }
+              }}
+              disabled={(date) => {
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                return date < today
+              }}
+              showOutsideDays={false}
+              defaultMonth={new Date()}
+              className="[&_[data-slot=popover-content]]:bg-transparent"
+            />
+          </PopoverContent>
         </Popover>
       )}
 
