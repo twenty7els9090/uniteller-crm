@@ -18,6 +18,8 @@ export const leadSchema = z.object({
   ourRate: z.string().default(''),
   revenue: z.string().default(''),
   reported: z.boolean().default(false),
+  callDate: z.string().nullable().optional(),
+  statusChangedAt: z.string().nullable().optional(),
 })
 
 export type LeadFormData = z.input<typeof leadSchema>

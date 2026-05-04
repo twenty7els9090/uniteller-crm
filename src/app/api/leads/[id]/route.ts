@@ -72,10 +72,12 @@ export async function PUT(
     const marginVal = parseFloat(data.margin as string) || 0
     const autoRevenue = turnover && marginVal ? (turnover * marginVal / 100).toFixed(2) : ''
 
-    // If status changed, record the timestamp
-    const statusChangedAt = (data.status && data.status !== existingLead.status)
+    // If status changed, record the timestamp (handle empty string correctly)
+    const newStatus = (data.status as string) || ''
+    const oldStatus = existingLead.status || ''
+    const statusChangedAt = newStatus !== oldStatus
       ? new Date()
-      : (data.status === existingLead.status ? existingLead.statusChangedAt : undefined)
+      : existingLead.statusChangedAt
 
     const lead = await db.lead.update({
       where: { id },
@@ -95,7 +97,7 @@ export async function PUT(
         revenue: autoRevenue,
         callDate: data.callDate ? new Date(data.callDate as string) : null,
         reported: (data.reported as boolean) ?? false,
-        ...(statusChangedAt !== undefined && { statusChangedAt }),
+        statusChangedAt,
       },
     })
 

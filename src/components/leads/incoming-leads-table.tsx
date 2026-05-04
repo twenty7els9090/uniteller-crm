@@ -121,7 +121,7 @@ function InlineStatusControls({
 }: {
   lead: Lead
   onRemove: (id: string) => void
-  onUpdate: (id: string, field: string, value: string) => void
+  onUpdate: (id: string, field: string, value: string | Record<string, unknown>) => void
   isVTB?: boolean
 }) {
   const [mode, setMode] = useState<InlineMode>('idle')
@@ -157,21 +157,23 @@ function InlineStatusControls({
         body: JSON.stringify(body),
       })
       if (res.ok) {
-        if (newZayavka === 'Отклонена') {
-          toast.success(`Отказ: ${newStatus}`)
-          onRemove(lead.id)
-        } else if (newZayavka === 'В работе') {
-          toast.success(`В работу: ${newStatus}`)
-          onRemove(lead.id)
-        } else if (newStatus === 'Перезвонить') {
-          onUpdate(lead.id, 'status', 'Перезвонить')
-          if (newCallDate) onUpdate(lead.id, 'callDate', new Date(newCallDate).toISOString())
-          toast.success(`Перезвонить ${formatCallDate(newCallDate || '')}`)
-          setMode('idle')
-        } else {
-          toast.success('Статус обновлён')
-          setMode('idle')
-        }
+          const updated = await res.json()
+          if (newZayavka === 'Отклонена') {
+            toast.success(`Отказ: ${newStatus}`)
+            onRemove(lead.id)
+          } else if (newZayavka === 'В работе') {
+            toast.success(`В работу: ${newStatus}`)
+            onRemove(lead.id)
+          } else if (newStatus === 'Перезвонить') {
+            // Use server response instead of separate updates to avoid stale data
+            onUpdate(lead.id, '__merge', updated)
+            toast.success(`Перезвонить ${formatCallDate(newCallDate || '')}`)
+            setMode('idle')
+          } else {
+            onUpdate(lead.id, '__merge', updated)
+            toast.success('Статус обновлён')
+            setMode('idle')
+          }
       } else {
         toast.error('Ошибка обновления')
       }
@@ -397,7 +399,7 @@ function IncomingDesktopRow({
   lead: Lead
   onDelete: (id: string) => void
   onRemove: (id: string) => void
-  onUpdate: (id: string, field: string, value: string) => void
+  onUpdate: (id: string, field: string, value: string | Record<string, unknown>) => void
   isVTB?: boolean
 }) {
   const d = new Date(lead.createdAt)
@@ -488,7 +490,7 @@ function IncomingMobileCard({
   lead: Lead
   onDelete: (id: string) => void
   onRemove: (id: string) => void
-  onUpdate: (id: string, field: string, value: string) => void
+  onUpdate: (id: string, field: string, value: string | Record<string, unknown>) => void
   isVTB?: boolean
 }) {
   const d = new Date(lead.createdAt)
@@ -670,17 +672,21 @@ export function IncomingLeadsTable() {
     useAppStore.getState().bumpSearchVersion()
   }
 
-  async function handleUpdate(id: string, field: string, value: string) {
+  async function handleUpdate(id: string, field: string, value: string | Record<string, unknown>) {
     const lead = leads.find((l) => l.id === id)
     if (!lead) return
     try {
+      const body = field === '__merge' && typeof value === 'object'
+        ? value
+        : { ...lead, [field]: value }
       const res = await fetch(`/api/leads/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...lead, [field]: value }),
+        body: JSON.stringify(body),
       })
       if (res.ok) {
-        setLeads((prev) => prev.map((l) => l.id === id ? { ...l, [field]: value } : l))
+        const updated = await res.json()
+        setLeads((prev) => prev.map((l) => l.id === id ? updated : l))
         toast.success('Сохранено')
         useAppStore.getState().bumpSearchVersion()
       } else {
