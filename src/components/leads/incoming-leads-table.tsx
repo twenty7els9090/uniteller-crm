@@ -23,8 +23,10 @@ import type { Lead } from '@/lib/types'
 import { IncomingLeadFormDialog } from './incoming-lead-form-dialog'
 import { REJECTION_REASONS, WORK_STATUSES, MANAGERS, ACTIVITY_TYPES } from '@/lib/constants'
 import { EditableTextCell } from '@/components/ui/editable-cells'
+import { Calendar } from '@/components/ui/calendar'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import {
-  Plus, Phone, Mail, Building2, Calendar, Clock,
+  Plus, Phone, Mail, Building2, CalendarIcon, Clock,
   Trash2, PhoneOff, AlertTriangle, Check,
   MessageSquare,
 } from 'lucide-react'
@@ -213,33 +215,54 @@ function InlineStatusControls({
         </div>
       )}
 
-      {/* ── Callback date inline ── */}
-      {mode === 'callback' && (
-        <div className="flex items-center gap-2">
-          <Input
-            type="date"
-            value={callDate}
-            onChange={(e) => setCallDate(e.target.value)}
-            min={new Date().toISOString().slice(0, 10)}
-            className="h-8 w-[130px] text-xs bg-slate-50 border-slate-200 text-foreground rounded-lg focus:ring-2 focus:ring-green-600/25 focus:border-green-600/40"
+      {/* ── Callback calendar popover ── */}
+      {(mode === 'idle' || mode === 'callback') && !isVTB && (
+        <Popover open={mode === 'callback'} onOpenChange={(open) => { if (!open) setMode('idle') }}>
+          <PopoverTrigger asChild>
+            <Button
+              size="sm"
+              className={`${btnBase} min-w-[100px] bg-white hover:bg-slate-50 text-slate-900 border border-slate-300`}
+              onClick={() => { if (mode !== 'callback') setMode('callback') }}
+            >
+              <CalendarIcon className="h-3.5 w-3.5 mr-1.5" />
+              Перезвонить
+            </Button>
+          </PopoverTrigger>
+        <PopoverContent className="w-auto p-0 border-slate-200/80 rounded-xl shadow-lg" align="end" sideOffset={8}>
+          <div className="px-3 pt-3 pb-1">
+            <p className="text-xs font-medium text-slate-500">Выберите дату</p>
+          </div>
+          <Calendar
+            mode="single"
+            selected={callDate ? new Date(callDate) : undefined}
+            onSelect={(date) => {
+              if (date) {
+                const dateStr = date.toISOString().slice(0, 10)
+                setCallDate(dateStr)
+                saveStatus('Входящий', 'Перезвонить', dateStr)
+              }
+            }}
+            disabled={{ before: new Date() }}
+            showOutsideDays={false}
+            defaultMonth={new Date()}
+            classNames={{
+              root: 'w-fit',
+              months: 'flex flex-col',
+              month: 'flex flex-col gap-2',
+              month_caption: 'flex justify-center h-8 w-full px-8',
+              caption_label: 'text-sm font-medium',
+              nav: 'flex items-center gap-1 w-full absolute top-0 inset-x-0 justify-between',
+              button_previous: 'size-7 aria-disabled:opacity-50 p-0',
+              button_next: 'size-7 aria-disabled:opacity-50 p-0',
+              table: 'w-full border-collapse',
+              weekdays: 'flex',
+              weekday: 'text-muted-foreground rounded-md flex-1 font-normal text-[0.7rem] select-none',
+              week: 'flex w-full mt-1',
+              day: 'relative w-full h-full p-0 text-center aspect-square select-none',
+            }}
           />
-          <Button
-            size="sm"
-            className={`${btnBase} w-8 p-0 bg-green-600 hover:bg-green-700 text-white`}
-            disabled={!callDate || saving}
-            onClick={() => saveStatus('Входящий', 'Перезвонить', callDate)}
-          >
-            <Check className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className={`${btnBase} w-8 p-0 text-slate-500 hover:text-foreground hover:bg-slate-100`}
-            onClick={() => setMode('idle')}
-          >
-            ✕
-          </Button>
-        </div>
+        </PopoverContent>
+        </Popover>
       )}
 
       {/* ── Reject reason inline ── */}
@@ -360,13 +383,6 @@ function InlineStatusControls({
       {/* ── Action buttons (when idle) — hidden for VTB ── */}
       {mode === 'idle' && !isVTB && (
         <>
-          <Button
-            size="sm"
-            className={`${btnBase} min-w-[100px] bg-white hover:bg-slate-50 text-slate-900 border border-slate-300`}
-            onClick={() => { setMode('callback'); setCallDate(new Date().toISOString().slice(0, 10)) }}
-          >
-            Перезвонить
-          </Button>
           <Button
             size="sm"
             className={`${btnBase} min-w-[100px] bg-white hover:bg-red-50 text-red-500 border border-red-300`}
@@ -512,7 +528,7 @@ function IncomingMobileCard({
       {/* Header: date + status */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm text-slate-500">
-          <Calendar className="h-4 w-4" />
+          <CalendarIcon className="h-4 w-4" />
           <span>{day} {month}</span>
         </div>
         {isNotStarted && (
