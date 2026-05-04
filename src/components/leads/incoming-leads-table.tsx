@@ -643,21 +643,9 @@ export function IncomingLeadsTable() {
     })
   }, [leads, storeGlobalSearch])
 
-  // Sort: not started first, then overdue, then by callDate, then newest
+  // Sort: newest created first
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
-      const aNS = (!a.status || a.status === 'Не начато') ? 0 : 1
-      const bNS = (!b.status || b.status === 'Не начато') ? 0 : 1
-      if (aNS !== bNS) return aNS - bNS
-
-      const aOD = (a.status === 'Перезвонить' && isOverdue(a.callDate)) ? 0 : 1
-      const bOD = (b.status === 'Перезвонить' && isOverdue(b.callDate)) ? 0 : 1
-      if (aOD !== bOD) return aOD - bOD
-
-      const aD = a.callDate ? new Date(a.callDate).getTime() : Infinity
-      const bD = b.callDate ? new Date(b.callDate).getTime() : Infinity
-      if (aD !== bD) return aD - bD
-
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     })
   }, [filtered])
