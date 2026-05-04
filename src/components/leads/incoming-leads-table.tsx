@@ -127,6 +127,7 @@ function InlineStatusControls({
   isVTB?: boolean
 }) {
   const [mode, setMode] = useState<InlineMode>('idle')
+  const [calOpen, setCalOpen] = useState(false)
   const [callDate, setCallDate] = useState('')
   const [rejectionReason, setRejectionReason] = useState('')
   const [workStatus, setWorkStatus] = useState('')
@@ -140,6 +141,7 @@ function InlineStatusControls({
 
   async function saveStatus(newZayavka: string, newStatus: string, newCallDate: string | null) {
     setSaving(true)
+    setCalOpen(false)
     try {
       const body: Record<string, unknown> = {
         ...lead,
@@ -216,13 +218,12 @@ function InlineStatusControls({
       )}
 
       {/* ── Callback calendar popover ── */}
-      {(mode === 'idle' || mode === 'callback') && !isVTB && (
-        <Popover open={mode === 'callback'} onOpenChange={(open) => { if (!open) setMode('idle') }}>
+      {!isVTB && (
+        <Popover open={calOpen} onOpenChange={setCalOpen}>
           <PopoverTrigger asChild>
             <Button
               size="sm"
               className={`${btnBase} min-w-[100px] bg-white hover:bg-slate-50 text-slate-900 border border-slate-300`}
-              onClick={() => { if (mode !== 'callback') setMode('callback') }}
             >
               Перезвонить
             </Button>
@@ -234,7 +235,7 @@ function InlineStatusControls({
               onSelect={(date) => {
                 if (date) {
                   const d = new Date(date)
-                  d.setHours(d.getHours() + 3) // fix timezone offset for .slice
+                  d.setHours(d.getHours() + 3)
                   const dateStr = d.toISOString().slice(0, 10)
                   setCallDate(dateStr)
                   saveStatus('Входящий', 'Перезвонить', dateStr)
@@ -247,7 +248,6 @@ function InlineStatusControls({
               }}
               showOutsideDays={false}
               defaultMonth={new Date()}
-              className="[&_[data-slot=popover-content]]:bg-transparent"
             />
           </PopoverContent>
         </Popover>
