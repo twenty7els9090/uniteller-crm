@@ -130,14 +130,14 @@ export function LeadsFilters({
             <button
               onClick={() => onToggleFolder('rejected')}
               className={cn(
-                'inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium shrink-0 border transition-all duration-150',
+                'inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold shrink-0 border transition-all duration-150',
                 expandedFolder === 'rejected'
-                  ? 'bg-red-500/15 text-red-400 border-red-500/25 shadow-sm'
-                  : 'text-red-400 border-red-500/15 bg-red-500/[0.04] hover:bg-red-500/[0.08]',
+                  ? 'bg-red-500 text-white border-red-600 shadow-sm'
+                  : 'text-red-600 border-red-300 bg-red-50 hover:bg-red-100',
               )}
             >
               Отклонённые
-              <Badge variant="muted" className="text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px] bg-slate-100 text-slate-500">{folderCounts.rejected}</Badge>
+              <Badge className={cn("text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px]", expandedFolder === 'rejected' ? 'bg-white/25 text-white' : 'bg-red-100 text-red-600')}>{folderCounts.rejected}</Badge>
             </button>
           )}
 
@@ -145,14 +145,14 @@ export function LeadsFilters({
             <button
               onClick={() => onToggleFolder('paused')}
               className={cn(
-                'inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-medium shrink-0 border transition-all duration-150',
+                'inline-flex items-center gap-1.5 h-8 px-3 rounded-lg text-[12px] font-semibold shrink-0 border transition-all duration-150',
                 expandedFolder === 'paused'
-                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/25 shadow-sm'
-                  : 'text-amber-400 border-amber-500/15 bg-amber-500/[0.04] hover:bg-amber-500/[0.08]',
+                  ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                  : 'text-amber-700 border-amber-300 bg-amber-50 hover:bg-amber-100',
               )}
             >
               На паузе
-              <Badge variant="muted" className="text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px] bg-slate-100 text-slate-500">{folderCounts.paused}</Badge>
+              <Badge className={cn("text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px]", expandedFolder === 'paused' ? 'bg-white/25 text-white' : 'bg-amber-100 text-amber-700')}>{folderCounts.paused}</Badge>
             </button>
           )}
 
