@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { SlidersHorizontal, X, ChevronDown, XCircle, PauseCircle, LayoutGrid } from 'lucide-react'
+import { SlidersHorizontal, X, ChevronDown, LayoutGrid } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAppStore } from '@/lib/store'
 
@@ -136,7 +136,6 @@ export function LeadsFilters({
                   : 'text-red-400 border-red-500/15 bg-red-500/[0.04] hover:bg-red-500/[0.08]',
               )}
             >
-              <XCircle className="h-3.5 w-3.5" />
               Отклонённые
               <Badge variant="muted" className="text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px] bg-slate-100 text-slate-500">{folderCounts.rejected}</Badge>
             </button>
@@ -152,7 +151,6 @@ export function LeadsFilters({
                   : 'text-amber-400 border-amber-500/15 bg-amber-500/[0.04] hover:bg-amber-500/[0.08]',
               )}
             >
-              <PauseCircle className="h-3.5 w-3.5" />
               На паузе
               <Badge variant="muted" className="text-[10px] font-bold px-1.5 py-0 min-w-[18px] h-[16px] bg-slate-100 text-slate-500">{folderCounts.paused}</Badge>
             </button>
