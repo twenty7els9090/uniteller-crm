@@ -431,7 +431,7 @@ function IncomingDesktopRow({
           <EditableField
             value={lead.organization}
             onSave={(val) => onUpdate(lead.id, 'organization', val)}
-            className="font-semibold text-sm leading-tight text-foreground max-w-[200px]"
+            className="font-semibold text-sm leading-tight text-foreground"
           />
           {lead.partner && (
             <Badge variant="outline" className="text-[10px] px-1.5 py-0 font-medium shrink-0 border-slate-200/80 bg-slate-100 text-slate-500">{lead.partner}</Badge>
