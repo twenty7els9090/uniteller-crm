@@ -17,10 +17,8 @@ export async function GET() {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
 
-    const isVTB = user.role === 'vtb'
-
     // ─── Churn (Оттоки) ───
-    const churns = isVTB ? [] : await db.churn.findMany()
+    const churns = await db.churn.findMany()
 
     const totalChurns = churns.length
     const churnsTurnover = churns.reduce((s, c) => s + parseCurrency(c.turnoverTsp), 0)

@@ -15,16 +15,14 @@ interface NavTab {
   label: string
   page: PageType
   icon: React.ReactNode
-  adminOnly?: boolean
-  unitellerOnly?: boolean
 }
 
 const tabs: NavTab[] = [
-  { label: 'Доп.',      page: 'dop',        icon: <Plug           className="h-4 w-4" />, unitellerOnly: true },
-  { label: 'Юр.лица',   page: 'relegal',    icon: <Building2      className="h-4 w-4" />, unitellerOnly: true },
-  { label: 'Оттоки',    page: 'churn',      icon: <TrendingDown   className="h-4 w-4" />, unitellerOnly: true },
-  { label: 'Статистика',page: 'statistics', icon: <BarChart3      className="h-4 w-4" />, unitellerOnly: true },
-  { label: 'Настройки', page: 'settings',   icon: <Settings       className="h-4 w-4" />, adminOnly: true },
+  { label: 'Доп.',      page: 'dop',        icon: <Plug           className="h-4 w-4" /> },
+  { label: 'Юр.лица',   page: 'relegal',    icon: <Building2      className="h-4 w-4" /> },
+  { label: 'Оттоки',    page: 'churn',      icon: <TrendingDown   className="h-4 w-4" /> },
+  { label: 'Статистика',page: 'statistics', icon: <BarChart3      className="h-4 w-4" /> },
+  { label: 'Настройки', page: 'settings',   icon: <Settings       className="h-4 w-4" /> },
 ]
 
 export function AppHeader() {
@@ -32,13 +30,6 @@ export function AppHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   if (!user) return null
-
-  const isAdmin = user.role === 'uniteller'
-  const visibleTabs = tabs.filter((t) => {
-    if (t.adminOnly && !isAdmin) return false
-    if (t.unitellerOnly && !isAdmin) return false
-    return true
-  })
 
   return (
     <>
@@ -53,7 +44,7 @@ export function AppHeader() {
         <div className="flex items-center justify-between h-14 px-5">
           {/* Left: Navigation */}
           <nav className="flex items-center gap-1">
-            {visibleTabs.map((tab) => {
+            {tabs.map((tab) => {
               const isActive = currentPage === tab.page
               return (
                 <button
@@ -145,7 +136,7 @@ export function AppHeader() {
               <div className="mx-4 h-px accent-line-v" />
 
               <nav className="flex-1 overflow-y-auto px-2 py-2 space-y-0.5">
-                {visibleTabs.map((tab) => {
+                {tabs.map((tab) => {
                   const isActive = currentPage === tab.page
                   return (
                     <button
@@ -194,7 +185,7 @@ export function AppHeader() {
       <nav className="md:hidden fixed bottom-3 left-2.5 right-2.5 z-40">
         <div className="glass-strong rounded-2xl border border-slate-200 shadow-popover safe-bottom overflow-hidden">
           <div className="flex items-stretch overflow-x-auto no-scrollbar">
-            {visibleTabs.map((tab) => {
+            {tabs.map((tab) => {
               const isActive = currentPage === tab.page
               return (
                 <button

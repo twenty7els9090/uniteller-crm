@@ -44,7 +44,6 @@ interface AdditionalTableProps {
 }
 
 export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
-  const user = useAppStore((s) => s.user)
   const { settings } = useSettings()
   const [allRecords, setAllRecords] = useState<Additional[]>([])
   const [loading, setLoading] = useState(true)
@@ -100,9 +99,6 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
     } catch { toast.error('Ошибка соединения'); fetchRecords() }
   }, [fetchRecords])
 
-  const isVTB = user?.role === 'vtb'
-  const isAdmin = user?.role === 'uniteller'
-
   const columns: ColumnDef<Additional>[] = useMemo(() => [
     {
       accessorKey: 'organization',
@@ -120,7 +116,6 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
           options={dynamicPartners.map((p) => ({ value: p, label: p }))}
           onSave={(val) => inlineSave(row.original.id, 'partner', val)}
           getBadge={(val) => <Badge variant="outline" className="text-xs justify-start border-slate-200/80 bg-slate-100 text-zinc-400">{val}</Badge>}
-          disabled={isVTB}
         />
       ),
     },
@@ -160,17 +155,15 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
               <DropdownMenuItem onClick={() => setEditRecord(rec)} className="text-slate-600 focus:bg-slate-100 focus:text-foreground">
                 <Pencil className="h-4 w-4 mr-2" />Редактировать
               </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem className="text-red-400 focus:text-red-300 focus:bg-red-500/10" onClick={() => setDeleteId(rec.id)}>
-                  <Trash2 className="h-4 w-4 mr-2" />Удалить
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuItem className="text-red-400 focus:text-red-300 focus:bg-red-500/10" onClick={() => setDeleteId(rec.id)}>
+                <Trash2 className="h-4 w-4 mr-2" />Удалить
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
       },
     },
-  ], [readOnly, isVTB, isAdmin, inlineSave, dynamicPartners])
+  ], [readOnly, inlineSave, dynamicPartners])
 
   const table = useReactTable({
     data: filtered, columns,
@@ -295,11 +288,9 @@ export function AdditionalTable({ readOnly = false }: AdditionalTableProps) {
                     <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl flex-1 border-slate-200/80 bg-slate-50 text-zinc-400 hover:text-foreground hover:bg-slate-100" onClick={() => setEditRecord(rec)}>
                       <Pencil className="h-3 w-3 mr-1" />Изменить
                     </Button>
-                    {isAdmin && (
-                      <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 border-slate-200/80 bg-slate-50" onClick={() => setDeleteId(rec.id)}>
-                        <Trash2 className="h-3 w-3 mr-1" />Удалить
-                      </Button>
-                    )}
+                    <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 border-slate-200/80 bg-slate-50" onClick={() => setDeleteId(rec.id)}>
+                      <Trash2 className="h-3 w-3 mr-1" />Удалить
+                    </Button>
                   </div>
                 )}
               </div>

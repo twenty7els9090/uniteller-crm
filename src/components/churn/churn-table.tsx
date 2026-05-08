@@ -75,7 +75,6 @@ interface ChurnTableProps {
 }
 
 export function ChurnTable({ readOnly = false }: ChurnTableProps) {
-  const user = useAppStore((s) => s.user)
   const storeGlobalSearch = useAppStore((s) => s.globalSearch)
   const { settings } = useSettings()
   const [allChurns, setAllChurns] = useState<Churn[]>([])
@@ -145,9 +144,6 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
     }
   }, [fetchChurns])
 
-  const isVTB = user?.role === 'vtb'
-  const isAdmin = user?.role === 'uniteller'
-
   const columns: ColumnDef<Churn>[] = useMemo(() => [
     {
       accessorKey: 'organization',
@@ -208,7 +204,6 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
             options={CHURN_STATUS_OPTIONS.map((s) => ({ value: s, label: s }))}
             onSave={(val) => inlineSave(churn.id, 'status', val)}
             getBadge={(val) => val ? getChurnStatusBadge(val) : <span className="text-xs text-zinc-600">—</span>}
-            disabled={isVTB}
           />
         )
       },
@@ -255,7 +250,6 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
             options={dynamicManagers.map((m) => ({ value: m, label: m }))}
             onSave={(val) => inlineSave(churn.id, 'manager', val)}
             getBadge={(val) => <Badge variant="outline" className="text-xs justify-start border-slate-200/80 bg-slate-100 text-zinc-400">{val}</Badge>}
-            disabled={isVTB}
           />
         )
       },
@@ -278,21 +272,19 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
                 <Pencil className="h-4 w-4 mr-2" />
                 Редактировать
               </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem
-                  className="text-red-400 focus:text-red-300 focus:bg-red-500/10"
-                  onClick={() => setDeleteId(churn.id)}
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Удалить
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuItem
+                className="text-red-400 focus:text-red-300 focus:bg-red-500/10"
+                onClick={() => setDeleteId(churn.id)}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Удалить
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
       },
     },
-  ], [readOnly, isVTB, isAdmin, inlineSave, dynamicManagers])
+  ], [readOnly, inlineSave, dynamicManagers])
 
   const table = useReactTable({
     data: filteredChurns,
@@ -448,14 +440,11 @@ export function ChurnTable({ readOnly = false }: ChurnTableProps) {
                         <Pencil className="h-3 w-3 mr-1" />
                         Изменить
                       </Button>
-                      {isAdmin && (
-                        <Button variant="ghost" size="sm"
-                          className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                      <Button variant="ghost" size="sm" className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10"
                           onClick={() => setDeleteId(churn.id)}>
                           <Trash2 className="h-3 w-3 mr-1" />
                           Удалить
                         </Button>
-                      )}
                     </div>
                   )}
                 </div>

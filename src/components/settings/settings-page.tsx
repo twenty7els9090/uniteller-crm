@@ -23,9 +23,6 @@ import {
   Trash2,
   Building2,
   Users,
-  ClipboardCheck,
-  FileText,
-  Briefcase,
   Loader2,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -38,11 +35,8 @@ interface CategoryConfig {
 }
 
 const categories: CategoryConfig[] = [
-  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров для лидов' },
+  { key: 'partner', label: 'Партнёры', icon: <Building2 className="h-4 w-4" />, description: 'Список партнёров' },
   { key: 'manager', label: 'Менеджеры', icon: <Users className="h-4 w-4" />, description: 'Список менеджеров' },
-  { key: 'zayavka', label: 'Статусы заявки', icon: <ClipboardCheck className="h-4 w-4" />, description: 'Выполнена, В работе, На паузе, Отклонена' },
-  { key: 'status', label: 'Детальные статусы', icon: <FileText className="h-4 w-4" />, description: 'Детализация текущего этапа работы' },
-  { key: 'activityType', label: 'Виды деятельности', icon: <Briefcase className="h-4 w-4" />, description: 'Автомойка, Паркинг, Вендинг и т.д.' },
 ]
 
 function SettingsCategory({ config }: { config: CategoryConfig }) {
@@ -171,7 +165,7 @@ function SettingsCategory({ config }: { config: CategoryConfig }) {
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-foreground">Удалить «{deleteItem}»?</AlertDialogTitle>
                 <AlertDialogDescription className="text-zinc-400">
-                  Это значение будет удалено из списка. Если оно используется в существующих лидах, оно останется в них.
+                  Это значение будет удалено из списка.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

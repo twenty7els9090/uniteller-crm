@@ -5,7 +5,7 @@ import type { AuthUser } from '@/lib/types'
 
 export type { AuthUser }
 
-const SESSION_COOKIE_NAME = 'leadmanager_session'
+const SESSION_COOKIE_NAME = 'crm_session'
 const SESSION_EXPIRY_HOURS = 24 * 7 // 7 days
 
 async function cleanExpiredSessions(): Promise<void> {
@@ -43,7 +43,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     id: session.user.id,
     username: session.user.username,
     fullName: session.user.fullName,
-    role: session.user.role as 'uniteller' | 'vtb',
+    role: session.user.role as 'uniteller',
   }
 }
 

@@ -5,17 +5,11 @@ import { useSyncExternalStore, useCallback, useEffect } from 'react'
 export interface AppSettings {
   partner: string[]
   manager: string[]
-  zayavka: string[]
-  status: string[]
-  activityType: string[]
 }
 
 const defaultSettings: AppSettings = {
   partner: [],
   manager: [],
-  zayavka: [],
-  status: [],
-  activityType: [],
 }
 
 let settingsCache: AppSettings | null = null
@@ -51,9 +45,6 @@ async function fetchSettingsFromApi(): Promise<AppSettings> {
       settingsCache = {
         partner: data.partner || [],
         manager: data.manager || [],
-        zayavka: data.zayavka || [],
-        status: data.status || [],
-        activityType: data.activityType || [],
       }
       fetchPromise = null
       notifyListeners()

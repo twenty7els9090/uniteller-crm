@@ -5,42 +5,25 @@ import { cookies } from 'next/headers'
 
 const UNITELLER_PASSWORD = 'cat16'
 
-const ROLE_DISPLAY: Record<string, string> = {
-  uniteller: 'Uniteller',
-  vtb: 'ВТБ',
-}
-
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { role, password } = body
+    const { password } = body
 
-    if (!role) {
-      return NextResponse.json({ error: 'Укажите роль' }, { status: 400 })
+    if (!password || UNITELLER_PASSWORD !== password) {
+      return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 })
     }
 
-    if (!['uniteller', 'vtb'].includes(role)) {
-      return NextResponse.json({ error: 'Неверная роль' }, { status: 400 })
-    }
-
-    // VTB — no password required
-    // Uniteller — password required
-    if (role === 'uniteller') {
-      if (!password || UNITELLER_PASSWORD !== password) {
-        return NextResponse.json({ error: 'Неверный пароль' }, { status: 401 })
-      }
-    }
-
-    // Find or create a session user for this role
-    let user = await db.user.findFirst({ where: { role } })
+    // Find or create the uniteller user
+    let user = await db.user.findFirst({ where: { role: 'uniteller' } })
 
     if (!user) {
       user = await db.user.create({
         data: {
-          username: role,
-          password: role === 'uniteller' ? UNITELLER_PASSWORD : '',
-          fullName: ROLE_DISPLAY[role],
-          role,
+          username: 'uniteller',
+          password: UNITELLER_PASSWORD,
+          fullName: 'Uniteller',
+          role: 'uniteller',
         },
       })
     }
@@ -67,7 +50,7 @@ export async function POST(request: Request) {
 export async function DELETE() {
   try {
     const cookieStore = await cookies()
-    const token = cookieStore.get('leadmanager_session')?.value
+    const token = cookieStore.get('crm_session')?.value
 
     if (token) {
       await deleteSession(token)

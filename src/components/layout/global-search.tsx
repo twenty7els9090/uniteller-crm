@@ -27,7 +27,7 @@ interface SearchCache {
 const EMPTY_CACHE: SearchCache = { relegal: [], churn: [], additional: [] }
 
 export function GlobalSearch() {
-  const { user, currentPage, navigateWithSearch, setGlobalSearch, searchVersion } = useAppStore()
+  const { currentPage, navigateWithSearch, setGlobalSearch, searchVersion } = useAppStore()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(true)
@@ -42,8 +42,6 @@ export function GlobalSearch() {
   const [isFirstLoad, setIsFirstLoad] = useState(true)
   const cacheReadyRef = useRef(false)
 
-  const isAdmin = user?.role !== 'vtb'
-
   // ─── Search logic ──────────────────
   const doSearch = useCallback(
     (search: string) => {
@@ -56,88 +54,76 @@ export function GlobalSearch() {
       const { relegal, churn, additional } = cacheRef.current
 
       // Relegal
-      if (isAdmin) {
-        for (const r of relegal) {
-          if (found.length >= 10) break
-          const haystack = `${r.fromOrg || ''} ${r.toOrg || ''} ${r.action || ''} ${r.manager || ''}`.toLowerCase()
-          if (haystack.includes(q)) {
-            found.push({
-              id: r.id,
-              title: r.fromOrg || r.toOrg || '',
-              subtitle: [
-                r.fromOrg && r.toOrg ? `→ ${r.toOrg}` : '',
-                r.action,
-                r.manager,
-              ]
-                .filter(Boolean)
-                .join(' · '),
-              page: 'relegal' as PageType,
-              pageLabel: 'Юр.лица',
-              icon: <ArrowRightLeft className="h-3.5 w-3.5" />,
-            })
-          }
+      for (const r of relegal) {
+        if (found.length >= 10) break
+        const haystack = `${r.fromOrg || ''} ${r.toOrg || ''} ${r.action || ''} ${r.manager || ''}`.toLowerCase()
+        if (haystack.includes(q)) {
+          found.push({
+            id: r.id,
+            title: r.fromOrg || r.toOrg || '',
+            subtitle: [
+              r.fromOrg && r.toOrg ? `→ ${r.toOrg}` : '',
+              r.action,
+              r.manager,
+            ]
+              .filter(Boolean)
+              .join(' · '),
+            page: 'relegal' as PageType,
+            pageLabel: 'Юр.лица',
+            icon: <ArrowRightLeft className="h-3.5 w-3.5" />,
+          })
         }
       }
 
       // Churn
-      if (isAdmin) {
-        for (const c of churn) {
-          if (found.length >= 10) break
-          const haystack = `${c.organization || ''} ${c.manager || ''} ${c.comment || ''} ${c.status || ''}`.toLowerCase()
-          if (haystack.includes(q)) {
-            found.push({
-              id: c.id,
-              title: c.organization || '',
-              subtitle: [c.manager, c.status].filter(Boolean).join(' · '),
-              page: 'churn' as PageType,
-              pageLabel: 'Оттоки',
-              icon: <TrendingDown className="h-3.5 w-3.5" />,
-            })
-          }
+      for (const c of churn) {
+        if (found.length >= 10) break
+        const haystack = `${c.organization || ''} ${c.manager || ''} ${c.comment || ''} ${c.status || ''}`.toLowerCase()
+        if (haystack.includes(q)) {
+          found.push({
+            id: c.id,
+            title: c.organization || '',
+            subtitle: [c.manager, c.status].filter(Boolean).join(' · '),
+            page: 'churn' as PageType,
+            pageLabel: 'Оттоки',
+            icon: <TrendingDown className="h-3.5 w-3.5" />,
+          })
         }
       }
 
       // Additional
-      if (isAdmin) {
-        for (const a of additional) {
-          if (found.length >= 10) break
-          const haystack = `${a.organization || ''} ${a.partner || ''} ${a.finInstrument || ''}`.toLowerCase()
-          if (haystack.includes(q)) {
-            found.push({
-              id: a.id,
-              title: a.organization || '',
-              subtitle: [a.partner, a.finInstrument].filter(Boolean).join(' · '),
-              page: 'dop' as PageType,
-              pageLabel: 'Доп.',
-              icon: <Plug className="h-3.5 w-3.5" />,
-            })
-          }
+      for (const a of additional) {
+        if (found.length >= 10) break
+        const haystack = `${a.organization || ''} ${a.partner || ''} ${a.finInstrument || ''}`.toLowerCase()
+        if (haystack.includes(q)) {
+          found.push({
+            id: a.id,
+            title: a.organization || '',
+            subtitle: [a.partner, a.finInstrument].filter(Boolean).join(' · '),
+            page: 'dop' as PageType,
+            pageLabel: 'Доп.',
+            icon: <Plug className="h-3.5 w-3.5" />,
+          })
         }
       }
 
       setResults(found.slice(0, 10))
     },
-    [isAdmin]
+    []
   )
 
   // ─── Fetch all searchable entities ─────────────────────────────
   const refreshCache = useCallback(() => {
     return Promise.all([
-      isAdmin
-        ? fetch('/api/relegal').then((r) => (r.ok ? r.json() : [])).catch(() => [])
-        : Promise.resolve([]),
-      isAdmin
-        ? fetch('/api/churn').then((r) => (r.ok ? r.json() : [])).catch(() => [])
-        : Promise.resolve([]),
-      isAdmin
-        ? fetch('/api/additional').then((r) => (r.ok ? r.json() : [])).catch(() => [])
-        : Promise.resolve([]),
+      fetch('/api/relegal').then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch('/api/churn').then((r) => (r.ok ? r.json() : [])).catch(() => []),
+      fetch('/api/additional').then((r) => (r.ok ? r.json() : [])).catch(() => []),
     ]).then(([relegal, churn, additional]) => {
       cacheRef.current = { relegal, churn, additional }
       cacheReadyRef.current = true
       setIsFirstLoad(false)
     })
-  }, [isAdmin])
+  }, [])
 
   // Initial data fetch
   useEffect(() => {

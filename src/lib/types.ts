@@ -2,7 +2,7 @@ export interface AuthUser {
   id: string
   username: string
   fullName: string
-  role: 'uniteller' | 'vtb'
+  role: 'uniteller'
 }
 
 export interface Additional {

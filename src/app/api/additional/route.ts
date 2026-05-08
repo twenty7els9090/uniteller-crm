@@ -8,10 +8,6 @@ export async function GET(request: Request) {
     const { user, response } = await requireAuth()
     if (!user || response) return response!
 
-    if (user.role === 'vtb') {
-      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
-    }
-
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search') || ''
 
@@ -40,10 +36,6 @@ export async function POST(request: Request) {
   try {
     const { user, response } = await requireAuth()
     if (!user || response) return response!
-
-    if (user.role === 'vtb') {
-      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
-    }
 
     const body = await request.json()
     const cleanBody = cleanNullableFields(body, ['partner', 'finInstrument', 'turnover', 'revenue'])

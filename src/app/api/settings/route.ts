@@ -31,7 +31,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'uniteller') {
+    if (!user) {
       return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
     }
 
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const user = await getCurrentUser()
-    if (!user || user.role !== 'uniteller') {
+    if (!user) {
       return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
     }
 

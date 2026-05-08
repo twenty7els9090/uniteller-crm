@@ -14,7 +14,7 @@ model User {
   username  String   @unique
   password  String
   fullName  String
-  role      String   @default("vtb")
+  role      String   @default("uniteller")
   sessions  Session[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

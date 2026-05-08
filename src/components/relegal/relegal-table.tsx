@@ -43,7 +43,6 @@ interface RelegalTableProps {
 }
 
 export function RelegalTable({ readOnly = false }: RelegalTableProps) {
-  const user = useAppStore((s) => s.user)
   const storeGlobalSearch = useAppStore((s) => s.globalSearch)
   const { settings } = useSettings()
   const [allRecords, setAllRecords] = useState<Relegal[]>([])
@@ -99,9 +98,6 @@ export function RelegalTable({ readOnly = false }: RelegalTableProps) {
     } catch { toast.error('Ошибка соединения'); fetchRecords() }
   }, [fetchRecords])
 
-  const isVTB = user?.role === 'vtb'
-  const isAdmin = user?.role === 'uniteller'
-
   const columns: ColumnDef<Relegal>[] = useMemo(() => [
     {
       accessorKey: 'fromOrg',
@@ -133,7 +129,6 @@ export function RelegalTable({ readOnly = false }: RelegalTableProps) {
           options={dynamicManagers.map((m) => ({ value: m, label: m }))}
           onSave={(val) => inlineSave(row.original.id, 'manager', val)}
           getBadge={(val) => <Badge variant="outline" className="text-xs justify-start border-slate-200/80 bg-slate-100 text-zinc-400">{val}</Badge>}
-          disabled={isVTB}
         />
       ),
     },
@@ -152,17 +147,15 @@ export function RelegalTable({ readOnly = false }: RelegalTableProps) {
               <DropdownMenuItem onClick={() => setEditRecord(rec)} className="text-slate-600 focus:bg-slate-100 focus:text-foreground">
                 <Pencil className="h-4 w-4 mr-2" />Редактировать
               </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem className="text-red-400 focus:text-red-300 focus:bg-red-500/10" onClick={() => setDeleteId(rec.id)}>
-                  <Trash2 className="h-4 w-4 mr-2" />Удалить
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuItem className="text-red-400 focus:text-red-300 focus:bg-red-500/10" onClick={() => setDeleteId(rec.id)}>
+                <Trash2 className="h-4 w-4 mr-2" />Удалить
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
       },
     },
-  ], [readOnly, isVTB, isAdmin, inlineSave, dynamicManagers])
+  ], [readOnly, inlineSave, dynamicManagers])
 
   const table = useReactTable({
     data: filtered, columns,
@@ -280,11 +273,9 @@ export function RelegalTable({ readOnly = false }: RelegalTableProps) {
                     <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl flex-1 border-slate-200/80 bg-slate-50 text-zinc-400 hover:text-foreground hover:bg-slate-100" onClick={() => setEditRecord(rec)}>
                       <Pencil className="h-3 w-3 mr-1" />Изменить
                     </Button>
-                    {isAdmin && (
-                      <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 border-slate-200/80 bg-slate-50" onClick={() => setDeleteId(rec.id)}>
+                    <Button variant="outline" size="sm" className="h-11 text-sm rounded-xl text-red-400 hover:text-red-300 hover:bg-red-500/10 border-slate-200/80 bg-slate-50" onClick={() => setDeleteId(rec.id)}>
                         <Trash2 className="h-3 w-3 mr-1" />Удалить
                       </Button>
-                    )}
                   </div>
                 )}
               </div>

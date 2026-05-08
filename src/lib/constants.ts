@@ -1,5 +1,5 @@
 // Партнёры
-export const PARTNERS = ['ВТБ', 'Vendotek', 'Другой'] as const
+export const PARTNERS = ['Vendotek', 'Другой'] as const
 
 // Менеджеры
 export const MANAGERS = [

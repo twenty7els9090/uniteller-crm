@@ -13,10 +13,6 @@ export async function PUT(
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
     }
 
-    if (user.role === 'vtb') {
-      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
-    }
-
     const { id } = await params
     const body = await request.json()
     const data = additionalSchema.parse(body)
@@ -57,10 +53,6 @@ export async function DELETE(
     const user = await getCurrentUser()
     if (!user) {
       return NextResponse.json({ error: 'Не авторизован' }, { status: 401 })
-    }
-
-    if (user.role !== 'uniteller') {
-      return NextResponse.json({ error: 'Доступ запрещён' }, { status: 403 })
     }
 
     const { id } = await params
