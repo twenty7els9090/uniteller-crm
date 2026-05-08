@@ -5,9 +5,9 @@ import { useAppStore, type PageType } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Search, X, Loader2, Building2, FileText, ArrowRightLeft, TrendingDown, Plug, PhoneIncoming } from 'lucide-react'
+import { Search, X, Loader2, ArrowRightLeft, TrendingDown, Plug } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import type { Lead, Relegal, Churn, Additional } from '@/lib/types'
+import type { Relegal, Churn, Additional } from '@/lib/types'
 
 interface SearchResult {
   id: string
@@ -19,13 +19,12 @@ interface SearchResult {
 }
 
 interface SearchCache {
-  leads: Lead[]
   relegal: Relegal[]
   churn: Churn[]
   additional: Additional[]
 }
 
-const EMPTY_CACHE: SearchCache = { leads: [], relegal: [], churn: [], additional: [] }
+const EMPTY_CACHE: SearchCache = { relegal: [], churn: [], additional: [] }
 
 export function GlobalSearch() {
   const { user, currentPage, navigateWithSearch, setGlobalSearch, searchVersion } = useAppStore()
@@ -41,12 +40,11 @@ export function GlobalSearch() {
   // Cache
   const cacheRef = useRef<SearchCache>({ ...EMPTY_CACHE })
   const [isFirstLoad, setIsFirstLoad] = useState(true)
-  const [cacheReady, setCacheReady] = useState(false)
   const cacheReadyRef = useRef(false)
 
   const isAdmin = user?.role !== 'vtb'
 
-  // ─── Search logic (defined before effects that use it) ──────────
+  // ─── Search logic ──────────────────
   const doSearch = useCallback(
     (search: string) => {
       if (!search.trim() || !cacheReadyRef.current) {
@@ -55,59 +53,7 @@ export function GlobalSearch() {
       }
       const q = search.toLowerCase()
       const found: SearchResult[] = []
-      const { leads, relegal, churn, additional } = cacheRef.current
-
-      // Incoming leads
-      for (const l of leads) {
-        if (found.length >= 10) break
-        if (l.zayavka !== 'Входящий') continue
-        const haystack = `${l.organization || ''} ${l.contactInfo || ''} ${l.manager || ''} ${l.comment || ''} ${l.partner || ''} ${l.email || ''}`.toLowerCase()
-        if (haystack.includes(q)) {
-          found.push({
-            id: l.id,
-            title: l.organization,
-            subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '),
-            page: 'incoming' as PageType,
-            pageLabel: 'Входящие',
-            icon: <PhoneIncoming className="h-3.5 w-3.5" />,
-          })
-        }
-      }
-
-      // Main leads (non-combat, non-incoming)
-      for (const l of leads) {
-        if (found.length >= 10) break
-        const isCombat = l.zayavka === 'Выполнена' || l.status === 'пошли боевые платежи'
-        if (isCombat || l.zayavka === 'Входящий') continue
-        const haystack = `${l.organization || ''} ${l.contactInfo || ''} ${l.manager || ''} ${l.comment || ''} ${l.partner || ''}`.toLowerCase()
-        if (haystack.includes(q)) {
-          found.push({
-            id: l.id,
-            title: l.organization,
-            subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '),
-            page: 'main' as PageType,
-            pageLabel: 'Лиды',
-            icon: <Building2 className="h-3.5 w-3.5" />,
-          })
-        }
-      }
-
-      // Combat leads
-      for (const l of leads) {
-        if (found.length >= 10) break
-        if (!(l.zayavka === 'Выполнена' || l.status === 'пошли боевые платежи')) continue
-        const haystack = `${l.organization || ''} ${l.contactInfo || ''} ${l.manager || ''} ${l.comment || ''} ${l.partner || ''}`.toLowerCase()
-        if (haystack.includes(q)) {
-          found.push({
-            id: l.id,
-            title: l.organization,
-            subtitle: [l.manager, l.contactInfo].filter(Boolean).join(' · '),
-            page: 'combat' as PageType,
-            pageLabel: 'Боевые',
-            icon: <FileText className="h-3.5 w-3.5" />,
-          })
-        }
-      }
+      const { relegal, churn, additional } = cacheRef.current
 
       // Relegal
       if (isAdmin) {
@@ -177,13 +123,6 @@ export function GlobalSearch() {
   // ─── Fetch all searchable entities ─────────────────────────────
   const refreshCache = useCallback(() => {
     return Promise.all([
-      fetch('/api/leads?limit=2000&page=1').then((r) =>
-        r.ok
-          ? r.json().then((d: Record<string, unknown>) =>
-              Array.isArray(d.leads) ? d.leads : Array.isArray(d) ? d : []
-            )
-          : []
-      ).catch(() => []),
       isAdmin
         ? fetch('/api/relegal').then((r) => (r.ok ? r.json() : [])).catch(() => [])
         : Promise.resolve([]),
@@ -193,11 +132,10 @@ export function GlobalSearch() {
       isAdmin
         ? fetch('/api/additional').then((r) => (r.ok ? r.json() : [])).catch(() => [])
         : Promise.resolve([]),
-    ]).then(([leads, relegal, churn, additional]) => {
-      cacheRef.current = { leads, relegal, churn, additional }
+    ]).then(([relegal, churn, additional]) => {
+      cacheRef.current = { relegal, churn, additional }
       cacheReadyRef.current = true
       setIsFirstLoad(false)
-      setCacheReady(true)
     })
   }, [isAdmin])
 
@@ -206,11 +144,10 @@ export function GlobalSearch() {
     refreshCache().finally(() => setLoading(false))
   }, [refreshCache])
 
-  // Re-fetch when searchVersion bumps (data was modified elsewhere)
+  // Re-fetch when searchVersion bumps
   useEffect(() => {
     if (searchVersion > 0 && !isFirstLoad) {
       refreshCache().then(() => {
-        // Re-run current search if there's a query
         if (queryRef.current.trim()) {
           doSearch(queryRef.current)
         }
@@ -218,15 +155,7 @@ export function GlobalSearch() {
     }
   }, [searchVersion, isFirstLoad, refreshCache, doSearch])
 
-  // Re-search when cache is ready and there's a query
-  useEffect(() => {
-    if (cacheReady && query.trim()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentionally re-runs search when cache loads
-      doSearch(query)
-    }
-  }, [cacheReady, doSearch, query])
-
-  // Debounce the query → doSearch pipeline
+  // Debounce
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
@@ -253,7 +182,7 @@ export function GlobalSearch() {
   // ─── Handlers ──────────────────────────────────────────────────
   function handleFocus() {
     setOpen(true)
-    refreshCache() // silent refresh
+    refreshCache()
   }
 
   function handleSelectResult(result: SearchResult) {
@@ -261,7 +190,6 @@ export function GlobalSearch() {
     setQuery(result.title)
     queryRef.current = result.title
     setResults([])
-    // Atomic: navigate + set search in a single state update (no race condition)
     navigateWithSearch(result.title, result.page)
   }
 
@@ -375,7 +303,7 @@ export function GlobalSearch() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.12 }}
                     onClick={() => handleSelectResult(result)}
-                    onMouseDown={(e) => e.preventDefault()} // prevent blur
+                    onMouseDown={(e) => e.preventDefault()}
                     className={cn(
                       'w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-slate-100 transition-colors',
                       i === 0 && 'bg-slate-100/60',

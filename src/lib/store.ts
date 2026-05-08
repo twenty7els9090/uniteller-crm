@@ -3,7 +3,7 @@ import type { AuthUser } from '@/lib/types'
 
 export type { AuthUser }
 
-export type PageType = 'incoming' | 'main' | 'kanban' | 'combat' | 'dop' | 'relegal' | 'churn' | 'statistics' | 'settings'
+export type PageType = 'dop' | 'relegal' | 'churn' | 'statistics' | 'settings'
 
 interface AppState {
   user: AuthUser | null
@@ -23,7 +23,7 @@ interface AppState {
 
 export const useAppStore = create<AppState>((set) => ({
   user: null,
-  currentPage: 'incoming',
+  currentPage: 'dop',
   isLoading: true,
   globalSearch: '',
   searchVersion: 0,
@@ -37,6 +37,6 @@ export const useAppStore = create<AppState>((set) => ({
   bumpSearchVersion: () => set((s) => ({ searchVersion: s.searchVersion + 1 })),
   logout: () => {
     fetch('/api/auth/login', { method: 'DELETE' }).catch(() => {})
-    set({ user: null, currentPage: 'incoming', globalSearch: '', isLoading: false })
+    set({ user: null, currentPage: 'dop', globalSearch: '', isLoading: false })
   },
 }))

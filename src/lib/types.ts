@@ -1,47 +1,3 @@
-export interface Lead {
-  id: string
-  organization: string
-  partner: string
-  zayavka: string
-  status: string | null
-  activityType: string
-  comment: string | null
-  contactInfo: string
-  email: string
-  margin: string
-  manager: string
-  turnoverTsp: string
-  ourRate: string
-  revenue: string
-  callDate: string | null
-  reported: boolean
-  statusChangedAt: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-export interface StatsData {
-  totalLeads: number
-  completedLeads: number
-  inProgressLeads: number
-  onHoldLeads: number
-  rejectedLeads: number
-  leadsByPartner: { partner: string; _count: { id: number } }[]
-  leadsByZayavka: { zayavka: string; _count: { id: number } }[]
-  rejectedByReason: { name: string; count: number }[]
-  // Combat leads
-  totalCombatLeads: number
-  combatLeadsTurnover: number
-  combatLeadsRevenue: number
-  combatCompletedLeads: number
-  // Churn
-  totalChurns: number
-  churnsTurnover: number
-  churnsRevenue: number
-  // Top orgs
-  topOrgs: { organization: string; turnover: number; revenue: number; zayavka: string }[]
-}
-
 export interface AuthUser {
   id: string
   username: string
@@ -81,4 +37,11 @@ export interface Churn {
   manager: string
   createdAt: string
   updatedAt: string
+}
+
+export interface StatsData {
+  // Churn
+  totalChurns: number
+  churnsTurnover: number
+  churnsRevenue: number
 }

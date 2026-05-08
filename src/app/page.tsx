@@ -6,10 +6,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { LoginForm } from '@/components/auth/login-form'
 import { AppHeader } from '@/components/layout/app-header'
 import { PageWrapper } from '@/components/layout/page-layout'
-import { IncomingLeadsTable } from '@/components/leads/incoming-leads-table'
-import { LeadsTable } from '@/components/leads/leads-table'
-import { CombatLeadsTable } from '@/components/leads/combat-leads-table'
-import { KanbanBoard } from '@/components/leads/kanban-board'
 import { AdditionalTable } from '@/components/additional/additional-table'
 import { RelegalTable } from '@/components/relegal/relegal-table'
 import { ChurnTable } from '@/components/churn/churn-table'
@@ -17,10 +13,6 @@ import { StatisticsCharts } from '@/components/statistics/charts'
 import { SettingsPage } from '@/components/settings/settings-page'
 
 const PAGE_COMPONENTS: Record<PageType, React.FC> = {
-  incoming: IncomingLeadsTable,
-  main: LeadsTable,
-  kanban: KanbanBoard,
-  combat: CombatLeadsTable,
   dop: AdditionalTable,
   relegal: RelegalTable,
   churn: ChurnTable,

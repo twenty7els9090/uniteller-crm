@@ -5,7 +5,7 @@ import { useAppStore, type PageType } from '@/lib/store'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  PhoneIncoming, Users, Swords, Plug,
+  Plug,
   Building2, TrendingDown, BarChart3, Settings, LogOut,
   Search, Menu, X,
 } from 'lucide-react'
@@ -20,9 +20,6 @@ interface NavTab {
 }
 
 const tabs: NavTab[] = [
-  { label: 'Входящие',  page: 'incoming',   icon: <PhoneIncoming  className="h-4 w-4" /> },
-  { label: 'Лиды',      page: 'main',       icon: <Users          className="h-4 w-4" /> },
-  { label: 'Боевые',    page: 'combat',     icon: <Swords         className="h-4 w-4" /> },
   { label: 'Доп.',      page: 'dop',        icon: <Plug           className="h-4 w-4" />, unitellerOnly: true },
   { label: 'Юр.лица',   page: 'relegal',    icon: <Building2      className="h-4 w-4" />, unitellerOnly: true },
   { label: 'Оттоки',    page: 'churn',      icon: <TrendingDown   className="h-4 w-4" />, unitellerOnly: true },

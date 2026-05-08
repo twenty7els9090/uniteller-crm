@@ -49,7 +49,6 @@ export function useStats() {
     return () => { cancelled = true }
   }, [])
 
-  /** Invalidate cache and re-fetch stats */
   const refreshStats = useCallback(() => {
     statsCache = null
     fetchPromise = null

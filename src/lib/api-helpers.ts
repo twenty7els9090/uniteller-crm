@@ -38,10 +38,3 @@ export function cleanNullableFields(
   }
   return clean
 }
-
-const LEAD_NULLABLE_FIELDS = ['status', 'comment', 'contactInfo', 'email', 'margin', 'activityType', 'turnoverTsp', 'ourRate', 'revenue']
-
-/** Clean lead nullable fields with default list */
-export function cleanLeadFields(body: Record<string, unknown>): Record<string, unknown> {
-  return cleanNullableFields(body, LEAD_NULLABLE_FIELDS)
-}
